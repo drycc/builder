@@ -22,7 +22,7 @@ func TestGitPktLine(t *testing.T) {
 	err := gitPktLine(b, str)
 	assert.NoErr(t, err)
 
-	outStr := string(b.Bytes())
+	outStr := b.String()
 	assert.True(t, len(outStr) > 4, "output string <= 4 chars")
 	assert.Equal(t, outStr[:4], fmt.Sprintf("%04x", len(str)+4), "hex prefix")
 	assert.Equal(t, outStr[4:], str, "remainder of string")
@@ -255,7 +255,7 @@ func runServer(
 func mockAuthKey() (*ssh.Permissions, error) {
 	perm := &ssh.Permissions{
 		Extensions: map[string]string{
-			"user":        "deis",
+			"user":        "drycc",
 			"fingerprint": "",
 			"apps":        "demo,repo1,repo2,repo3,repo4,repo5,repo6,repo7,repo8,repo0,repo9",
 		},
@@ -279,13 +279,13 @@ func gitPktLineStr(str string) (string, error) {
 	if err := gitPktLine(&buf, str); err != nil {
 		return "", err
 	}
-	return string(buf.Bytes()), nil
+	return buf.String(), nil
 }
 
 // connMetadata mocks ssh.ConnMetadata for authentication.
 type connMetadata struct{}
 
-func (cm *connMetadata) User() string          { return "deis" }
+func (cm *connMetadata) User() string          { return "drycc" }
 func (cm *connMetadata) SessionID() []byte     { return []byte("1") }
 func (cm *connMetadata) ClientVersion() []byte { return []byte("2.3.4") }
 func (cm *connMetadata) ServerVersion() []byte { return []byte("2.3.4") }

@@ -1,14 +1,14 @@
-// Package pkg provides common libraries for the Deis builder.
+// Package pkg provides common libraries for the Drycc builder.
 //
-// The Deis builder is responsible for building slugs and docker images for use in the Deis
-// on the Deis PaaS platform.
+// The Drycc builder is responsible for building slugs and docker images for use in the Drycc
+// on the Drycc PaaS platform.
 package pkg
 
 import (
 	"fmt"
 
-	"github.com/deis/builder/pkg/sshd"
-	"github.com/deis/pkg/log"
+	"github.com/drycc/builder/pkg/sshd"
+	"github.com/drycc/pkg/log"
 )
 
 // Return codes that will be sent to the shell.

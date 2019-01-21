@@ -11,14 +11,14 @@ import (
 	"testing"
 
 	"github.com/arschles/assert"
-	builderconf "github.com/deis/builder/pkg/conf"
-	"github.com/deis/builder/pkg/storage"
-	"github.com/deis/builder/pkg/sys"
-	"github.com/deis/controller-sdk-go/api"
-	"github.com/deis/pkg/log"
 	"github.com/docker/distribution/context"
 	"github.com/docker/distribution/registry/storage/driver/factory"
 	_ "github.com/docker/distribution/registry/storage/driver/inmemory"
+	builderconf "github.com/drycc/builder/pkg/conf"
+	"github.com/drycc/builder/pkg/storage"
+	"github.com/drycc/builder/pkg/sys"
+	"github.com/drycc/controller-sdk-go/api"
+	"github.com/drycc/pkg/log"
 	"gopkg.in/yaml.v2"
 )
 

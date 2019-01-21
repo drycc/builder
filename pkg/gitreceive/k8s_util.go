@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/deis/builder/pkg/k8s"
+	"github.com/drycc/builder/pkg/k8s"
 	"github.com/pborman/uuid"
 	"k8s.io/kubernetes/pkg/api"
 	apierrors "k8s.io/kubernetes/pkg/api/errors"
@@ -15,19 +15,19 @@ import (
 )
 
 const (
-	slugBuilderName   = "deis-slugbuilder"
-	dockerBuilderName = "deis-dockerbuilder"
+	slugBuilderName   = "drycc-slugbuilder"
+	dockerBuilderName = "drycc-dockerbuilder"
 
 	tarPath          = "TAR_PATH"
 	putPath          = "PUT_PATH"
 	cachePath        = "CACHE_PATH"
-	debugKey         = "DEIS_DEBUG"
+	debugKey         = "DRYCC_DEBUG"
 	sourceVersion    = "SOURCE_VERSION"
 	objectStore      = "objectstorage-keyfile"
 	dockerSocketName = "docker-socket"
 	dockerSocketPath = "/var/run/docker.sock"
 	builderStorage   = "BUILDER_STORAGE"
-	objectStorePath  = "/var/run/secrets/deis/objectstore/creds"
+	objectStorePath  = "/var/run/secrets/drycc/objectstore/creds"
 	envRoot          = "/tmp/env"
 )
 
@@ -77,7 +77,7 @@ func dockerBuilderPod(
 	// {"KEY": "value"}
 	//
 	// So we need to translate the map into json.
-	if _, ok := env["DEIS_DOCKER_BUILD_ARGS_ENABLED"]; ok {
+	if _, ok := env["DRYCC_DOCKER_BUILD_ARGS_ENABLED"]; ok {
 		dockerBuildArgs, _ := json.Marshal(env)
 		addEnvToPod(pod, "DOCKER_BUILD_ARGS", string(dockerBuildArgs))
 	}
@@ -89,10 +89,10 @@ func dockerBuilderPod(
 	addEnvToPod(pod, sourceVersion, gitShortHash)
 	addEnvToPod(pod, "IMG_NAME", imageName)
 	addEnvToPod(pod, builderStorage, storageType)
-	// inject existing DEIS_REGISTRY_SERVICE_HOST and PORT info to dockerbuilder
-	// see https://github.com/teamhephy/dockerbuilder/issues/83
-	addEnvToPod(pod, "DEIS_REGISTRY_SERVICE_HOST", registryHost)
-	addEnvToPod(pod, "DEIS_REGISTRY_SERVICE_PORT", registryPort)
+	// inject existing DRYCC_REGISTRY_SERVICE_HOST and PORT info to dockerbuilder
+	// see https://github.com/drycc/dockerbuilder/issues/83
+	addEnvToPod(pod, "DRYCC_REGISTRY_SERVICE_HOST", registryHost)
+	addEnvToPod(pod, "DRYCC_REGISTRY_SERVICE_PORT", registryPort)
 
 	for key, value := range registryEnv {
 		addEnvToPod(pod, key, value)
@@ -326,10 +326,8 @@ func createAppEnvConfigSecret(secretsClient client.SecretsInterface, secretName 
 	}
 	if _, err := secretsClient.Create(newSecret); err != nil {
 		if apierrors.IsAlreadyExists(err) {
-			if _, err = secretsClient.Update(newSecret); err != nil {
-				return err
-			}
-			return nil
+			_, err = secretsClient.Update(newSecret)
+			return err
 		}
 		return err
 	}

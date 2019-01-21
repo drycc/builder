@@ -1,16 +1,16 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: deis-builder
+  name: drycc-builder
   labels:
-    heritage: deis
+    heritage: drycc
 spec:
   ports:
     - name: ssh
       port: 2222
       targetPort: 2223
   selector:
-    app: deis-builder
+    app: drycc-builder
 {{ if .Values.global.experimental_native_ingress }}
   type: "LoadBalancer"
 {{ end }}

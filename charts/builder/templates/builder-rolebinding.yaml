@@ -3,16 +3,16 @@
 kind: RoleBinding
 apiVersion: {{ template "rbacAPIVersion" . }}
 metadata:
-  name: deis-builder
+  name: drycc-builder
   labels:
-    app: deis-builder
-    heritage: deis
+    app: drycc-builder
+    heritage: drycc
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: Role
-  name: deis-builder
+  name: drycc-builder
 subjects:
 - kind: ServiceAccount
-  name: deis-builder
+  name: drycc-builder
 {{- end -}}
 {{- end -}}

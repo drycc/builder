@@ -8,7 +8,7 @@ import (
 	"testing"
 
 	"github.com/arschles/assert"
-	"github.com/deis/builder/pkg/sys"
+	"github.com/drycc/builder/pkg/sys"
 )
 
 func TestGetStorageParams(t *testing.T) {
@@ -68,9 +68,9 @@ func TestGetStorageParams(t *testing.T) {
 
 	env := sys.NewFakeEnv()
 	env.Envs = map[string]string{
-		"BUILDER_STORAGE":         "minio",
-		"DEIS_MINIO_SERVICE_HOST": "localhost",
-		"DEIS_MINIO_SERVICE_PORT": "8088",
+		"BUILDER_STORAGE":          "minio",
+		"DRYCC_MINIO_SERVICE_HOST": "localhost",
+		"DRYCC_MINIO_SERVICE_PORT": "8088",
 	}
 	params, err = GetStorageParams(env)
 	if err != nil {

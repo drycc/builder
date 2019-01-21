@@ -6,7 +6,7 @@ import (
 	"errors"
 	"strings"
 
-	"github.com/deis/builder/pkg/storage"
+	"github.com/drycc/builder/pkg/storage"
 	"k8s.io/kubernetes/pkg/api"
 	client "k8s.io/kubernetes/pkg/client/unversioned"
 )
@@ -56,9 +56,9 @@ func getDetailsFromDockerConfigSecret(secretGetter client.SecretsInterface, secr
 	user := parts[0]
 	password := parts[1]
 	regDetails := make(map[string]string)
-	regDetails["DEIS_REGISTRY_USERNAME"] = user
-	regDetails["DEIS_REGISTRY_PASSWORD"] = password
-	regDetails["DEIS_REGISTRY_HOSTNAME"] = hostname
+	regDetails["DRYCC_REGISTRY_USERNAME"] = user
+	regDetails["DRYCC_REGISTRY_PASSWORD"] = password
+	regDetails["DRYCC_REGISTRY_HOSTNAME"] = hostname
 	return regDetails, nil
 }
 
@@ -74,13 +74,13 @@ func getRegistryDetails(kubeClient client.SecretsNamespacer, image *string, regi
 			return nil, err
 		}
 		for key, value := range regSecretData {
-			registryEnv["DEIS_REGISTRY_"+strings.ToUpper(key)] = value
+			registryEnv["DRYCC_REGISTRY_"+strings.ToUpper(key)] = value
 		}
-		if registryEnv["DEIS_REGISTRY_ORGANIZATION"] != "" {
-			*image = registryEnv["DEIS_REGISTRY_ORGANIZATION"] + "/" + *image
+		if registryEnv["DRYCC_REGISTRY_ORGANIZATION"] != "" {
+			*image = registryEnv["DRYCC_REGISTRY_ORGANIZATION"] + "/" + *image
 		}
-		if registryEnv["DEIS_REGISTRY_HOSTNAME"] != "" {
-			*image = registryEnv["DEIS_REGISTRY_HOSTNAME"] + "/" + *image
+		if registryEnv["DRYCC_REGISTRY_HOSTNAME"] != "" {
+			*image = registryEnv["DRYCC_REGISTRY_HOSTNAME"] + "/" + *image
 		}
 	} else if registryLocation == "ecr" {
 		registryEnv, err = getDetailsFromDockerConfigSecret(registryConfigSecretInterface, registrySecretPrefix+"-"+registryLocation)
@@ -96,7 +96,7 @@ func getRegistryDetails(kubeClient client.SecretsNamespacer, image *string, regi
 		if err != nil {
 			return nil, err
 		}
-		hostname := strings.Replace(registryEnv["DEIS_REGISTRY_HOSTNAME"], "https://", "", 1)
+		hostname := strings.Replace(registryEnv["DRYCC_REGISTRY_HOSTNAME"], "https://", "", 1)
 		*image = hostname + "/" + *image
 
 	} else if registryLocation == "gcr" {
@@ -116,9 +116,9 @@ func getRegistryDetails(kubeClient client.SecretsNamespacer, image *string, regi
 		if err := json.Unmarshal(jsonKey, &key); err != nil {
 			return nil, err
 		}
-		hostname := strings.Replace(registryEnv["DEIS_REGISTRY_HOSTNAME"], "https://", "", 1)
+		hostname := strings.Replace(registryEnv["DRYCC_REGISTRY_HOSTNAME"], "https://", "", 1)
 		projectID := strings.Replace(key.ProjectID, ":", "/", -1)
-		registryEnv["DEIS_REGISTRY_GCS_PROJ_ID"] = projectID
+		registryEnv["DRYCC_REGISTRY_GCS_PROJ_ID"] = projectID
 		*image = strings.Replace(hostname, "https://", "", 1) + "/" + projectID + "/" + *image
 	}
 	return registryEnv, nil

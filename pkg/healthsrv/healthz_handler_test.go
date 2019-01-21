@@ -15,8 +15,8 @@ import (
 	"github.com/docker/distribution/context"
 
 	"github.com/arschles/assert"
-	"github.com/deis/builder/pkg/sshd"
-	"github.com/deis/controller-sdk-go"
+	"github.com/drycc/builder/pkg/sshd"
+	"github.com/drycc/controller-sdk-go"
 )
 
 var (
@@ -69,7 +69,7 @@ type fakeHTTPServer struct {
 }
 
 func (f fakeHTTPServer) ServeHTTP(res http.ResponseWriter, req *http.Request) {
-	res.Header().Add("DEIS_API_VERSION", deis.APIVersion)
+	res.Header().Add("DRYCC_API_VERSION", drycc.APIVersion)
 
 	if req.URL.Path == "/healthz" {
 		if f.Healthy {
@@ -118,7 +118,7 @@ func TestReadinessNamespaceListErr(t *testing.T) {
 	handler := fakeHTTPServer{true}
 	server := httptest.NewServer(handler)
 	defer server.Close()
-	client, err := deis.New(false, server.URL, "")
+	client, err := drycc.New(false, server.URL, "")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -138,7 +138,7 @@ func TestReadinessControllerErr(t *testing.T) {
 	handler := fakeHTTPServer{false}
 	server := httptest.NewServer(handler)
 	defer server.Close()
-	client, err := deis.New(false, server.URL, "")
+	client, err := drycc.New(false, server.URL, "")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -171,7 +171,7 @@ func TestReadinessSuccess(t *testing.T) {
 	handler := fakeHTTPServer{true}
 	server := httptest.NewServer(handler)
 	defer server.Close()
-	client, err := deis.New(false, server.URL, "")
+	client, err := drycc.New(false, server.URL, "")
 	if err != nil {
 		t.Fatal(err)
 	}

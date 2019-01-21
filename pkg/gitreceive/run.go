@@ -6,10 +6,10 @@ import (
 	"os"
 	"strings"
 
-	builderconf "github.com/deis/builder/pkg/conf"
-	"github.com/deis/builder/pkg/sys"
-	"github.com/deis/pkg/log"
 	storagedriver "github.com/docker/distribution/registry/storage/driver"
+	builderconf "github.com/drycc/builder/pkg/conf"
+	"github.com/drycc/builder/pkg/sys"
+	"github.com/drycc/pkg/log"
 
 	client "k8s.io/kubernetes/pkg/client/unversioned"
 )

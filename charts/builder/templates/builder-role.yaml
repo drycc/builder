@@ -3,10 +3,10 @@
 kind: Role
 apiVersion: {{ template "rbacAPIVersion" . }}
 metadata:
-  name: deis-builder
+  name: drycc-builder
   labels:
-    app: deis-builder
-    heritage: deis
+    app: drycc-builder
+    heritage: drycc
 rules:
 - apiGroups: [""]
   resources: ["secrets"]

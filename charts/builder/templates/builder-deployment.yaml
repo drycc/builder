@@ -1,11 +1,11 @@
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: deis-builder
+  name: drycc-builder
   labels:
-    heritage: deis
+    heritage: drycc
   annotations:
-    component.deis.io/version: {{ .Values.docker_tag }}
+    component.drycc.cc/version: {{ .Values.docker_tag }}
 spec:
   replicas: 1
   strategy:
@@ -15,15 +15,15 @@ spec:
     type: RollingUpdate
   selector:
     matchLabels:
-      app: deis-builder
+      app: drycc-builder
   template:
     metadata:
       labels:
-        app: deis-builder
+        app: drycc-builder
     spec:
-      serviceAccount: deis-builder
+      serviceAccount: drycc-builder
       containers:
-        - name: deis-builder
+        - name: drycc-builder
           image: quay.io/{{.Values.org}}/builder:{{.Values.docker_tag}}
           imagePullPolicy: {{.Values.pull_policy}}
           ports:
@@ -42,10 +42,10 @@ spec:
 {{- end}}
 {{- end}}
           env:
-            # NOTE(bacongobbler): use deis/registry_proxy to work around Docker --insecure-registry requirements
-            - name: "DEIS_REGISTRY_SERVICE_HOST"
+            # NOTE(bacongobbler): use drycc/registry_proxy to work around Docker --insecure-registry requirements
+            - name: "DRYCC_REGISTRY_SERVICE_HOST"
               value: "127.0.0.1"
-            - name: "DEIS_REGISTRY_SERVICE_PORT"
+            - name: "DRYCC_REGISTRY_SERVICE_PORT"
               value: "{{ .Values.global.host_port }}"
             - name: "HEALTH_SERVER_PORT"
               value: "8092"
@@ -53,9 +53,9 @@ spec:
               value: "2223"
             - name: BUILDER_STORAGE
               value: "{{ .Values.global.storage }}"
-            - name: "DEIS_REGISTRY_LOCATION"
+            - name: "DRYCC_REGISTRY_LOCATION"
               value: "{{ .Values.global.registry_location }}"
-            - name: "DEIS_REGISTRY_SECRET_PREFIX"
+            - name: "DRYCC_REGISTRY_SECRET_PREFIX"
               value: "{{ .Values.global.secret_prefix }}"
             # Set GIT_LOCK_TIMEOUT to number of minutes you want to wait to git push again to the same repository
             - name: "GIT_LOCK_TIMEOUT"
@@ -83,13 +83,13 @@ spec:
             # This var needs to be passed so that the minio client (https://github.com/minio/mc) will work in Alpine linux
             - name: "DOCKERIMAGE"
               value: "1"
-            - name: "DEIS_DEBUG"
+            - name: "DRYCC_DEBUG"
               value: "false"
             - name: "POD_NAMESPACE"
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.namespace
-            - name: DEIS_BUILDER_KEY
+            - name: DRYCC_BUILDER_KEY
               valueFrom:
                 secretKeyRef:
                   name: builder-key-auth
@@ -115,10 +115,10 @@ spec:
               mountPath: /var/run/secrets/api/auth
               readOnly: true
             - name: builder-ssh-private-keys
-              mountPath: /var/run/secrets/deis/builder/ssh
+              mountPath: /var/run/secrets/drycc/builder/ssh
               readOnly: true
             - name: objectstore-creds
-              mountPath: /var/run/secrets/deis/objectstore/creds
+              mountPath: /var/run/secrets/drycc/objectstore/creds
               readOnly: true
       volumes:
         - name: builder-key-auth

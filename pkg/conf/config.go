@@ -5,13 +5,13 @@ import (
 	"io/ioutil"
 	"strings"
 
-	"github.com/deis/builder/pkg/sys"
+	"github.com/drycc/builder/pkg/sys"
 )
 
 const (
-	storageCredLocation = "/var/run/secrets/deis/objectstore/creds/"
-	minioHostEnvVar     = "DEIS_MINIO_SERVICE_HOST"
-	minioPortEnvVar     = "DEIS_MINIO_SERVICE_PORT"
+	storageCredLocation = "/var/run/secrets/drycc/objectstore/creds/"
+	minioHostEnvVar     = "DRYCC_MINIO_SERVICE_HOST"
+	minioPortEnvVar     = "DRYCC_MINIO_SERVICE_PORT"
 	gcsKey              = "key.json"
 )
 
@@ -21,7 +21,7 @@ var BuilderKeyLocation = "/var/run/secrets/api/auth/builder-key"
 // Parameters is map which contains storage params
 type Parameters map[string]interface{}
 
-// GetBuilderKey returns the key to be used as token to interact with deis-controller
+// GetBuilderKey returns the key to be used as token to interact with drycc-controller
 func GetBuilderKey() (string, error) {
 	builderKeyBytes, err := ioutil.ReadFile(BuilderKeyLocation)
 	if err != nil {

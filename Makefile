@@ -3,8 +3,8 @@ SHORT_NAME ?= builder
 include versioning.mk
 
 # dockerized development environment variables
-REPO_PATH := github.com/deis/${SHORT_NAME}
-DEV_ENV_IMAGE := quay.io/deis/go-dev:v0.22.0
+REPO_PATH := github.com/drycc/${SHORT_NAME}
+DEV_ENV_IMAGE := quay.io/drycc/go-dev:v0.22.0
 DEV_ENV_WORK_DIR := /go/src/${REPO_PATH}
 DEV_ENV_PREFIX := docker run --rm -v ${CURDIR}:${DEV_ENV_WORK_DIR} -w ${DEV_ENV_WORK_DIR}
 DEV_ENV_CMD := ${DEV_ENV_PREFIX} ${DEV_ENV_IMAGE}
@@ -17,7 +17,7 @@ LDFLAGS := "-s -w -X main.version=${VERSION}"
 # Docker Root FS
 BINDIR := ./rootfs
 
-DEIS_REGISTRY ?= ${DEV_REGISTRY}/
+DRYCC_REGISTRY ?= ${DEV_REGISTRY}
 
 GOTEST := go test --race
 
@@ -37,7 +37,7 @@ build:
 test: test-style test-unit
 
 test-style:
-	${DEV_ENV_CMD} lint
+	${DEV_ENV_CMD} lint --deadline
 
 test-unit:
 	${DEV_ENV_CMD} sh -c '${GOTEST} $$(glide nv)'
@@ -56,6 +56,6 @@ check-kubectl:
 	fi
 
 deploy: check-kubectl docker-build docker-push
-	kubectl --namespace=deis patch deployment deis-$(SHORT_NAME) --type='json' -p='[{"op": "replace", "path": "/spec/template/spec/containers/0/image", "value":"$(IMAGE)"}]'
+	kubectl --namespace=drycc patch deployment drycc-$(SHORT_NAME) --type='json' -p='[{"op": "replace", "path": "/spec/template/spec/containers/0/image", "value":"$(IMAGE)"}]'
 
 .PHONY: bootstrap glideup build docker-build test test-style test-unit test-cover deploy

@@ -1,4 +1,4 @@
-package: github.com/deis/builder
+package: github.com/drycc/builder
 ignore:
 - appengine
 - appengine/memcache
@@ -15,8 +15,8 @@ import:
 - package: gopkg.in/yaml.v2
   version: eca94c41d994ae2215d455ce578ae6e2dc6ee516
 - package: github.com/pborman/uuid
-- package: github.com/deis/pkg
-  version: 00e55bded444eea7fadff398f93152e962a0c338
+- package: github.com/drycc/pkg
+  version: 5c1dfa7b5446283ec3bdc7e8c3ef367bb5c1b4d1
   subpackages:
   - time
   - log
@@ -27,7 +27,7 @@ import:
 - package: github.com/arschles/assert
   version: 6882f85ccdc7c1822b146d1a6b0c2c48f91b5140
 - package: github.com/docker/distribution
-  repo: https://github.com/teamhephy/distribution
+  repo: https://github.com/drycc/distribution
   version: 0afef00d5764404d70f86076f364551657d51de6
   vcs: git
 - package: speter.net/go/exp/math/dec/inf
@@ -41,5 +41,5 @@ import:
   version: 8e7dc108ab3a1ab6ce6d922bbaff5657b88e8e49
   repo: https://github.com/spf13/pflag
   vcs: git
-- package: github.com/deis/controller-sdk-go
-  version: 27bab7c5535de202635877fa7600d5158b91a757
+- package: github.com/drycc/controller-sdk-go
+  version: 6c99dbcce25a775067cbaa47ccbc66dd16e4b721

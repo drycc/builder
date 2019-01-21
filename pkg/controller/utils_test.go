@@ -8,10 +8,10 @@ import (
 	"path/filepath"
 	"testing"
 
-	builderconf "github.com/deis/builder/pkg/conf"
+	builderconf "github.com/drycc/builder/pkg/conf"
 
 	"github.com/arschles/assert"
-	deis "github.com/deis/controller-sdk-go"
+	drycc "github.com/drycc/controller-sdk-go"
 )
 
 func TestNew(t *testing.T) {
@@ -38,7 +38,7 @@ func TestNew(t *testing.T) {
 	assert.NoErr(t, err)
 	assert.Equal(t, cli.ControllerURL.String(), fmt.Sprintf("http://%s:%s/", host, port), "data")
 	assert.Equal(t, cli.HooksToken, string(data), "data")
-	assert.Equal(t, cli.UserAgent, "deis-builder", "user-agent")
+	assert.Equal(t, cli.UserAgent, "drycc-builder", "user-agent")
 
 	port = "invalid-port-number"
 	if _, err = New(host, port); err == nil {
@@ -54,8 +54,8 @@ func TestNewWithInvalidBuilderKeyPath(t *testing.T) {
 }
 
 func TestCheckAPICompat(t *testing.T) {
-	client := &deis.Client{ControllerAPIVersion: deis.APIVersion}
-	err := deis.ErrAPIMismatch
+	client := &drycc.Client{ControllerAPIVersion: drycc.APIVersion}
+	err := drycc.ErrAPIMismatch
 
 	if apiErr := CheckAPICompat(client, err); apiErr != nil {
 		t.Errorf("api errors are non-fatal and should return nil, got '%v'", apiErr)

@@ -3,8 +3,8 @@ package healthsrv
 import (
 	"net/http"
 
-	"github.com/deis/builder/pkg/controller"
-	deis "github.com/deis/controller-sdk-go"
+	"github.com/drycc/builder/pkg/controller"
+	drycc "github.com/drycc/controller-sdk-go"
 )
 
 // GetClient is an (*net/http).Client compatible interface that provides just the Get cross-section of functionality.
@@ -13,7 +13,7 @@ type GetClient interface {
 	Get(string) (*http.Response, error)
 }
 
-func controllerState(client *deis.Client, succCh chan<- string, errCh chan<- error, stopCh <-chan struct{}) {
+func controllerState(client *drycc.Client, succCh chan<- string, errCh chan<- error, stopCh <-chan struct{}) {
 	err := client.Healthcheck()
 	if controller.CheckAPICompat(client, err) != nil {
 		select {

@@ -7,7 +7,7 @@ import (
 	"testing"
 
 	"github.com/arschles/assert"
-	"github.com/deis/builder/pkg/k8s"
+	"github.com/drycc/builder/pkg/k8s"
 	"k8s.io/kubernetes/pkg/api"
 	apierrors "k8s.io/kubernetes/pkg/api/errors"
 )
@@ -78,7 +78,7 @@ func TestBuildPod(t *testing.T) {
 	env := make(map[string]interface{})
 	env["KEY"] = "VALUE"
 	buildArgsEnv := make(map[string]interface{})
-	buildArgsEnv["DEIS_DOCKER_BUILD_ARGS_ENABLED"] = "1"
+	buildArgsEnv["DRYCC_DOCKER_BUILD_ARGS_ENABLED"] = "1"
 	buildArgsEnv["KEY"] = "VALUE"
 	envSecretName := "test-build-env"
 	var pod *api.Pod
@@ -200,8 +200,8 @@ func TestBuildPod(t *testing.T) {
 		checkForEnv(t, pod, "TAR_PATH", build.tarKey)
 		checkForEnv(t, pod, "IMG_NAME", build.imgName)
 		checkForEnv(t, pod, "REG_LOC", "on-cluster")
-		if _, ok := build.env["DEIS_DOCKER_BUILD_ARGS_ENABLED"]; ok {
-			checkForEnv(t, pod, "DOCKER_BUILD_ARGS", `{"DEIS_DOCKER_BUILD_ARGS_ENABLED":"1","KEY":"VALUE"}`)
+		if _, ok := build.env["DRYCC_DOCKER_BUILD_ARGS_ENABLED"]; ok {
+			checkForEnv(t, pod, "DOCKER_BUILD_ARGS", `{"DRYCC_DOCKER_BUILD_ARGS_ENABLED":"1","KEY":"VALUE"}`)
 		}
 		if build.dockerBuilderImage != "" {
 			if pod.Spec.Containers[0].Image != build.dockerBuilderImage {

@@ -11,10 +11,10 @@ import (
 	"net"
 	"strings"
 
-	"github.com/deis/builder/pkg/controller"
-	"github.com/deis/builder/pkg/git"
-	"github.com/deis/controller-sdk-go/hooks"
-	"github.com/deis/pkg/log"
+	"github.com/drycc/builder/pkg/controller"
+	"github.com/drycc/builder/pkg/git"
+	"github.com/drycc/controller-sdk-go/hooks"
+	"github.com/drycc/pkg/log"
 	"golang.org/x/crypto/ssh"
 )
 
@@ -30,8 +30,8 @@ const (
 )
 
 var errBuildAppPerm = errors.New("user has no permission to build the app")
-var errDirPerm = errors.New("Cannot change directory in file name.")
-var errDirCreatePerm = errors.New("Empty repo name.")
+var errDirPerm = errors.New("cannot change directory in file name")
+var errDirCreatePerm = errors.New("empty repo name")
 
 // AuthKey authenticates based on a public key.
 func AuthKey(key ssh.PublicKey, cnf *Config) (*ssh.Permissions, error) {
@@ -79,7 +79,7 @@ func Configure(cnf *Config) (*ssh.ServerConfig, error) {
 		},
 	}
 	hostKeyTypes := []string{"rsa", "ecdsa"}
-	pathTpl := "/var/run/secrets/deis/builder/ssh/ssh-host-%s-key"
+	pathTpl := "/var/run/secrets/drycc/builder/ssh/ssh-host-%s-key"
 	for _, t := range hostKeyTypes {
 		path := fmt.Sprintf(pathTpl, t)
 

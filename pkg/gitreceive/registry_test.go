@@ -6,14 +6,14 @@ import (
 	"testing"
 
 	"github.com/arschles/assert"
-	"github.com/deis/builder/pkg/k8s"
+	"github.com/drycc/builder/pkg/k8s"
 	"k8s.io/kubernetes/pkg/api"
 	client "k8s.io/kubernetes/pkg/client/unversioned"
 )
 
 const (
-	testSecret    = "test-secret"
-	deisNamespace = "deis"
+	testSecret     = "test-secret"
+	dryccNamespace = "drycc"
 )
 
 func TestGetDetailsFromRegistrySecretErr(t *testing.T) {
@@ -101,7 +101,7 @@ func TestGetDetailsFromDockerConfigSecretSuccess(t *testing.T) {
           }
     }
 `)
-	expectedData := map[string]string{"DEIS_REGISTRY_USERNAME": "testuser", "DEIS_REGISTRY_PASSWORD": "testpassword", "DEIS_REGISTRY_HOSTNAME": "https://test.io"}
+	expectedData := map[string]string{"DRYCC_REGISTRY_USERNAME": "testuser", "DRYCC_REGISTRY_PASSWORD": "testpassword", "DRYCC_REGISTRY_HOSTNAME": "https://test.io"}
 	data := make(map[string][]byte)
 	data[api.DockerConfigJsonKey] = auth
 	secret := api.Secret{Data: data}
@@ -130,13 +130,13 @@ func TestGetRegistryDetailsOffclusterErr(t *testing.T) {
 		},
 	}
 	image := "test-image"
-	_, err := getRegistryDetails(kubeClient, &image, "off-cluster", deisNamespace, "private-registry")
+	_, err := getRegistryDetails(kubeClient, &image, "off-cluster", dryccNamespace, "private-registry")
 	assert.Err(t, err, expectedErr)
 }
 
 func TestGetRegistryDetailsOffclusterSuccess(t *testing.T) {
 	data := map[string][]byte{"organization": []byte("kmala"), "hostname": []byte("quay.io")}
-	expectedData := map[string]string{"DEIS_REGISTRY_HOSTNAME": "quay.io", "DEIS_REGISTRY_ORGANIZATION": "kmala"}
+	expectedData := map[string]string{"DRYCC_REGISTRY_HOSTNAME": "quay.io", "DRYCC_REGISTRY_ORGANIZATION": "kmala"}
 	expectedImage := "quay.io/kmala/test-image"
 	secret := api.Secret{Data: data}
 	getter := &k8s.FakeSecret{
@@ -151,7 +151,7 @@ func TestGetRegistryDetailsOffclusterSuccess(t *testing.T) {
 		},
 	}
 	image := "test-image"
-	regDetails, err := getRegistryDetails(kubeClient, &image, "off-cluster", deisNamespace, "private-registry")
+	regDetails, err := getRegistryDetails(kubeClient, &image, "off-cluster", dryccNamespace, "private-registry")
 	assert.NoErr(t, err)
 	assert.Equal(t, expectedData, regDetails, "registry details")
 	assert.Equal(t, expectedImage, image, "image")
@@ -180,7 +180,7 @@ func TestGetRegistryDetailsGCRSuccess(t *testing.T) {
 
 	srvAccount := []byte(`
 		{
-		"project_id": "deis-test"
+		"project_id": "drycc-test"
 	}
 		`)
 	data := map[string][]byte{"key.json": srvAccount}
@@ -193,18 +193,18 @@ func TestGetRegistryDetailsGCRSuccess(t *testing.T) {
 
 	kubeClient := &k8s.FakeSecretsNamespacer{
 		Fn: func(namespace string) client.SecretsInterface {
-			if namespace == "deis" {
+			if namespace == "drycc" {
 				return getter
 			}
 			return configGetter
 		},
 	}
 
-	expectedData := map[string]string{"DEIS_REGISTRY_USERNAME": "testuser", "DEIS_REGISTRY_PASSWORD": "testpassword", "DEIS_REGISTRY_HOSTNAME": "https://test.io", "DEIS_REGISTRY_GCS_PROJ_ID": "deis-test"}
-	expectedImage := "test.io/deis-test/test-image"
+	expectedData := map[string]string{"DRYCC_REGISTRY_USERNAME": "testuser", "DRYCC_REGISTRY_PASSWORD": "testpassword", "DRYCC_REGISTRY_HOSTNAME": "https://test.io", "DRYCC_REGISTRY_GCS_PROJ_ID": "drycc-test"}
+	expectedImage := "test.io/drycc-test/test-image"
 
 	image := "test-image"
-	regDetails, err := getRegistryDetails(kubeClient, &image, "gcr", deisNamespace, "private-registry")
+	regDetails, err := getRegistryDetails(kubeClient, &image, "gcr", dryccNamespace, "private-registry")
 
 	assert.NoErr(t, err)
 	assert.Equal(t, expectedData, regDetails, "registry details")
@@ -227,7 +227,7 @@ func TestGetRegistryDetailsGCRConfigErr(t *testing.T) {
 
 	kubeClient := &k8s.FakeSecretsNamespacer{
 		Fn: func(namespace string) client.SecretsInterface {
-			if namespace == "deis" {
+			if namespace == "drycc" {
 				return getter
 			}
 			return configGetter
@@ -235,7 +235,7 @@ func TestGetRegistryDetailsGCRConfigErr(t *testing.T) {
 	}
 
 	image := "test-image"
-	_, err := getRegistryDetails(kubeClient, &image, "gcr", deisNamespace, "private-registry")
+	_, err := getRegistryDetails(kubeClient, &image, "gcr", dryccNamespace, "private-registry")
 
 	assert.Err(t, err, expectedErr)
 }
@@ -270,7 +270,7 @@ func TestGetRegistryDetailsGCRSecretErr(t *testing.T) {
 
 	kubeClient := &k8s.FakeSecretsNamespacer{
 		Fn: func(namespace string) client.SecretsInterface {
-			if namespace == "deis" {
+			if namespace == "drycc" {
 				return getter
 			}
 			return configGetter
@@ -278,7 +278,7 @@ func TestGetRegistryDetailsGCRSecretErr(t *testing.T) {
 	}
 
 	image := "test-image"
-	_, err := getRegistryDetails(kubeClient, &image, "gcr", deisNamespace, "private-registry")
+	_, err := getRegistryDetails(kubeClient, &image, "gcr", dryccNamespace, "private-registry")
 
 	assert.Err(t, err, expectedErr)
 }
@@ -315,7 +315,7 @@ func TestGetRegistryDetailsGCRJsonErr(t *testing.T) {
 
 	kubeClient := &k8s.FakeSecretsNamespacer{
 		Fn: func(namespace string) client.SecretsInterface {
-			if namespace == "deis" {
+			if namespace == "drycc" {
 				return getter
 			}
 			return configGetter
@@ -323,7 +323,7 @@ func TestGetRegistryDetailsGCRJsonErr(t *testing.T) {
 	}
 
 	image := "test-image"
-	_, err := getRegistryDetails(kubeClient, &image, "gcr", deisNamespace, "private-registry")
+	_, err := getRegistryDetails(kubeClient, &image, "gcr", dryccNamespace, "private-registry")
 
 	assert.Equal(t, expectedErr.Error(), err.Error(), "error")
 }

@@ -50,21 +50,21 @@ imports:
   version: 3e6e67c4dcea3ac2f25fd4731abc0e1deaf36216
   subpackages:
   - spew
-- name: github.com/deis/controller-sdk-go
-  version: 27bab7c5535de202635877fa7600d5158b91a757
+- name: github.com/drycc/controller-sdk-go
+  version: 6c99dbcce25a775067cbaa47ccbc66dd16e4b721
   subpackages:
   - api
   - hooks
   - pkg/time
-- name: github.com/deis/pkg
-  version: 00e55bded444eea7fadff398f93152e962a0c338
+- name: github.com/drycc/pkg
+  version: 5c1dfa7b5446283ec3bdc7e8c3ef367bb5c1b4d1
   subpackages:
   - log
   - prettyprint
   - time
 - name: github.com/docker/distribution
   version: 0afef00d5764404d70f86076f364551657d51de6
-  repo: https://github.com/teamhephy/distribution
+  repo: https://github.com/drycc/distribution
   vcs: git
   subpackages:
   - context

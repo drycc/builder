@@ -3,19 +3,19 @@ package controller
 import (
 	"fmt"
 
-	"github.com/deis/builder/pkg/conf"
-	deis "github.com/deis/controller-sdk-go"
-	"github.com/deis/pkg/log"
+	"github.com/drycc/builder/pkg/conf"
+	drycc "github.com/drycc/controller-sdk-go"
+	"github.com/drycc/pkg/log"
 )
 
 // New creates a new SDK client configured as the builder.
-func New(host, port string) (*deis.Client, error) {
+func New(host, port string) (*drycc.Client, error) {
 
-	client, err := deis.New(true, fmt.Sprintf("http://%s:%s/", host, port), "")
+	client, err := drycc.New(true, fmt.Sprintf("http://%s:%s/", host, port), "")
 	if err != nil {
 		return client, err
 	}
-	client.UserAgent = "deis-builder"
+	client.UserAgent = "drycc-builder"
 
 	builderKey, err := conf.GetBuilderKey()
 	if err != nil {
@@ -27,10 +27,10 @@ func New(host, port string) (*deis.Client, error) {
 }
 
 // CheckAPICompat checks for API compatibility errors and warns about them.
-func CheckAPICompat(c *deis.Client, err error) error {
-	if err == deis.ErrAPIMismatch {
+func CheckAPICompat(c *drycc.Client, err error) error {
+	if err == drycc.ErrAPIMismatch {
 		log.Info("WARNING: SDK and Controller API versions do not match. SDK: %s Controller: %s",
-			deis.APIVersion, c.ControllerAPIVersion)
+			drycc.APIVersion, c.ControllerAPIVersion)
 
 		// API mismatch isn't fatal, so after warning continue on.
 		return nil

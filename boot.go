@@ -6,27 +6,27 @@ import (
 	"runtime"
 
 	"github.com/codegangsta/cli"
-	"github.com/deis/builder/pkg"
-	"github.com/deis/builder/pkg/cleaner"
-	"github.com/deis/builder/pkg/conf"
-	"github.com/deis/builder/pkg/gitreceive"
-	"github.com/deis/builder/pkg/healthsrv"
-	"github.com/deis/builder/pkg/sshd"
-	"github.com/deis/builder/pkg/sys"
-	pkglog "github.com/deis/pkg/log"
 	storagedriver "github.com/docker/distribution/registry/storage/driver"
 	_ "github.com/docker/distribution/registry/storage/driver/azure"
 	"github.com/docker/distribution/registry/storage/driver/factory"
 	_ "github.com/docker/distribution/registry/storage/driver/gcs"
 	_ "github.com/docker/distribution/registry/storage/driver/s3-aws"
 	_ "github.com/docker/distribution/registry/storage/driver/swift"
+	"github.com/drycc/builder/pkg"
+	"github.com/drycc/builder/pkg/cleaner"
+	"github.com/drycc/builder/pkg/conf"
+	"github.com/drycc/builder/pkg/gitreceive"
+	"github.com/drycc/builder/pkg/healthsrv"
+	"github.com/drycc/builder/pkg/sshd"
+	"github.com/drycc/builder/pkg/sys"
+	pkglog "github.com/drycc/pkg/log"
 	"github.com/kelseyhightower/envconfig"
 	kcl "k8s.io/kubernetes/pkg/client/unversioned"
 )
 
 const (
-	serverConfAppName     = "deis-builder-server"
-	gitReceiveConfAppName = "deis-builder-git-receive"
+	serverConfAppName     = "drycc-builder-server"
+	gitReceiveConfAppName = "drycc-builder-git-receive"
 	gitHomeDir            = "/home/git"
 )
 
@@ -35,7 +35,7 @@ func init() {
 }
 
 func main() {
-	if os.Getenv("DEIS_DEBUG") == "true" {
+	if os.Getenv("DRYCC_DEBUG") == "true" {
 		pkglog.DefaultLogger.SetDebug(true)
 		log.Printf("Running in debug mode")
 	}

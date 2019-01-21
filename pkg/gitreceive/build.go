@@ -11,16 +11,16 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/deis/builder/pkg/controller"
-	"github.com/deis/builder/pkg/git"
-	"github.com/deis/builder/pkg/k8s"
-	"github.com/deis/builder/pkg/storage"
-	"github.com/deis/builder/pkg/sys"
-	deisAPI "github.com/deis/controller-sdk-go/api"
-	"github.com/deis/controller-sdk-go/hooks"
-	"github.com/deis/pkg/log"
 	"github.com/docker/distribution/context"
 	storagedriver "github.com/docker/distribution/registry/storage/driver"
+	"github.com/drycc/builder/pkg/controller"
+	"github.com/drycc/builder/pkg/git"
+	"github.com/drycc/builder/pkg/k8s"
+	"github.com/drycc/builder/pkg/storage"
+	"github.com/drycc/builder/pkg/sys"
+	dryccAPI "github.com/drycc/controller-sdk-go/api"
+	"github.com/drycc/controller-sdk-go/hooks"
+	"github.com/drycc/pkg/log"
 	"gopkg.in/yaml.v2"
 	"k8s.io/kubernetes/pkg/api"
 	client "k8s.io/kubernetes/pkg/client/unversioned"
@@ -110,7 +110,7 @@ func build(
 		}
 	}
 
-	_, disableCaching := appConf.Values["DEIS_DISABLE_CACHE"]
+	_, disableCaching := appConf.Values["DRYCC_DISABLE_CACHE"]
 	slugBuilderInfo := NewSlugBuilderInfo(appName, gitSha.Short(), disableCaching)
 
 	if slugBuilderInfo.DisableCaching() {
@@ -176,8 +176,8 @@ func build(
 			}
 			image = image + ":git-" + gitSha.Short()
 		}
-		registryEnv["DEIS_REGISTRY_PROXY_PORT"] = conf.RegistryProxyPort
-		registryEnv["DEIS_REGISTRY_LOCATION"] = registryLocation
+		registryEnv["DRYCC_REGISTRY_PROXY_PORT"] = conf.RegistryProxyPort
+		registryEnv["DRYCC_REGISTRY_LOCATION"] = registryLocation
 
 		pod = dockerBuilderPod(
 			conf.Debug,
@@ -293,7 +293,7 @@ func build(
 	for _, containerStatus := range buildPod.Status.ContainerStatuses {
 		state := containerStatus.State.Terminated
 		if state.ExitCode != 0 {
-			return fmt.Errorf("Build pod exited with code %d, stopping build.", state.ExitCode)
+			return fmt.Errorf("build pod exited with code %d, stopping build", state.ExitCode)
 		}
 	}
 	log.Debug("Done")
@@ -318,8 +318,8 @@ func build(
 	}
 
 	log.Info("Done, %s:v%d deployed to Workflow\n", appName, release)
-	log.Info("Use 'deis open' to view this application in your browser\n")
-	log.Info("To learn more, use 'deis help' or visit https://deis.com/\n")
+	log.Info("Use 'drycc open' to view this application in your browser\n")
+	log.Info("To learn more, use 'drycc help' or visit https://drycc.com/\n")
 
 	run(repoCmd(repoDir, "git", "gc"))
 
@@ -349,11 +349,11 @@ func prettyPrintJSON(data interface{}) (string, error) {
 	if err := json.Indent(formatted, output.Bytes(), "", "  "); err != nil {
 		return "", err
 	}
-	return string(formatted.Bytes()), nil
+	return formatted.String(), nil
 }
 
-func getProcFile(getter storage.ObjectGetter, dirName, procfileKey string, bType buildType) (deisAPI.ProcessType, error) {
-	procType := deisAPI.ProcessType{}
+func getProcFile(getter storage.ObjectGetter, dirName, procfileKey string, bType buildType) (dryccAPI.ProcessType, error) {
+	procType := dryccAPI.ProcessType{}
 	if _, err := os.Stat(fmt.Sprintf("%s/Procfile", dirName)); err == nil {
 		rawProcFile, err := ioutil.ReadFile(fmt.Sprintf("%s/Procfile", dirName))
 		if err != nil {

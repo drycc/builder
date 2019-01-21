@@ -14,13 +14,13 @@ const (
 // builder's git-receive hook.
 type Config struct {
 	// k8s service discovery env vars
-	ControllerHost       string `envconfig:"DEIS_CONTROLLER_SERVICE_HOST" required:"true"`
-	ControllerPort       string `envconfig:"DEIS_CONTROLLER_SERVICE_PORT" required:"true"`
-	RegistryHost         string `envconfig:"DEIS_REGISTRY_SERVICE_HOST" required:"true"`
-	RegistryPort         string `envconfig:"DEIS_REGISTRY_SERVICE_PORT" required:"true"`
-	RegistryProxyPort    string `envconfig:"DEIS_REGISTRY_PROXY_PORT" default:"5555"`
-	RegistryLocation     string `envconfig:"DEIS_REGISTRY_LOCATION" default:"on-cluster"`
-	RegistrySecretPrefix string `envconfig:"DEIS_REGISTRY_SECRET_PREFIX" default:"private-registry"`
+	ControllerHost       string `envconfig:"DRYCC_CONTROLLER_SERVICE_HOST" required:"true"`
+	ControllerPort       string `envconfig:"DRYCC_CONTROLLER_SERVICE_PORT" required:"true"`
+	RegistryHost         string `envconfig:"DRYCC_REGISTRY_SERVICE_HOST" required:"true"`
+	RegistryPort         string `envconfig:"DRYCC_REGISTRY_SERVICE_PORT" required:"true"`
+	RegistryProxyPort    string `envconfig:"DRYCC_REGISTRY_PROXY_PORT" default:"5555"`
+	RegistryLocation     string `envconfig:"DRYCC_REGISTRY_LOCATION" default:"on-cluster"`
+	RegistrySecretPrefix string `envconfig:"DRYCC_REGISTRY_SECRET_PREFIX" default:"private-registry"`
 
 	GitHome                       string `envconfig:"GIT_HOME" required:"true"`
 	SSHConnection                 string `envconfig:"SSH_CONNECTION" required:"true"`
@@ -30,7 +30,7 @@ type Config struct {
 	Fingerprint                   string `envconfig:"FINGERPRINT" required:"true"`
 	PodNamespace                  string `envconfig:"POD_NAMESPACE" required:"true"`
 	StorageRegion                 string `envconfig:"STORAGE_REGION" default:"us-east-1"`
-	Debug                         bool   `envconfig:"DEIS_DEBUG" default:"false"`
+	Debug                         bool   `envconfig:"DRYCC_DEBUG" default:"false"`
 	BuilderPodTickDurationMSec    int    `envconfig:"BUILDER_POD_TICK_DURATION" default:"100"`
 	BuilderPodWaitDurationMSec    int    `envconfig:"BUILDER_POD_WAIT_DURATION" default:"900000"` // 15 minutes
 	ObjectStorageTickDurationMSec int    `envconfig:"OBJECT_STORAGE_TICK_DURATION" default:"500"`
