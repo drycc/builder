@@ -24,7 +24,7 @@ spec:
       serviceAccount: drycc-builder
       containers:
         - name: drycc-builder
-          image: quay.io/{{.Values.org}}/builder:{{.Values.docker_tag}}
+          image: {{.Values.docker_registry}}{{.Values.org}}/builder:{{.Values.docker_tag}}
           imagePullPolicy: {{.Values.pull_policy}}
           ports:
             - containerPort: 2223

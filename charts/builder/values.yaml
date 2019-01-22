@@ -1,6 +1,7 @@
 org: "drycc"
 pull_policy: "Always"
-docker_tag: canary
+docker_tag: "canary"
+docker_registry: ""
 # limits_cpu: "100m"
 # limits_memory: "50Mi"
 # builder_pod_node_selector: "disk:ssd"
