@@ -64,11 +64,8 @@ func main() {
 					os.Exit(1)
 				}
 				var storageDriver storagedriver.StorageDriver
-				if cnf.StorageType == "minio" {
-					storageDriver, err = factory.Create("s3", storageParams)
-				} else {
-					storageDriver, err = factory.Create(cnf.StorageType, storageParams)
-				}
+				storageDriver, err = factory.Create("s3", storageParams)
+
 				if err != nil {
 					log.Printf("Error creating storage driver (%s)", err)
 					os.Exit(1)
@@ -132,11 +129,8 @@ func main() {
 					os.Exit(1)
 				}
 				var storageDriver storagedriver.StorageDriver
-				if cnf.StorageType == "minio" {
-					storageDriver, err = factory.Create("s3", storageParams)
-				} else {
-					storageDriver, err = factory.Create(cnf.StorageType, storageParams)
-				}
+				storageDriver, err = factory.Create("s3", storageParams)
+
 				if err != nil {
 					log.Printf("Error creating storage driver (%s)", err)
 					os.Exit(1)

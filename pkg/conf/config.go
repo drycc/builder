@@ -55,15 +55,10 @@ func GetStorageParams(env sys.Env) (Parameters, error) {
 		}
 	}
 	params["bucket"] = params["builder-bucket"]
-	params["container"] = params["builder-container"]
-	if env.Get("BUILDER_STORAGE") == "minio" {
-		mHost := env.Get(minioHostEnvVar)
-		mPort := env.Get(minioPortEnvVar)
-		params["regionendpoint"] = fmt.Sprintf("http://%s:%s", mHost, mPort)
-		params["secure"] = false
-		params["region"] = "us-east-1"
-		params["bucket"] = "git"
-	}
-
+	mHost := env.Get(minioHostEnvVar)
+	mPort := env.Get(minioPortEnvVar)
+	params["region"] = "us-east-1"
+	params["regionendpoint"] = fmt.Sprintf("http://%s:%s", mHost, mPort)
+	params["secure"] = false
 	return params, nil
 }
