@@ -19,12 +19,10 @@ BINDIR := ./rootfs
 
 DRYCC_REGISTRY ?= ${DEV_REGISTRY}
 
-GOTEST := go test --race
-
 bootstrap:
 	${DEV_ENV_CMD} glide install
 
-glideup:
+depup:
 	${DEV_ENV_CMD} glide up
 
 # This illustrates a two-stage Docker build. docker-compile runs inside of
@@ -40,7 +38,7 @@ test-style:
 	${DEV_ENV_CMD} lint --deadline
 
 test-unit:
-	${DEV_ENV_CMD} sh -c '${GOTEST} $$(glide nv)'
+	${DEV_ENV_CMD} sh -c 'go test --race ./...'
 
 test-cover:
 	${DEV_ENV_CMD} test-cover.sh
@@ -58,4 +56,4 @@ check-kubectl:
 deploy: check-kubectl docker-build docker-push
 	kubectl --namespace=drycc patch deployment drycc-$(SHORT_NAME) --type='json' -p='[{"op": "replace", "path": "/spec/template/spec/containers/0/image", "value":"$(IMAGE)"}]'
 
-.PHONY: bootstrap glideup build docker-build test test-style test-unit test-cover deploy
+.PHONY: bootstrap depup build docker-build test test-style test-unit test-cover deploy
