@@ -46,7 +46,7 @@ spec:
             - name: "DRYCC_REGISTRY_SERVICE_HOST"
               value: "127.0.0.1"
             - name: "DRYCC_REGISTRY_SERVICE_PORT"
-              value: "{{ .Values.global.host_port }}"
+              value: "{{ .Values.global.registry_service_port }}"
             - name: "HEALTH_SERVER_PORT"
               value: "8092"
             - name: "EXTERNAL_PORT"
