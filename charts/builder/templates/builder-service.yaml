@@ -11,6 +11,6 @@ spec:
       targetPort: 2223
   selector:
     app: drycc-builder
-{{ if .Values.global.use_ingress }}
+{{ if .Values.ingress.enabled }}
   type: "LoadBalancer"
 {{ end }}
