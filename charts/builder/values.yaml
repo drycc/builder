@@ -2,6 +2,11 @@ org: "drycc"
 pull_policy: "Always"
 docker_tag: "canary"
 docker_registry: ""
+service:
+  # Service type default to LoadBalancer
+  type: ClusterIP
+  # If service.type is not set to NodePort, the following statement will be ignored.
+  nodePort: ""
 # limits_cpu: "100m"
 # limits_memory: "50Mi"
 # builder_pod_node_selector: "disk:ssd"
@@ -9,11 +14,8 @@ docker_registry: ""
 global:
   # Role-Based Access Control for Kubernetes >= 1.5
   use_rbac: false
-
-ingress:
   # Experimental feature to use Kubernetes ingress instead of Workflow's drycc-router.
-  #
-  # Valid values are:
-  # - true: drycc-router will not be deployed. Workflow will not be usable until a Kubernetes ingress controller is installed.
-  # - false: drycc-router will be deployed (default).
-  enabled: false
+  # If ingress_class is empty, use drycc-router
+  # Otherwise, please check `kubernetes.io/ingress.class`
+  # The cert-manager component must be installed
+  ingress_class: ""

@@ -9,8 +9,9 @@ spec:
     - name: ssh
       port: 2222
       targetPort: 2223
+      {{- if (and (eq .Values.service.type "NodePort") (not (empty .Values.service.nodePort))) }}
+      nodePort: {{ .Values.service.nodePort }}
+      {{- end }}
   selector:
     app: drycc-builder
-{{ if .Values.ingress.enabled }}
-  type: "LoadBalancer"
-{{ end }}
+  type: {{ .Values.service.type }}
