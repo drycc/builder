@@ -142,14 +142,8 @@ func build(
 		return fmt.Errorf("running %s (%s)", strings.Join(tarCmd.Args, " "), err)
 	}
 
-	var bType buildType
-	if buildPackURL != "" {
-		bType = buildTypeProcfile
-	} else {
-		bType = getBuildTypeForDir(tmpDir)
-	}
-
-	usingDockerfile := bType == buildTypeDockerfile
+	bType := getBuildType(tmpDir, appConf)
+	usingDockerfile := bType == buildTypeDockerbuilder
 
 	appTgzdata, err := ioutil.ReadFile(absAppTgz)
 	if err != nil {
@@ -370,7 +364,7 @@ func getProcFile(getter storage.ObjectGetter, dirName, procfileKey string, bType
 		}
 		return procType, nil
 	}
-	if bType != buildTypeProcfile {
+	if bType != buildTypeSlugbuilder {
 		return procType, nil
 	}
 	log.Debug("Procfile not present. Getting it from the buildpack")
