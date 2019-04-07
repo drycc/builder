@@ -176,7 +176,6 @@ func build(
 			}
 			image = image + ":git-" + gitSha.Short()
 		}
-		registryEnv["DRYCC_REGISTRY_PROXY_PORT"] = conf.RegistryProxyPort
 		registryEnv["DRYCC_REGISTRY_LOCATION"] = registryLocation
 
 		pod = dockerBuilderPod(

@@ -18,7 +18,6 @@ type Config struct {
 	ControllerPort       string `envconfig:"DRYCC_CONTROLLER_SERVICE_PORT" required:"true"`
 	RegistryHost         string `envconfig:"DRYCC_REGISTRY_SERVICE_HOST" required:"true"`
 	RegistryPort         string `envconfig:"DRYCC_REGISTRY_SERVICE_PORT" required:"true"`
-	RegistryProxyPort    string `envconfig:"DRYCC_REGISTRY_PROXY_PORT" default:"5555"`
 	RegistryLocation     string `envconfig:"DRYCC_REGISTRY_LOCATION" default:"on-cluster"`
 	RegistrySecretPrefix string `envconfig:"DRYCC_REGISTRY_SECRET_PREFIX" default:"private-registry"`
 
