@@ -18,17 +18,15 @@ const (
 	slugBuilderName   = "drycc-slugbuilder"
 	dockerBuilderName = "drycc-dockerbuilder"
 
-	tarPath          = "TAR_PATH"
-	putPath          = "PUT_PATH"
-	cachePath        = "CACHE_PATH"
-	debugKey         = "DRYCC_DEBUG"
-	sourceVersion    = "SOURCE_VERSION"
-	objectStore      = "objectstorage-keyfile"
-	dockerSocketName = "docker-socket"
-	dockerSocketPath = "/var/run/docker.sock"
-	builderStorage   = "BUILDER_STORAGE"
-	objectStorePath  = "/var/run/secrets/drycc/objectstore/creds"
-	envRoot          = "/tmp/env"
+	tarPath         = "TAR_PATH"
+	putPath         = "PUT_PATH"
+	cachePath       = "CACHE_PATH"
+	debugKey        = "DRYCC_DEBUG"
+	sourceVersion   = "SOURCE_VERSION"
+	objectStore     = "objectstorage-keyfile"
+	builderStorage  = "BUILDER_STORAGE"
+	objectStorePath = "/var/run/secrets/drycc/objectstore/creds"
+	envRoot         = "/tmp/env"
 )
 
 func dockerBuilderPodName(appName, shortSha string) string {
@@ -97,20 +95,6 @@ func dockerBuilderPod(
 	for key, value := range registryEnv {
 		addEnvToPod(pod, key, value)
 	}
-
-	pod.Spec.Containers[0].VolumeMounts = append(pod.Spec.Containers[0].VolumeMounts, api.VolumeMount{
-		Name:      dockerSocketName,
-		MountPath: dockerSocketPath,
-	})
-
-	pod.Spec.Volumes = append(pod.Spec.Volumes, api.Volume{
-		Name: dockerSocketName,
-		VolumeSource: api.VolumeSource{
-			HostPath: &api.HostPathVolumeSource{
-				Path: dockerSocketPath,
-			},
-		},
-	})
 
 	return &pod
 }
