@@ -142,8 +142,7 @@ func build(
 		return fmt.Errorf("running %s (%s)", strings.Join(tarCmd.Args, " "), err)
 	}
 
-	bType := getBuildType(tmpDir, appConf)
-	usingDockerfile := bType == buildTypeDockerbuilder
+	stack := getStack(tmpDir, appConf)
 
 	appTgzdata, err := ioutil.ReadFile(absAppTgz)
 	if err != nil {
@@ -165,7 +164,7 @@ func build(
 		return fmt.Errorf("error build builder pod node selector %s", err)
 	}
 
-	if usingDockerfile {
+	if strings.Contains(stack["name"], "container") {
 		buildPodName = dockerBuilderPodName(appName, gitSha.Short())
 		registryLocation := conf.RegistryLocation
 		registryEnv := make(map[string]string)
@@ -187,7 +186,7 @@ func build(
 			gitSha.Short(),
 			slugName,
 			conf.StorageType,
-			conf.DockerBuilderImage,
+			stack["image"],
 			conf.RegistryHost,
 			conf.RegistryPort,
 			registryEnv,
@@ -222,7 +221,7 @@ func build(
 			gitSha.Short(),
 			buildPackURL,
 			conf.StorageType,
-			conf.SlugBuilderImage,
+			stack["image"],
 			slugBuilderImagePullPolicy,
 			builderPodNodeSelector,
 		)
@@ -297,7 +296,7 @@ func build(
 	}
 	log.Debug("Done")
 
-	procType, err := getProcFile(storageDriver, tmpDir, slugBuilderInfo.AbsoluteProcfileKey(), bType)
+	procType, err := getProcFile(storageDriver, tmpDir, slugBuilderInfo.AbsoluteProcfileKey(), stack)
 	if err != nil {
 		return err
 	}
@@ -306,10 +305,10 @@ func build(
 
 	quit := progress("...", conf.SessionIdleInterval())
 	log.Info("Launching App...")
-	if !usingDockerfile {
+	if stack["name"] != "container" {
 		image = slugBuilderInfo.AbsoluteSlugObjectKey()
 	}
-	release, err := hooks.CreateBuild(client, conf.Username, conf.App(), image, gitSha.Short(), procType, usingDockerfile)
+	release, err := hooks.CreateBuild(client, conf.Username, conf.App(), image, gitSha.Short(), procType, stack["name"] == "container")
 	quit <- true
 	<-quit
 	if controller.CheckAPICompat(client, err) != nil {
@@ -351,7 +350,7 @@ func prettyPrintJSON(data interface{}) (string, error) {
 	return formatted.String(), nil
 }
 
-func getProcFile(getter storage.ObjectGetter, dirName, procfileKey string, bType buildType) (dryccAPI.ProcessType, error) {
+func getProcFile(getter storage.ObjectGetter, dirName, procfileKey string, stack map[string]string) (dryccAPI.ProcessType, error) {
 	procType := dryccAPI.ProcessType{}
 	if _, err := os.Stat(fmt.Sprintf("%s/Procfile", dirName)); err == nil {
 		rawProcFile, err := ioutil.ReadFile(fmt.Sprintf("%s/Procfile", dirName))
@@ -363,7 +362,7 @@ func getProcFile(getter storage.ObjectGetter, dirName, procfileKey string, bType
 		}
 		return procType, nil
 	}
-	if bType != buildTypeSlugbuilder {
+	if stack["name"] == "container" {
 		return procType, nil
 	}
 	log.Debug("Procfile not present. Getting it from the buildpack")

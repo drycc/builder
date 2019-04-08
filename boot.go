@@ -7,11 +7,8 @@ import (
 
 	"github.com/codegangsta/cli"
 	storagedriver "github.com/docker/distribution/registry/storage/driver"
-	_ "github.com/docker/distribution/registry/storage/driver/azure"
 	"github.com/docker/distribution/registry/storage/driver/factory"
-	_ "github.com/docker/distribution/registry/storage/driver/gcs"
 	_ "github.com/docker/distribution/registry/storage/driver/s3-aws"
-	_ "github.com/docker/distribution/registry/storage/driver/swift"
 	"github.com/drycc/builder/pkg"
 	"github.com/drycc/builder/pkg/cleaner"
 	"github.com/drycc/builder/pkg/conf"

@@ -14,8 +14,8 @@ type Config struct {
 	HealthSrvTestStorageRegion   string `envconfig:"STORAGE_REGION" default:"us-east-1"`
 	CleanerPollSleepDurationSec  int    `envconfig:"CLEANER_POLL_SLEEP_DURATION_SEC" default:"5"`
 	StorageType                  string `envconfig:"BUILDER_STORAGE" default:"minio"`
-	SlugBuilderImagePullPolicy   string `envconfig:"SLUG_BUILDER_IMAGE_PULL_POLICY" default:"Always"`
-	DockerBuilderImagePullPolicy string `envconfig:"DOCKER_BUILDER_IMAGE_PULL_POLICY" default:"Always"`
+	SlugBuilderImagePullPolicy   string `envconfig:"SLUGBUILDER_IMAGE_PULL_POLICY" default:"Always"`
+	DockerBuilderImagePullPolicy string `envconfig:"DOCKERBUILDER_IMAGE_PULL_POLICY" default:"Always"`
 	LockTimeout                  int    `envconfig:"GIT_LOCK_TIMEOUT" default:"10"`
 }
 

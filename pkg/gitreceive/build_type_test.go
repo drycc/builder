@@ -6,20 +6,20 @@ import (
 	"testing"
 )
 
-func TestGetBuildType(t *testing.T) {
+func TestGetStack(t *testing.T) {
 	tmpDir := os.TempDir()
 	config := api.Config{}
-	bType := getBuildType(tmpDir, config)
-	if bType != buildTypeDockerbuilder {
-		t.Fatalf("expected procfile build, got %s", bType)
+	stack := getStack(tmpDir, config)
+	if stack["name"] != "container" {
+		t.Fatalf("expected procfile build, got %s", stack)
 	}
 	if _, err := os.Create(tmpDir + "/Dockerfile"); err != nil {
 		t.Fatalf("error creating %s/Dockerfile (%s)", tmpDir, err)
 	}
 
-	bType = getBuildType(tmpDir, config)
-	if bType != buildTypeDockerbuilder {
-		t.Fatalf("expected dockerfile build, got %s", bType)
+	stack = getStack(tmpDir, config)
+	if stack["name"] != "container" {
+		t.Fatalf("expected dockerfile build, got %s", stack)
 	}
 
 	if _, err := os.Create(tmpDir + "/Procfile"); err != nil {
@@ -35,18 +35,18 @@ func TestGetBuildType(t *testing.T) {
 		}
 	}()
 	config.Values = map[string]interface{}{
-		"DRYCC_BUILDER": "slugbuilder",
+		"DRYCC_STACK": "heroku-18",
 	}
-	bType = getBuildType(tmpDir, config)
-	if bType != buildTypeSlugbuilder {
-		t.Fatalf("expected procfile build, got %s", bType)
+	stack = getStack(tmpDir, config)
+	if stack["name"] != "heroku-18" {
+		t.Fatalf("expected procfile build, got %s", stack)
 	}
 
 	config.Values = map[string]interface{}{
-		"DRYCC_BUILDER": "dockerbuilder",
+		"DRYCC_STACK": "container",
 	}
-	bType = getBuildType(tmpDir, config)
-	if bType != buildTypeDockerbuilder {
-		t.Fatalf("expected Dockerfile build, got %s", bType)
+	stack = getStack(tmpDir, config)
+	if stack["name"] != "container" {
+		t.Fatalf("expected Dockerfile build, got %s", stack)
 	}
 }

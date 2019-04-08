@@ -1,44 +1,85 @@
 package gitreceive
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/drycc/controller-sdk-go/api"
+	"io/ioutil"
 	"os"
+	"strings"
 )
 
-type buildType string
+// defaultStacks is default stacks json, order represents priority
+var defaultStacks = `[
+    {
+        "name": "container",
+        "image": "drycc/container:canary"
+    },
+    {
+        "name": "heroku-18",
+        "image": "drycc/slugrunner:canary.heroku-18"
+    },
+    {
+        "name": "heroku-16",
+        "image": "drycc/slugrunner:canary.heroku-16"
+    }
 
-func (b buildType) String() string {
-	return string(b)
+]`
+
+// Stacks for drycc
+var Stacks []map[string]string
+
+// initStack load stack by config
+func initStack() error {
+	data, err := ioutil.ReadFile("/etc/slugbuilder/images.json")
+	if err == nil {
+		var stacksSlugbuilder []map[string]string
+		err = json.Unmarshal(data, &stacksSlugbuilder)
+		if err == nil {
+			data, err = ioutil.ReadFile("/etc/dockerbuilder/images.json")
+			if err == nil {
+				var stacksDockerbuilder []map[string]string
+				err = json.Unmarshal(data, &stacksDockerbuilder)
+				if err == nil {
+					// Stacks order represents priority
+					Stacks = stacksDockerbuilder
+					Stacks = append(Stacks, stacksSlugbuilder...)
+				}
+				return nil
+			}
+		}
+	}
+	return json.Unmarshal([]byte(defaultStacks), &Stacks)
 }
 
-const (
-	buildTypeSlugbuilder   buildType = "slugbuilder"
-	buildTypeDockerbuilder buildType = "dockerbuilder"
-)
-
-func getBuildType(dirName string, config api.Config) buildType {
-
-	hasDockerfile := false
-	if _, err := os.Stat(fmt.Sprintf("%s/Dockerfile", dirName)); err == nil {
-		hasDockerfile = true
+func getStack(dirName string, config api.Config) map[string]string {
+	if len(Stacks) == 0 {
+		initStack()
 	}
-
-	hasProcfile := false
-	if _, err := os.Stat(fmt.Sprintf("%s/Procfile", dirName)); err == nil {
-		hasProcfile = true
-	}
-	if hasDockerfile && hasProcfile {
-		if bTypeInterface, ok := config.Values["DRYCC_BUILDER"]; ok {
-			if strType, ok := bTypeInterface.(string); ok {
-				bType := buildType(strType)
-				if bType == buildTypeSlugbuilder || bType == buildTypeDockerbuilder {
-					return bType
+	if stackInterface, ok := config.Values["DRYCC_STACK"]; ok {
+		if strStack, ok := stackInterface.(string); ok {
+			for _, stack := range Stacks {
+				if stack["name"] == strStack {
+					return stack
 				}
 			}
 		}
-	} else if hasProcfile {
-		return buildTypeSlugbuilder
 	}
-	return buildTypeDockerbuilder
+
+	if _, err := os.Stat(fmt.Sprintf("%s/Dockerfile", dirName)); err == nil {
+		for _, stack := range Stacks {
+			if strings.Contains(stack["name"], "container") {
+				return stack
+			}
+		}
+	}
+
+	if _, err := os.Stat(fmt.Sprintf("%s/Procfile", dirName)); err == nil {
+		for _, stack := range Stacks {
+			if strings.Contains(stack["name"], "heroku") {
+				return stack
+			}
+		}
+	}
+	return Stacks[0]
 }
