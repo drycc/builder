@@ -87,10 +87,10 @@ func dockerBuilderPod(
 	addEnvToPod(pod, sourceVersion, gitShortHash)
 	addEnvToPod(pod, "IMG_NAME", imageName)
 	addEnvToPod(pod, builderStorage, storageType)
-	// inject existing DRYCC_REGISTRY_SERVICE_HOST and PORT info to dockerbuilder
+	// inject existing DRYCC_REGISTRY_PROXY_HOST and PORT info to dockerbuilder
 	// see https://github.com/drycc/dockerbuilder/issues/83
-	addEnvToPod(pod, "DRYCC_REGISTRY_SERVICE_HOST", registryHost)
-	addEnvToPod(pod, "DRYCC_REGISTRY_SERVICE_PORT", registryPort)
+	addEnvToPod(pod, "DRYCC_REGISTRY_PROXY_HOST", registryHost)
+	addEnvToPod(pod, "DRYCC_REGISTRY_PROXY_PORT", registryPort)
 
 	for key, value := range registryEnv {
 		addEnvToPod(pod, key, value)

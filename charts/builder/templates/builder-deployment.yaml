@@ -43,9 +43,9 @@ spec:
 {{- end}}
           env:
             # NOTE(bacongobbler): use drycc/registry_proxy to work around Docker --insecure-registry requirements
-            - name: "DRYCC_REGISTRY_SERVICE_HOST"
+            - name: "DRYCC_REGISTRY_PROXY_HOST"
               value: "127.0.0.1"
-            - name: "DRYCC_REGISTRY_SERVICE_PORT"
+            - name: "DRYCC_REGISTRY_PROXY_PORT"
               value: "{{ .Values.global.registry_service_port }}"
             - name: "HEALTH_SERVER_PORT"
               value: "8092"
@@ -56,7 +56,7 @@ spec:
             - name: "DRYCC_REGISTRY_LOCATION"
               value: "{{ .Values.global.registry_location }}"
             - name: "DRYCC_REGISTRY_SECRET_PREFIX"
-              value: "{{ .Values.global.secret_prefix }}"
+              value: "{{ .Values.global.registry_secret_prefix }}"
             # Set GIT_LOCK_TIMEOUT to number of minutes you want to wait to git push again to the same repository
             - name: "GIT_LOCK_TIMEOUT"
               value: "10"
