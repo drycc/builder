@@ -308,7 +308,7 @@ func build(
 	if stack["name"] != "container" {
 		image = slugBuilderInfo.AbsoluteSlugObjectKey()
 	}
-	release, err := hooks.CreateBuild(client, conf.Username, conf.App(), image, stack["image"], gitSha.Short(), procType, stack["name"] == "container")
+	release, err := hooks.CreateBuild(client, conf.Username, conf.App(), image, stack["name"], gitSha.Short(), procType, stack["name"] == "container")
 	quit <- true
 	<-quit
 	if controller.CheckAPICompat(client, err) != nil {
