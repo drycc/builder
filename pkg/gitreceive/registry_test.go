@@ -54,7 +54,7 @@ func TestGetRegistryDetailsOffclusterErr(t *testing.T) {
 		},
 	}
 	image := "test-image"
-	_, err := getRegistryDetails(kubeClient, &image, "off-cluster", dryccNamespace, "private-registry")
+	_, err := getRegistryDetails(kubeClient, &image, "off-cluster", dryccNamespace)
 	assert.Err(t, err, expectedErr)
 }
 
@@ -75,7 +75,7 @@ func TestGetRegistryDetailsOffclusterSuccess(t *testing.T) {
 		},
 	}
 	image := "test-image"
-	regDetails, err := getRegistryDetails(kubeClient, &image, "off-cluster", dryccNamespace, "private-registry")
+	regDetails, err := getRegistryDetails(kubeClient, &image, "off-cluster", dryccNamespace)
 	assert.NoErr(t, err)
 	assert.Equal(t, expectedData, regDetails, "registry details")
 	assert.Equal(t, expectedImage, image, "image")

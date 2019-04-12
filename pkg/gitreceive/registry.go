@@ -22,7 +22,7 @@ func getDetailsFromRegistrySecret(secretGetter client.SecretsInterface, secret s
 	return regDetails, nil
 }
 
-func getRegistryDetails(kubeClient client.SecretsNamespacer, image *string, registryLocation, namespace, registrySecretPrefix string) (map[string]string, error) {
+func getRegistryDetails(kubeClient client.SecretsNamespacer, image *string, registryLocation, namespace string) (map[string]string, error) {
 	privateRegistrySecretInterface := kubeClient.Secrets(namespace)
 	registryEnv := make(map[string]string)
 	var regSecretData map[string]string

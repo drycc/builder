@@ -169,7 +169,7 @@ func build(
 		registryLocation := conf.RegistryLocation
 		registryEnv := make(map[string]string)
 		if registryLocation != "on-cluster" {
-			registryEnv, err = getRegistryDetails(kubeClient, &image, registryLocation, conf.PodNamespace, conf.RegistrySecretPrefix)
+			registryEnv, err = getRegistryDetails(kubeClient, &image, registryLocation, conf.PodNamespace)
 			if err != nil {
 				return fmt.Errorf("error getting private registry details %s", err)
 			}
