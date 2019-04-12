@@ -51,7 +51,7 @@ imports:
   subpackages:
   - spew
 - name: github.com/drycc/controller-sdk-go
-  version: 6c99dbcce25a775067cbaa47ccbc66dd16e4b721
+  version: 0d790cf13cf4237e833ff525f29d7fc1f8899131
   subpackages:
   - api
   - hooks
