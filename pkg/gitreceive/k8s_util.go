@@ -103,12 +103,12 @@ func slugbuilderPod(
 	debug bool,
 	name,
 	namespace string,
+	env map[string]interface{},
 	envSecretName string,
 	tarKey,
 	putKey,
 	cacheKey,
 	gitShortHash string,
-	buildpackURL,
 	storageType,
 	image string,
 	pullPolicy api.PullPolicy,
@@ -144,10 +144,6 @@ func slugbuilderPod(
 	addEnvToPod(pod, putPath, putKey)
 	addEnvToPod(pod, sourceVersion, gitShortHash)
 	addEnvToPod(pod, builderStorage, storageType)
-
-	if buildpackURL != "" {
-		addEnvToPod(pod, "BUILDPACK_URL", buildpackURL)
-	}
 
 	return &pod
 }

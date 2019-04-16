@@ -46,12 +46,12 @@ type slugBuildCase struct {
 	debug                      bool
 	name                       string
 	namespace                  string
+	env                        map[string]interface{}
 	envSecretName              string
 	tarKey                     string
 	putKey                     string
 	cacheKey                   string
 	gitShortHash               string
-	buildPack                  string
 	slugBuilderImage           string
 	slugBuilderImagePullPolicy api.PullPolicy
 	storageType                string
@@ -77,6 +77,7 @@ func TestBuildPod(t *testing.T) {
 
 	env := make(map[string]interface{})
 	env["KEY"] = "VALUE"
+	env["BUILDPACK_URL"] = "buildpack"
 	buildArgsEnv := make(map[string]interface{})
 	buildArgsEnv["DRYCC_DOCKER_BUILD_ARGS_ENABLED"] = "1"
 	buildArgsEnv["KEY"] = "VALUE"
@@ -93,14 +94,14 @@ func TestBuildPod(t *testing.T) {
 	nodeSelector2["network"] = "fast"
 
 	slugBuilds := []slugBuildCase{
-		{true, "test", "default", envSecretName, "tar", "put-url", "cache-url", "deadbeef", "", "", api.PullAlways, "", emptyNodeSelector},
-		{true, "test", "default", envSecretName, "tar", "put-url", "cache-url", "deadbeef", "", "", api.PullAlways, "", emptyNodeSelector},
-		{true, "test", "default", envSecretName, "tar", "put-url", "", "deadbeef", "", "", api.PullAlways, "", emptyNodeSelector},
-		{true, "test", "default", envSecretName, "tar", "put-url", "cache-url", "deadbeef", "buildpack", "", api.PullAlways, "", emptyNodeSelector},
-		{true, "test", "default", envSecretName, "tar", "put-url", "cache-url", "deadbeef", "buildpack", "", api.PullAlways, "", emptyNodeSelector},
-		{true, "test", "default", envSecretName, "tar", "put-url", "cache-url", "deadbeef", "buildpack", "customimage", api.PullAlways, "", nil},
-		{true, "test", "default", envSecretName, "tar", "put-url", "cache-url", "deadbeef", "buildpack", "customimage", api.PullIfNotPresent, "", nodeSelector1},
-		{true, "test", "default", envSecretName, "tar", "put-url", "cache-url", "deadbeef", "buildpack", "customimage", api.PullNever, "", nodeSelector2},
+		{true, "test", "default", emptyEnv, envSecretName, "tar", "put-url", "cache-url", "deadbeef", "", api.PullAlways, "", emptyNodeSelector},
+		{true, "test", "default", emptyEnv, envSecretName, "tar", "put-url", "cache-url", "deadbeef", "", api.PullAlways, "", emptyNodeSelector},
+		{true, "test", "default", emptyEnv, envSecretName, "tar", "put-url", "", "deadbeef", "", api.PullAlways, "", emptyNodeSelector},
+		{true, "test", "default", env, envSecretName, "tar", "put-url", "cache-url", "deadbeef", "", api.PullAlways, "", emptyNodeSelector},
+		{true, "test", "default", env, envSecretName, "tar", "put-url", "cache-url", "deadbeef", "", api.PullAlways, "", emptyNodeSelector},
+		{true, "test", "default", env, envSecretName, "tar", "put-url", "cache-url", "deadbeef", "customimage", api.PullAlways, "", nil},
+		{true, "test", "default", env, envSecretName, "tar", "put-url", "cache-url", "deadbeef", "customimage", api.PullIfNotPresent, "", nodeSelector1},
+		{true, "test", "default", env, envSecretName, "tar", "put-url", "cache-url", "deadbeef", "customimage", api.PullNever, "", nodeSelector2},
 	}
 
 	for _, build := range slugBuilds {
@@ -108,12 +109,12 @@ func TestBuildPod(t *testing.T) {
 			build.debug,
 			build.name,
 			build.namespace,
+			build.env,
 			build.envSecretName,
 			build.tarKey,
 			build.putKey,
 			build.cacheKey,
 			build.gitShortHash,
-			build.buildPack,
 			build.storageType,
 			build.slugBuilderImage,
 			build.slugBuilderImagePullPolicy,
@@ -138,10 +139,6 @@ func TestBuildPod(t *testing.T) {
 			}
 		} else {
 			checkForEnv(t, pod, "CACHE_PATH", build.cacheKey)
-		}
-
-		if build.buildPack != "" {
-			checkForEnv(t, pod, "BUILDPACK_URL", build.buildPack)
 		}
 
 		if build.slugBuilderImage != "" {

@@ -101,15 +101,6 @@ func build(
 		return err
 	}
 
-	log.Debug("got the following config back for app %s: %+v", appName, appConf)
-	var buildPackURL string
-	if buildPackURLInterface, ok := appConf.Values["BUILDPACK_URL"]; ok {
-		if bpStr, ok := buildPackURLInterface.(string); ok {
-			log.Debug("found custom buildpack URL %s", bpStr)
-			buildPackURL = bpStr
-		}
-	}
-
 	_, disableCaching := appConf.Values["DRYCC_DISABLE_CACHE"]
 	slugBuilderInfo := NewSlugBuilderInfo(appName, gitSha.Short(), disableCaching)
 
@@ -214,12 +205,12 @@ func build(
 			conf.Debug,
 			buildPodName,
 			conf.PodNamespace,
+			appConf.Values,
 			envSecretName,
 			slugBuilderInfo.TarKey(),
 			slugBuilderInfo.PushKey(),
 			cacheKey,
 			gitSha.Short(),
-			buildPackURL,
 			conf.StorageType,
 			stack["image"],
 			slugBuilderImagePullPolicy,
