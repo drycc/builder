@@ -2,7 +2,9 @@ hash: d85b2efb6ab99d7c4d431a95b64116345596b1e371c19c2f55b2be73fff9bcbf
 updated: 2017-02-14T09:23:17.687476614-07:00
 imports:
 - name: bitbucket.org/ww/goautoneg
-  version: 75cd24fc2f2c2a2088577d12123ddee5f54e0675
+  version: a547fc61f48d567d5b4ec6f8aee5573d8efce11d
+  repo: https://github.com/rancher/goautoneg
+  vcs: git
 - name: github.com/arschles/assert
   version: 6882f85ccdc7c1822b146d1a6b0c2c48f91b5140
 - name: github.com/aws/aws-sdk-go

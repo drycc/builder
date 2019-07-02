@@ -41,5 +41,8 @@ import:
   version: 8e7dc108ab3a1ab6ce6d922bbaff5657b88e8e49
   repo: https://github.com/spf13/pflag
   vcs: git
+- package: bitbucket.org/ww/goautoneg
+  repo: https://github.com/rancher/goautoneg
+  vcs: git
 - package: github.com/drycc/controller-sdk-go
   version: 6c99dbcce25a775067cbaa47ccbc66dd16e4b721
