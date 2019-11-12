@@ -8,7 +8,7 @@ imports:
 - name: github.com/arschles/assert
   version: 6882f85ccdc7c1822b146d1a6b0c2c48f91b5140
 - name: github.com/aws/aws-sdk-go
-  version: 49c3892b61af1d4996292a3025f36e4dfa25eaee
+  version: 781d45fe0d5a562ef5b0d8c23527f4c443c86e58
   subpackages:
   - aws
   - aws/awserr
