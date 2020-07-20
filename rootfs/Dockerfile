@@ -1,4 +1,4 @@
-FROM quay.io/drycc/base:v0.3.6
+FROM drycc/base:v0.3.6
 
 RUN adduser --system \
 	--shell /bin/bash \

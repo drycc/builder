@@ -4,7 +4,7 @@ include versioning.mk
 
 # dockerized development environment variables
 REPO_PATH := github.com/drycc/${SHORT_NAME}
-DEV_ENV_IMAGE := quay.io/drycc/go-dev:v0.22.0
+DEV_ENV_IMAGE := golang:1.14
 DEV_ENV_WORK_DIR := /go/src/${REPO_PATH}
 DEV_ENV_PREFIX := docker run --rm -v ${CURDIR}:${DEV_ENV_WORK_DIR} -w ${DEV_ENV_WORK_DIR}
 DEV_ENV_CMD := ${DEV_ENV_PREFIX} ${DEV_ENV_IMAGE}
@@ -20,7 +20,7 @@ BINDIR := ./rootfs
 DRYCC_REGISTRY ?= ${DEV_REGISTRY}
 
 bootstrap:
-	${DEV_ENV_CMD} glide install
+	${DEV_ENV_CMD} go mod vendor
 
 depup:
 	${DEV_ENV_CMD} glide up
@@ -30,7 +30,6 @@ depup:
 # the build as a `docker build`.
 build:
 	${DEV_ENV_CMD} go build -ldflags ${LDFLAGS} -o ${BINARY_DEST_DIR}/boot boot.go
-	${DEV_ENV_CMD} upx -9 ${BINARY_DEST_DIR}/boot
 
 test: test-style test-unit
 
