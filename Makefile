@@ -22,9 +22,6 @@ DRYCC_REGISTRY ?= ${DEV_REGISTRY}
 bootstrap:
 	${DEV_ENV_CMD} go mod vendor
 
-depup:
-	${DEV_ENV_CMD} glide up
-
 # This illustrates a two-stage Docker build. docker-compile runs inside of
 # the Docker environment. Other alternatives are cross-compiling, doing
 # the build as a `docker build`.
