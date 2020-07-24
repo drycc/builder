@@ -1,7 +1,6 @@
 package k8s
 
 import (
-	//"k8s.io/kubernetes/pkg/api"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	v1 "k8s.io/api/core/v1"
 )

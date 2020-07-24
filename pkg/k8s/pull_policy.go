@@ -2,7 +2,6 @@ package k8s
 
 import (
 	"fmt"
-	//"k8s.io/kubernetes/pkg/api"
 	"k8s.io/api/core/v1"
 )
 
