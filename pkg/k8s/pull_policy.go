@@ -2,17 +2,17 @@ package k8s
 
 import (
 	"fmt"
-
-	"k8s.io/kubernetes/pkg/api"
+	//"k8s.io/kubernetes/pkg/api"
+	"k8s.io/api/core/v1"
 )
 
 var (
-	emptyPullPolicy = api.PullPolicy("")
+	emptyPullPolicy = v1.PullPolicy("")
 	// ValidPullPolicies is the set of pull policies that this package considers valid
-	ValidPullPolicies = map[api.PullPolicy]struct{}{
-		api.PullAlways:       {},
-		api.PullIfNotPresent: {},
-		api.PullNever:        {},
+	ValidPullPolicies = map[v1.PullPolicy]struct{}{
+		v1.PullAlways:       {},
+		v1.PullIfNotPresent: {},
+		v1.PullNever:        {},
 	}
 )
 
@@ -27,8 +27,8 @@ func (e ErrInvalidPullPolicy) Error() string {
 }
 
 // PullPolicyFromString converts a string into an api.PullPolicy. returns an error if the string does not match a pull policy in ValidPullPolicies()
-func PullPolicyFromString(ppStr string) (api.PullPolicy, error) {
-	candidatePP := api.PullPolicy(ppStr)
+func PullPolicyFromString(ppStr string) (v1.PullPolicy, error) {
+	candidatePP := v1.PullPolicy(ppStr)
 	if _, ok := ValidPullPolicies[candidatePP]; !ok {
 		return emptyPullPolicy, ErrInvalidPullPolicy{str: ppStr}
 	}

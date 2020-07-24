@@ -2,56 +2,53 @@ package k8s
 
 import (
 	"time"
-
-	"k8s.io/kubernetes/pkg/api"
-	"k8s.io/kubernetes/pkg/client/cache"
-	client "k8s.io/kubernetes/pkg/client/unversioned"
-	"k8s.io/kubernetes/pkg/controller/framework"
-	"k8s.io/kubernetes/pkg/labels"
-	"k8s.io/kubernetes/pkg/runtime"
-	"k8s.io/kubernetes/pkg/watch"
+	"context"
+	"k8s.io/api/core/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/client-go/tools/cache"
+	"k8s.io/apimachinery/pkg/watch"
+	"k8s.io/client-go/kubernetes"
+	"k8s.io/apimachinery/pkg/runtime"
 )
 
 var (
 	resyncPeriod = 30 * time.Second
 )
+type StoreToPodLister struct {
+	cache.Store
+}
 
 //PodWatcher is a struct which holds the return values of (k8s.io/kubernetes/pkg/controller/framework).NewIndexerInformer together.
 type PodWatcher struct {
-	Store      cache.StoreToPodLister
-	Controller *framework.Controller
+	Store      StoreToPodLister
+	Controller cache.Controller
 }
 
 //NewPodWatcher creates a new BuildPodWatcher useful to list the pods using a cache which gets updated based on the watch func.
-func NewPodWatcher(c *client.Client, ns string) *PodWatcher {
+func NewPodWatcher(c kubernetes.Interface, ns string) *PodWatcher {
 	pw := &PodWatcher{}
 
-	pw.Store.Store, pw.Controller = framework.NewIndexerInformer(
+	pw.Store.Store, pw.Controller = cache.NewIndexerInformer(
 		&cache.ListWatch{
 			ListFunc:  podListFunc(c, ns),
 			WatchFunc: podWatchFunc(c, ns),
 		},
-		&api.Pod{},
+		&v1.Pod{},
 		resyncPeriod,
-		framework.ResourceEventHandlerFuncs{},
+		cache.ResourceEventHandlerFuncs{},
 		cache.Indexers{},
 	)
-
 	return pw
 }
 
-func podListFunc(c *client.Client, ns string) func(options api.ListOptions) (runtime.Object, error) {
-	return func(opts api.ListOptions) (runtime.Object, error) {
-		return c.Pods(ns).List(api.ListOptions{
-			LabelSelector: labels.Everything(),
-		})
+func podListFunc(c kubernetes.Interface, ns string) func(options metav1.ListOptions) (runtime.Object, error) {
+	return func(opts metav1.ListOptions) (runtime.Object, error) {
+		return c.CoreV1().Pods(ns).List(context.TODO(), metav1.ListOptions{})
 	}
 }
 
-func podWatchFunc(c *client.Client, ns string) func(options api.ListOptions) (watch.Interface, error) {
-	return func(opts api.ListOptions) (watch.Interface, error) {
-		return c.Pods(ns).Watch(api.ListOptions{
-			LabelSelector: labels.Everything(),
-		})
+func podWatchFunc(c kubernetes.Interface, ns string) func(options metav1.ListOptions) (watch.Interface, error) {
+	return func(opts metav1.ListOptions) (watch.Interface, error) {
+		return c.CoreV1().Pods(ns).Watch(context.TODO(), metav1.ListOptions{})
 	}
 }
