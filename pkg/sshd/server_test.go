@@ -263,25 +263,6 @@ func mockAuthKey() (*ssh.Permissions, error) {
 	return perm, nil
 }
 
-func mockDummyReceive(sleepDur time.Duration) func(channel ssh.Channel, req *ssh.Request) error {
-	return func(channel ssh.Channel, req *ssh.Request) error {
-
-		time.Sleep(sleepDur)
-		channel.Write([]byte("OK"))
-		sendExitStatus(0, channel)
-		req.Reply(true, nil)
-		return nil
-	}
-}
-
-func gitPktLineStr(str string) (string, error) {
-	var buf bytes.Buffer
-	if err := gitPktLine(&buf, str); err != nil {
-		return "", err
-	}
-	return buf.String(), nil
-}
-
 // connMetadata mocks ssh.ConnMetadata for authentication.
 type connMetadata struct{}
 
@@ -328,6 +309,4 @@ v3+ZZfZMlci4pxBtXqrnoyj4uUoqZtR3ENLz53SN1i0vpT7DtC6gMnEF1UWiaoJ6
 6mGH5/bxCg9wpV7qpqR0EbFM/dhQFZmmnirOS8x+00hJvc1HFiuN/A==
 -----END RSA PRIVATE KEY-----
 `
-
-	testingClientPubKey = `ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC/OImeiJppXJQY+fKpULj1cvM1FL5M9brc3Diqi8IbyVVvEoYMgcLri0msIOJl3SmkSFj5FAMZo/CswicedXwjB1LXBfbZRNG5cD+heYdwjE7bOZSeuMUOWkqbaj7Zd3XruJ91X0CKo0G2q47QzzzZFobL30ts09yX26ACfGjkNUjWMRKXm9iq2I4CdFK+YmfZz6GQl8pevIfuFTjL5uUMrlXPjh5KwLtuAbdlsp8oZH2aV/ajNWXMw2LYAJnny8MHGflZUtvVs9XUsemJwnTR9TdMNGcrcyTC+8Ceqnvxs3OL6i5ggDBhJnjWIc13n3otAlyGvW+zcWjypuBhotjz donotuse`
 )
