@@ -23,8 +23,7 @@ import (
 )
 
 const (
-	bucketName = "mybucket"
-	objKey     = "myobj"
+	objKey = "myobj"
 )
 
 type testJSONStruct struct {

@@ -36,8 +36,9 @@ require (
 	github.com/prometheus/client_model v0.2.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/ugorji/go v0.0.0-20160211161415-f4485b318aad // indirect
-	golang.org/x/crypto v0.0.0-20200220183623-bac4c82f6975
-	golang.org/x/net v0.0.0-20191004110552-13f9640d40b9 // indirect
+	golang.org/x/crypto v0.0.0-20200622213623-75b288015ac9
+	golang.org/x/lint v0.0.0-20200302205851-738671d3881b // indirect
+	golang.org/x/tools v0.0.0-20200725200936-102e7d357031 // indirect
 	google.golang.org/api v0.6.1-0.20190607001116-5213b8090861 // indirect
 	google.golang.org/cloud v0.0.0-20151119220103-975617b05ea8 // indirect
 	google.golang.org/grpc v1.26.0 // indirect

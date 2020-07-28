@@ -37,8 +37,6 @@ func (e errBucketLister) List(ctx context.Context, opath string) ([]string, erro
 	return nil, e.err
 }
 
-type successGetClient struct{}
-
 type failureGetClient struct{}
 
 func (e failureGetClient) Get(url string) (*http.Response, error) {
