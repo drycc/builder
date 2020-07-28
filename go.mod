@@ -29,7 +29,7 @@ require (
 	github.com/kelseyhightower/envconfig v1.2.0
 	github.com/mitchellh/mapstructure v1.1.2 // indirect
 	github.com/ncw/swift v1.0.20-0.20151102203822-c54732e87b0b // indirect
-	github.com/opencontainers/runc v0.0.7
+	github.com/opencontainers/runc v0.0.7 // indirect
 	github.com/opencontainers/runtime-spec v1.0.2 // indirect
 	github.com/pborman/uuid v1.2.0
 	github.com/prometheus/client_golang v1.0.0 // indirect
