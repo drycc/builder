@@ -6,7 +6,7 @@ import (
 	"time"
 
 	drycc "github.com/drycc/controller-sdk-go"
-	"k8s.io/kubernetes/pkg/api"
+	"k8s.io/api/core/v1"
 )
 
 func readinessHandler(client *drycc.Client, nsLister NamespaceLister) http.Handler {
@@ -14,7 +14,7 @@ func readinessHandler(client *drycc.Client, nsLister NamespaceLister) http.Handl
 		stopCh := make(chan struct{})
 
 		numChecks := 0
-		namespaceListerCh := make(chan *api.NamespaceList)
+		namespaceListerCh := make(chan *v1.NamespaceList)
 		namespaceListerErrCh := make(chan error)
 		go listNamespaces(nsLister, namespaceListerCh, namespaceListerErrCh, stopCh)
 		numChecks++

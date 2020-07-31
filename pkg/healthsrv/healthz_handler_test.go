@@ -10,8 +10,6 @@ import (
 	"strings"
 	"testing"
 
-	"k8s.io/kubernetes/pkg/api"
-
 	"github.com/docker/distribution/context"
 
 	"github.com/arschles/assert"
@@ -47,19 +45,19 @@ func (e failureGetClient) Get(url string) (*http.Response, error) {
 	return resp, nil
 }
 
-type emptyNamespaceLister struct{}
-
-func (n emptyNamespaceLister) List(opts api.ListOptions) (*api.NamespaceList, error) {
-	return &api.NamespaceList{}, nil
-}
-
-type errNamespaceLister struct {
-	err error
-}
-
-func (e errNamespaceLister) List(opts api.ListOptions) (*api.NamespaceList, error) {
-	return nil, e.err
-}
+//type emptyNamespaceLister struct{}
+//
+//func (n emptyNamespaceLister) List(ctx context.Context, opts metav1.ListOptions) (*corev1.NamespaceList, error) {
+//	return &corev1.NamespaceList{}, nil
+//}
+//
+//type errNamespaceLister struct {
+//	err error
+//}
+//
+//func (e errNamespaceLister) List(ctx context.Context, opts metav1.ListOptions) (*corev1.NamespaceList, error) {
+//	return nil, e.err
+//}
 
 type fakeHTTPServer struct {
 	// determines wether to return success or failure.

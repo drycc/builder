@@ -6,8 +6,8 @@ import (
 
 	"github.com/arschles/assert"
 	"github.com/drycc/builder/pkg/k8s"
-	"k8s.io/kubernetes/pkg/api"
-	client "k8s.io/kubernetes/pkg/client/unversioned"
+	corev1 "k8s.io/api/core/v1"
+	typedcorev1 "k8s.io/client-go/kubernetes/typed/core/v1"
 )
 
 const (
@@ -18,8 +18,8 @@ const (
 func TestGetDetailsFromRegistrySecretErr(t *testing.T) {
 	expectedErr := errors.New("get secret error")
 	getter := &k8s.FakeSecret{
-		FnGet: func(string) (*api.Secret, error) {
-			return &api.Secret{}, expectedErr
+		FnGet: func(string) (*corev1.Secret, error) {
+			return &corev1.Secret{}, expectedErr
 		},
 	}
 	_, err := getDetailsFromRegistrySecret(getter, testSecret)
@@ -29,9 +29,9 @@ func TestGetDetailsFromRegistrySecretErr(t *testing.T) {
 func TestGetDetailsFromRegistrySecretSuccess(t *testing.T) {
 	data := map[string][]byte{"test": []byte("test")}
 	expectedData := map[string]string{"test": "test"}
-	secret := api.Secret{Data: data}
+	secret := corev1.Secret{Data: data}
 	getter := &k8s.FakeSecret{
-		FnGet: func(string) (*api.Secret, error) {
+		FnGet: func(string) (*corev1.Secret, error) {
 			return &secret, nil
 		},
 	}
@@ -43,13 +43,14 @@ func TestGetDetailsFromRegistrySecretSuccess(t *testing.T) {
 func TestGetRegistryDetailsOffclusterErr(t *testing.T) {
 	expectedErr := errors.New("get secret error")
 	getter := &k8s.FakeSecret{
-		FnGet: func(string) (*api.Secret, error) {
-			return &api.Secret{}, expectedErr
+		FnGet: func(string) (*corev1.Secret, error) {
+			return &corev1.Secret{}, expectedErr
+			//return &kubernetes.Clientset.CoreV1(), expectedErr
 		},
 	}
 
-	kubeClient := &k8s.FakeSecretsNamespacer{
-		Fn: func(string) client.SecretsInterface {
+	kubeClient := &k8s.FakeSecretsGetter{
+		Fn: func(string) typedcorev1.SecretInterface {
 			return getter
 		},
 	}
@@ -62,15 +63,15 @@ func TestGetRegistryDetailsOffclusterSuccess(t *testing.T) {
 	data := map[string][]byte{"organization": []byte("kmala"), "hostname": []byte("quay.io")}
 	expectedData := map[string]string{"DRYCC_REGISTRY_HOSTNAME": "quay.io", "DRYCC_REGISTRY_ORGANIZATION": "kmala"}
 	expectedImage := "quay.io/kmala/test-image"
-	secret := api.Secret{Data: data}
+	secret := corev1.Secret{Data: data}
 	getter := &k8s.FakeSecret{
-		FnGet: func(string) (*api.Secret, error) {
+		FnGet: func(string) (*corev1.Secret, error) {
 			return &secret, nil
 		},
 	}
 
-	kubeClient := &k8s.FakeSecretsNamespacer{
-		Fn: func(string) client.SecretsInterface {
+	kubeClient := &k8s.FakeSecretsGetter{
+		Fn: func(string) typedcorev1.SecretInterface {
 			return getter
 		},
 	}

@@ -1,8 +1,9 @@
 package k8s
 
 import (
+	"context"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	v1 "k8s.io/api/core/v1"
+	corev1 "k8s.io/api/core/v1"
 )
 
 // NamespaceLister is a (k8s.io/kubernetes/pkg/client/unversioned).NamespaceInterface compatible
@@ -15,5 +16,5 @@ import (
 //	var nsl NamespaceLister
 //	nsl = kubeClient.Namespaces()
 type NamespaceLister interface {
-	List(opts metav1.ListOptions) (*v1.NamespaceList, error)
+	List(ctx context.Context, opts metav1.ListOptions) (*corev1.NamespaceList, error)
 }

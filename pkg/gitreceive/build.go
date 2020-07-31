@@ -10,6 +10,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"strings"
+	ctx "context"
 
 	"github.com/docker/distribution/context"
 	storagedriver "github.com/docker/distribution/registry/storage/driver"
@@ -22,8 +23,9 @@ import (
 	"github.com/drycc/controller-sdk-go/hooks"
 	"github.com/drycc/pkg/log"
 	"gopkg.in/yaml.v2"
-	"k8s.io/kubernetes/pkg/api"
-	client "k8s.io/kubernetes/pkg/client/unversioned"
+	"k8s.io/client-go/kubernetes"
+	corev1 "k8s.io/api/core/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 // repoCmd returns exec.Command(first, others...) with its current working directory repoDir
@@ -48,7 +50,8 @@ func run(cmd *exec.Cmd) error {
 func build(
 	conf *Config,
 	storageDriver storagedriver.StorageDriver,
-	kubeClient *client.Client,
+	//kubeClient *client.Client,
+	kubeClient *kubernetes.Clientset,
 	fs sys.FS,
 	env sys.Env,
 	builderKey,
@@ -146,7 +149,7 @@ func build(
 		return fmt.Errorf("uploading %s to %s (%v)", absAppTgz, slugBuilderInfo.TarKey(), err)
 	}
 
-	var pod *api.Pod
+	var pod *corev1.Pod
 	var buildPodName string
 	image := appName
 
@@ -160,7 +163,7 @@ func build(
 		registryLocation := conf.RegistryLocation
 		registryEnv := make(map[string]string)
 		if registryLocation != "on-cluster" {
-			registryEnv, err = getRegistryDetails(kubeClient, &image, registryLocation, conf.PodNamespace)
+			registryEnv, err = getRegistryDetails(kubeClient.CoreV1(), &image, registryLocation, conf.PodNamespace)
 			if err != nil {
 				return fmt.Errorf("error getting private registry details %s", err)
 			}
@@ -192,12 +195,12 @@ func build(
 			cacheKey = slugBuilderInfo.CacheKey()
 		}
 		envSecretName := fmt.Sprintf("%s-build-env", appName)
-		err = createAppEnvConfigSecret(kubeClient.Secrets(conf.PodNamespace), envSecretName, appConf.Values)
+		err = createAppEnvConfigSecret(kubeClient.CoreV1().Secrets(conf.PodNamespace), envSecretName, appConf.Values)
 		if err != nil {
 			return fmt.Errorf("error creating/updating secret %s: (%s)", envSecretName, err)
 		}
 		defer func() {
-			if err := kubeClient.Secrets(conf.PodNamespace).Delete(envSecretName); err != nil {
+			if err := kubeClient.CoreV1().Secrets(conf.PodNamespace).Delete(ctx.TODO(), envSecretName, metav1.DeleteOptions{}); err != nil {
 				log.Info("unable to delete secret %s (%s)", envSecretName, err)
 			}
 		}()
@@ -227,14 +230,14 @@ func build(
 		log.Debug("Error creating json representation of pod spec: %v", err)
 	}
 
-	podsInterface := kubeClient.Pods(conf.PodNamespace)
+	podsInterface := kubeClient.CoreV1().Pods(conf.PodNamespace)
 
-	newPod, err := podsInterface.Create(pod)
+	newPod, err := podsInterface.Create(ctx.TODO(), pod, metav1.CreateOptions{})
 	if err != nil {
 		return fmt.Errorf("creating builder pod (%s)", err)
 	}
 
-	pw := k8s.NewPodWatcher(kubeClient, conf.PodNamespace)
+	pw := k8s.NewPodWatcher(*kubeClient, conf.PodNamespace)
 	stopCh := make(chan struct{})
 	defer close(stopCh)
 	go pw.Controller.Run(stopCh)
@@ -243,12 +246,12 @@ func build(
 		return fmt.Errorf("watching events for builder pod startup (%s)", err)
 	}
 
-	req := kubeClient.Get().Namespace(newPod.Namespace).Name(newPod.Name).Resource("pods").SubResource("log").VersionedParams(
-		&api.PodLogOptions{
+	req := kubeClient.CoreV1().RESTClient().Get().Namespace(newPod.Namespace).Name(newPod.Name).Resource("pods").SubResource("log").VersionedParams(
+		&corev1.PodLogOptions{
 			Follow: true,
-		}, api.ParameterCodec)
+		}, metav1.ParameterCodec)
 
-	rc, err := req.Stream()
+	rc, err := req.Stream(ctx.TODO())
 	if err != nil {
 		return fmt.Errorf("attempting to stream logs (%s)", err)
 	}
@@ -274,7 +277,7 @@ func build(
 	}
 	log.Debug("Done")
 	log.Debug("Checking for builder pod exit code")
-	buildPod, err := kubeClient.Pods(newPod.Namespace).Get(newPod.Name)
+	buildPod, err := kubeClient.CoreV1().Pods(newPod.Namespace).Get(ctx.TODO(), newPod.Name, metav1.GetOptions{})
 	if err != nil {
 		return fmt.Errorf("error getting builder pod status (%s)", err)
 	}
