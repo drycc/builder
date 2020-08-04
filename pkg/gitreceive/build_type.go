@@ -16,6 +16,10 @@ var defaultStacks = `[
         "image": "drycc/container:canary"
     },
     {
+        "name": "heroku-20",
+        "image": "drycc/slugrunner:canary.heroku-20"
+    },
+    {
         "name": "heroku-18",
         "image": "drycc/slugrunner:canary.heroku-18"
     },
