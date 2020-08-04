@@ -43,6 +43,9 @@ func clientConfig() *ssh.ClientConfig {
 		Auth: []ssh.AuthMethod{
 			ssh.Password("password"),
 		},
+		HostKeyCallback: func(hostname string, remote net.Addr, key ssh.PublicKey) error {
+			return nil
+		},
 	}
 }
 

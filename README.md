@@ -5,7 +5,6 @@
 [![codecov](https://codecov.io/gh/drycc/builder/branch/master/graph/badge.svg)](https://codecov.io/gh/drycc/builder)
 [![Go Report Card](https://goreportcard.com/badge/github.com/drycc/builder)](https://goreportcard.com/report/github.com/drycc/builder)
 [![codebeat badge](https://codebeat.co/badges/0507e5d5-163b-4280-84ea-83bd2e0c8e41)](https://codebeat.co/projects/github-com-drycc-builder-master)
-[![Docker Repository on Quay](https://quay.io/repository/drycc/builder/status "Docker Repository on Quay")](https://quay.io/repository/drycc/builder)
 
 Drycc - A Fork of Drycc Workflow
 
