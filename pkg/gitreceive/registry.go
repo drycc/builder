@@ -2,16 +2,18 @@ package gitreceive
 
 import (
 	"strings"
+	"context"
 
-	client "k8s.io/kubernetes/pkg/client/unversioned"
+	typedcorev1 "k8s.io/client-go/kubernetes/typed/core/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 const (
 	registrySecret = "registry-secret"
 )
 
-func getDetailsFromRegistrySecret(secretGetter client.SecretsInterface, secret string) (map[string]string, error) {
-	regSecret, err := secretGetter.Get(secret)
+func getDetailsFromRegistrySecret(secretGetter typedcorev1.SecretInterface, secret string) (map[string]string, error) {
+	regSecret, err := secretGetter.Get(context.TODO(), secret, metav1.GetOptions{})
 	if err != nil {
 		return nil, err
 	}
@@ -22,7 +24,7 @@ func getDetailsFromRegistrySecret(secretGetter client.SecretsInterface, secret s
 	return regDetails, nil
 }
 
-func getRegistryDetails(kubeClient client.SecretsNamespacer, image *string, registryLocation, namespace string) (map[string]string, error) {
+func getRegistryDetails(kubeClient typedcorev1.SecretsGetter, image *string, registryLocation, namespace string) (map[string]string, error) {
 	privateRegistrySecretInterface := kubeClient.Secrets(namespace)
 	registryEnv := make(map[string]string)
 	var regSecretData map[string]string

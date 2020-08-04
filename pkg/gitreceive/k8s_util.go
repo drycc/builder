@@ -1,17 +1,19 @@
 package gitreceive
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"time"
 
 	"github.com/drycc/builder/pkg/k8s"
 	"github.com/pborman/uuid"
-	"k8s.io/kubernetes/pkg/api"
-	apierrors "k8s.io/kubernetes/pkg/api/errors"
-	client "k8s.io/kubernetes/pkg/client/unversioned"
-	"k8s.io/kubernetes/pkg/labels"
-	"k8s.io/kubernetes/pkg/util/wait"
+	"k8s.io/apimachinery/pkg/util/wait"
+	corev1 "k8s.io/api/core/v1"
+	apierrors "k8s.io/apimachinery/pkg/api/errors"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/labels"
+	typedcorev1 "k8s.io/client-go/kubernetes/typed/core/v1"
 )
 
 const (
@@ -62,9 +64,10 @@ func dockerBuilderPod(
 	registryHost,
 	registryPort string,
 	registryEnv map[string]string,
-	pullPolicy api.PullPolicy,
+	pullPolicy corev1.PullPolicy,
 	nodeSelector map[string]string,
-) *api.Pod {
+//) *api.Pod {
+) *corev1.Pod {
 
 	pod := buildPod(debug, name, namespace, pullPolicy, nodeSelector, env)
 
@@ -111,22 +114,22 @@ func slugbuilderPod(
 	gitShortHash string,
 	storageType,
 	image string,
-	pullPolicy api.PullPolicy,
+	pullPolicy corev1.PullPolicy,
 	nodeSelector map[string]string,
-) *api.Pod {
+) *corev1.Pod {
 
 	pod := buildPod(debug, name, namespace, pullPolicy, nodeSelector, nil)
 
-	pod.Spec.Volumes = append(pod.Spec.Volumes, api.Volume{
+	pod.Spec.Volumes = append(pod.Spec.Volumes, corev1.Volume{
 		Name: envSecretName,
-		VolumeSource: api.VolumeSource{
-			Secret: &api.SecretVolumeSource{
+		VolumeSource: corev1.VolumeSource{
+			Secret: &corev1.SecretVolumeSource{
 				SecretName: envSecretName,
 			},
 		},
 	})
 
-	pod.Spec.Containers[0].VolumeMounts = append(pod.Spec.Containers[0].VolumeMounts, api.VolumeMount{
+	pod.Spec.Containers[0].VolumeMounts = append(pod.Spec.Containers[0].VolumeMounts, corev1.VolumeMount{
 		Name:      envSecretName,
 		MountPath: envRoot,
 		ReadOnly:  true,
@@ -152,21 +155,21 @@ func buildPod(
 	debug bool,
 	name,
 	namespace string,
-	pullPolicy api.PullPolicy,
+	//pullPolicy api.PullPolicy,
+	pullPolicy corev1.PullPolicy,
 	nodeSelector map[string]string,
-	env map[string]interface{}) api.Pod {
-
-	pod := api.Pod{
-		Spec: api.PodSpec{
-			RestartPolicy: api.RestartPolicyNever,
-			Containers: []api.Container{
+	env map[string]interface{}) corev1.Pod {
+	pod := corev1.Pod{
+		Spec: corev1.PodSpec{
+			RestartPolicy: corev1.RestartPolicyNever,
+			Containers: []corev1.Container{
 				{
 					ImagePullPolicy: pullPolicy,
 				},
 			},
-			Volumes: []api.Volume{},
+			Volumes: []corev1.Volume{},
 		},
-		ObjectMeta: api.ObjectMeta{
+		ObjectMeta: metav1.ObjectMeta{
 			Name:      name,
 			Namespace: namespace,
 			Labels: map[string]string{
@@ -175,16 +178,16 @@ func buildPod(
 		},
 	}
 
-	pod.Spec.Volumes = append(pod.Spec.Volumes, api.Volume{
+	pod.Spec.Volumes = append(pod.Spec.Volumes, corev1.Volume{
 		Name: objectStore,
-		VolumeSource: api.VolumeSource{
-			Secret: &api.SecretVolumeSource{
+		VolumeSource: corev1.VolumeSource{
+			Secret: &corev1.SecretVolumeSource{
 				SecretName: objectStore,
 			},
 		},
 	})
 
-	pod.Spec.Containers[0].VolumeMounts = []api.VolumeMount{
+	pod.Spec.Containers[0].VolumeMounts = []corev1.VolumeMount{
 		{
 			Name:      objectStore,
 			MountPath: objectStorePath,
@@ -194,7 +197,7 @@ func buildPod(
 
 	if len(pod.Spec.Containers) > 0 {
 		for k, v := range env {
-			pod.Spec.Containers[0].Env = append(pod.Spec.Containers[0].Env, api.EnvVar{
+			pod.Spec.Containers[0].Env = append(pod.Spec.Containers[0].Env, corev1.EnvVar{
 				Name:  k,
 				Value: fmt.Sprintf("%v", v),
 			})
@@ -212,9 +215,9 @@ func buildPod(
 	return pod
 }
 
-func addEnvToPod(pod api.Pod, key, value string) {
+func addEnvToPod(pod corev1.Pod, key, value string) {
 	if len(pod.Spec.Containers) > 0 {
-		pod.Spec.Containers[0].Env = append(pod.Spec.Containers[0].Env, api.EnvVar{
+		pod.Spec.Containers[0].Env = append(pod.Spec.Containers[0].Env, corev1.EnvVar{
 			Name:  key,
 			Value: value,
 		})
@@ -223,14 +226,14 @@ func addEnvToPod(pod api.Pod, key, value string) {
 
 // waitForPod waits for a pod in state running, succeeded or failed
 func waitForPod(pw *k8s.PodWatcher, ns, podName string, ticker, interval, timeout time.Duration) error {
-	condition := func(pod *api.Pod) (bool, error) {
-		if pod.Status.Phase == api.PodRunning {
+	condition := func(pod *corev1.Pod) (bool, error) {
+		if pod.Status.Phase == corev1.PodRunning {
 			return true, nil
 		}
-		if pod.Status.Phase == api.PodSucceeded {
+		if pod.Status.Phase == corev1.PodSucceeded {
 			return true, nil
 		}
-		if pod.Status.Phase == api.PodFailed {
+		if pod.Status.Phase == corev1.PodFailed {
 			return true, fmt.Errorf("Giving up; pod went into failed status: \n[%s]:%s", pod.Status.Reason, pod.Status.Message)
 		}
 		return false, nil
@@ -245,11 +248,11 @@ func waitForPod(pw *k8s.PodWatcher, ns, podName string, ticker, interval, timeou
 
 // waitForPodEnd waits for a pod in state succeeded or failed
 func waitForPodEnd(pw *k8s.PodWatcher, ns, podName string, interval, timeout time.Duration) error {
-	condition := func(pod *api.Pod) (bool, error) {
-		if pod.Status.Phase == api.PodSucceeded {
+	condition := func(pod *corev1.Pod) (bool, error) {
+		if pod.Status.Phase == corev1.PodSucceeded {
 			return true, nil
 		}
-		if pod.Status.Phase == api.PodFailed {
+		if pod.Status.Phase == corev1.PodFailed {
 			return true, nil
 		}
 		return false, nil
@@ -259,7 +262,7 @@ func waitForPodEnd(pw *k8s.PodWatcher, ns, podName string, interval, timeout tim
 }
 
 // waitForPodCondition waits for a pod in state defined by a condition (func)
-func waitForPodCondition(pw *k8s.PodWatcher, ns, podName string, condition func(pod *api.Pod) (bool, error),
+func waitForPodCondition(pw *k8s.PodWatcher, ns, podName string, condition func(pod *corev1.Pod) (bool, error),
 	interval, timeout time.Duration) error {
 	return wait.PollImmediate(interval, timeout, func() (bool, error) {
 		pods, err := pw.Store.List(labels.Set{"heritage": podName}.AsSelector())
@@ -296,17 +299,17 @@ func progress(msg string, interval time.Duration) chan bool {
 	return quit
 }
 
-func createAppEnvConfigSecret(secretsClient client.SecretsInterface, secretName string, env map[string]interface{}) error {
-	newSecret := new(api.Secret)
+func createAppEnvConfigSecret(secretsClient typedcorev1.SecretInterface, secretName string, env map[string]interface{}) error {
+	newSecret := new(corev1.Secret)
 	newSecret.Name = secretName
-	newSecret.Type = api.SecretTypeOpaque
+	newSecret.Type = corev1.SecretTypeOpaque
 	newSecret.Data = make(map[string][]byte)
 	for k, v := range env {
 		newSecret.Data[k] = []byte(fmt.Sprintf("%v", v))
 	}
-	if _, err := secretsClient.Create(newSecret); err != nil {
+	if _, err := secretsClient.Create(context.TODO(), newSecret, metav1.CreateOptions{}); err != nil {
 		if apierrors.IsAlreadyExists(err) {
-			_, err = secretsClient.Update(newSecret)
+			_, err = secretsClient.Update(context.TODO(), newSecret, metav1.UpdateOptions{})
 			return err
 		}
 		return err

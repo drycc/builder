@@ -11,7 +11,7 @@ import (
 	"github.com/drycc/builder/pkg/sys"
 	"github.com/drycc/pkg/log"
 
-	client "k8s.io/kubernetes/pkg/client/unversioned"
+	"github.com/drycc/builder/pkg/k8s"
 )
 
 func readLine(line string) (string, string, string, error) {
@@ -32,7 +32,8 @@ func Run(conf *Config, fs sys.FS, env sys.Env, storageDriver storagedriver.Stora
 		return err
 	}
 
-	kubeClient, err := client.NewInCluster()
+	//kubeClient, err := client.NewInCluster()
+	kubeClient, err := k8s.NewInCluster()
 	if err != nil {
 		return fmt.Errorf("couldn't reach the api server (%s)", err)
 	}

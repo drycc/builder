@@ -7,13 +7,14 @@ import (
 	"testing"
 
 	"github.com/arschles/assert"
-	"k8s.io/kubernetes/pkg/api"
+	"k8s.io/api/core/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 func TestGetDiff(t *testing.T) {
-	nsList := []api.Namespace{
-		{ObjectMeta: api.ObjectMeta{Name: "app1"}},
-		{ObjectMeta: api.ObjectMeta{Name: "app2"}},
+	nsList := []v1.Namespace{
+		{ObjectMeta: metav1.ObjectMeta{Name: "app1"}},
+		{ObjectMeta: metav1.ObjectMeta{Name: "app2"}},
 	}
 	dirList := []string{"app1", "app3"}
 	diff := getDiff(nsList, dirList)

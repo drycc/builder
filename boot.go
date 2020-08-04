@@ -18,7 +18,7 @@ import (
 	"github.com/drycc/builder/pkg/sys"
 	pkglog "github.com/drycc/pkg/log"
 	"github.com/kelseyhightower/envconfig"
-	kcl "k8s.io/kubernetes/pkg/client/unversioned"
+	"github.com/drycc/builder/pkg/k8s"
 )
 
 const (
@@ -68,7 +68,7 @@ func main() {
 					os.Exit(1)
 				}
 
-				kubeClient, err := kcl.NewInCluster()
+				kubeClient, err := k8s.NewInCluster()
 				if err != nil {
 					log.Printf("Error getting kubernetes client [%s]", err)
 					os.Exit(1)
@@ -76,14 +76,14 @@ func main() {
 				log.Printf("Starting health check server on port %d", cnf.HealthSrvPort)
 				healthSrvCh := make(chan error)
 				go func() {
-					if err := healthsrv.Start(cnf, kubeClient.Namespaces(), storageDriver, circ); err != nil {
+					if err := healthsrv.Start(cnf, kubeClient.CoreV1().Namespaces(), storageDriver, circ); err != nil {
 						healthSrvCh <- err
 					}
 				}()
 				log.Printf("Starting deleted app cleaner")
 				cleanerErrCh := make(chan error)
 				go func() {
-					if err := cleaner.Run(gitHomeDir, kubeClient.Namespaces(), fs, cnf.CleanerPollSleepDuration(), storageDriver); err != nil {
+					if err := cleaner.Run(gitHomeDir, kubeClient.CoreV1().Namespaces(), fs, cnf.CleanerPollSleepDuration(), storageDriver); err != nil {
 						cleanerErrCh <- err
 					}
 				}()

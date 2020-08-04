@@ -9,16 +9,19 @@ import (
 	"regexp"
 	"strings"
 	"time"
+	"context"
 
-	"github.com/docker/distribution/context"
+	//"github.com/docker/distribution/context"
 	storagedriver "github.com/docker/distribution/registry/storage/driver"
 	"github.com/drycc/builder/pkg/gitreceive"
 	"github.com/drycc/builder/pkg/k8s"
 	"github.com/drycc/builder/pkg/sys"
 	"github.com/drycc/pkg/log"
-	"k8s.io/kubernetes/pkg/api"
-	"k8s.io/kubernetes/pkg/fields"
-	"k8s.io/kubernetes/pkg/labels"
+	corev1 "k8s.io/api/core/v1"
+	//"k8s.io/apimachinery/pkg/labels"
+	//"k8s.io/apimachinery/pkg/fields"
+	//"k8s.io/apimachinery/pkg/apis/meta/internalversion"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 const (
@@ -46,7 +49,7 @@ func localDirs(gitHome string, filter func(string) bool) ([]string, error) {
 }
 
 // getDiff gets the directories that are not in namespaceList
-func getDiff(namespaceList []api.Namespace, dirs []string) []string {
+func getDiff(namespaceList []corev1.Namespace, dirs []string) []string {
 	var ret []string
 
 	// create a set of lowercase namespace names
@@ -123,7 +126,7 @@ func deleteFromObjectStore(app string, storageDriver storagedriver.StorageDriver
 // On any error, it uses log messages to output a human readable description of what happened.
 func Run(gitHome string, nsLister k8s.NamespaceLister, fs sys.FS, pollSleepDuration time.Duration, storageDriver storagedriver.StorageDriver) error {
 	for {
-		nsList, err := nsLister.List(api.ListOptions{LabelSelector: labels.Everything(), FieldSelector: fields.Everything()})
+		nsList, err := nsLister.List(context.TODO(), metav1.ListOptions{})
 		if err != nil {
 			log.Err("Cleaner error listing namespaces (%s)", err)
 			continue
