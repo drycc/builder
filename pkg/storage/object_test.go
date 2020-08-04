@@ -4,9 +4,9 @@ import (
 	"errors"
 	"testing"
 	"time"
-
+	"context"
 	"github.com/arschles/assert"
-	"github.com/docker/distribution/context"
+	//"github.com/docker/distribution/context"
 	storagedriver "github.com/docker/distribution/registry/storage/driver"
 )
 

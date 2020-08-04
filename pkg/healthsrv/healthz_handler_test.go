@@ -9,8 +9,8 @@ import (
 	"net/http/httptest"
 	"strings"
 	"testing"
-
-	"github.com/docker/distribution/context"
+	"context"
+	//"github.com/docker/distribution/context"
 
 	"github.com/arschles/assert"
 	"github.com/drycc/builder/pkg/sshd"
