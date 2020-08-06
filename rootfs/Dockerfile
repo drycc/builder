@@ -1,46 +1,22 @@
-FROM drycc/base:v0.3.6
+FROM alpine:3.12
 
-RUN adduser --system \
-	--shell /bin/bash \
-	--disabled-password \
-	--home /home/git \
-	--group \
+RUN adduser \
+	-s /bin/sh \
+	-D \
+	-h /home/git \
+	git \
 	git
 
-RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E1DF1F24 && \
-	echo "deb http://ppa.launchpad.net/git-core/ppa/ubuntu xenial main" >> /etc/apt/sources.list && \
-	apt-get update && \
-	apt-get install -y --no-install-recommends \
-		git \
-		sudo \
-		openssh-server \
-		coreutils \
-		tar \
-		xz-utils && \
-	mkdir -p /var/run/sshd && \
-	rm -rf /etc/ssh/ssh_host* && \
-	mkdir /apps && \
-	passwd -u git && \
-    # cleanup
-    apt-get autoremove -y && \
-    apt-get clean -y && \
-    rm -rf \
-        /usr/share/doc \
-        /usr/share/man \
-        /usr/share/info \
-        /usr/share/locale \
-        /var/lib/apt/lists/* \
-        /var/log/* \
-        /var/cache/debconf/* \
-        /etc/systemd \
-        /lib/lsb \
-        /lib/udev \
-        /usr/lib/x86_64-linux-gnu/gconv/IBM* \
-        /usr/lib/x86_64-linux-gnu/gconv/EBC* && \
-    bash -c "mkdir -p /usr/share/man/man{1..8}"
+RUN  sed -i 's/dl-cdn.alpinelinux.org/mirrors.ustc.edu.cn/g' /etc/apk/repositories \
+    && apk add --update git sudo openssh-server coreutils tar xz \
+    && mkdir -p /var/run/sshd  \
+    && rm -rf /etc/ssh/ssh_host*  \
+	&& mkdir /apps  \
+	&& passwd -u git
 
 COPY . /
 
 CMD ["/usr/bin/boot", "server"]
+
 EXPOSE 2223
 EXPOSE 3000
