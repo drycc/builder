@@ -25,8 +25,11 @@ bootstrap:
 # This illustrates a two-stage Docker build. docker-compile runs inside of
 # the Docker environment. Other alternatives are cross-compiling, doing
 # the build as a `docker build`.
+build-binary:
+	CGO_ENABLED=0 go build -ldflags ${LDFLAGS} -o ${BINARY_DEST_DIR}/boot boot.go
+
 build:
-	${DEV_ENV_CMD} go build -ldflags ${LDFLAGS} -o ${BINARY_DEST_DIR}/boot boot.go
+	${DEV_ENV_CMD} make build-binary
 
 test: test-style test-unit
 
