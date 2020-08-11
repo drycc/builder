@@ -47,6 +47,8 @@ github.com/drycc/controller-sdk-go v0.0.0-20200804054414-9d56a7f85205 h1:6agdZ9/
 github.com/drycc/controller-sdk-go v0.0.0-20200804054414-9d56a7f85205/go.mod h1:mF8/kZ/E4oDHCtfUVS790Frm8oVzZkoCGCKYT2eWQro=
 github.com/drycc/pkg v0.0.0-20200730070607-a183b894cef1 h1:k8fWNiR7LVmy3lYFDuAuOw+ATJNkTjChaE3AeU0B6u8=
 github.com/drycc/pkg v0.0.0-20200730070607-a183b894cef1/go.mod h1:H6rDYnCiVX4k0B8T57myWlRMQoTx3hsvyAQV9//4T2Q=
+github.com/drycc/pkg v0.0.0-20200811173146-1f2b2781a852 h1:OsWH7jrv2i32rkvHFuj3yVpGMR+A6heRge9tm01XR/U=
+github.com/drycc/pkg v0.0.0-20200811173146-1f2b2781a852/go.mod h1:ojTmgbTG5tOJcTirzcdyHwEDxV0OQTm5AqnnBgdOjYE=
 github.com/elazarl/goproxy v0.0.0-20180725130230-947c36da3153/go.mod h1:/Zj4wYkgs4iZTTu3o/KG3Itv/qCCa8VVMlb3i9OVuzc=
 github.com/emicklei/go-restful v0.0.0-20170410110728-ff4f55a20633/go.mod h1:otzb+WCGbkyDHkqmQmT5YD2WR4BBwUdeQoFo8l/7tVs=
 github.com/evanphx/json-patch v4.2.0+incompatible/go.mod h1:50XU6AFN0ol/bzJsmQLiYLvXMP4fmwYFNcr97nuDLSk=

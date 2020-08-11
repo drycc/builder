@@ -9,7 +9,7 @@ require (
 	github.com/docker/distribution v2.7.1+incompatible
 	github.com/docker/go-metrics v0.0.1 // indirect
 	github.com/drycc/controller-sdk-go v0.0.0-20200804054414-9d56a7f85205
-	github.com/drycc/pkg v0.0.0-20200730070607-a183b894cef1
+	github.com/drycc/pkg v0.0.0-20200811173146-1f2b2781a852
 	github.com/gorilla/mux v1.7.4 // indirect
 	github.com/kelseyhightower/envconfig v1.2.0
 	github.com/pborman/uuid v1.2.0
