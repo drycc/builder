@@ -3,13 +3,13 @@
 package cleaner
 
 import (
+	"context"
 	"fmt"
 	"io/ioutil"
 	"path/filepath"
 	"regexp"
 	"strings"
 	"time"
-	"context"
 
 	//"github.com/docker/distribution/context"
 	storagedriver "github.com/docker/distribution/registry/storage/driver"

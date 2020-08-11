@@ -2,15 +2,15 @@ package gitreceive
 
 import (
 	"bytes"
+	"context"
 	"errors"
 	"fmt"
+	"github.com/arschles/assert"
 	"io/ioutil"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"testing"
-	"context"
-	"github.com/arschles/assert"
 	//"github.com/docker/distribution/context"
 	"github.com/docker/distribution/registry/storage/driver/factory"
 	_ "github.com/docker/distribution/registry/storage/driver/inmemory"

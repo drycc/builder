@@ -2,6 +2,7 @@ package gitreceive
 
 import (
 	"bytes"
+	ctx "context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -9,8 +10,8 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"regexp"
 	"strings"
-	ctx "context"
 
 	"github.com/docker/distribution/context"
 	storagedriver "github.com/docker/distribution/registry/storage/driver"
@@ -23,9 +24,10 @@ import (
 	"github.com/drycc/controller-sdk-go/hooks"
 	"github.com/drycc/pkg/log"
 	"gopkg.in/yaml.v2"
-	"k8s.io/client-go/kubernetes"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/client-go/kubernetes"
+	"k8s.io/client-go/kubernetes/scheme"
 )
 
 // repoCmd returns exec.Command(first, others...) with its current working directory repoDir
@@ -56,6 +58,9 @@ func build(
 	env sys.Env,
 	builderKey,
 	rawGitSha string) error {
+
+	// Rewrite regular expression, compatible with slug type
+	storagedriver.PathRegexp = regexp.MustCompile(`^([A-Za-z0-9._:-]*(/[A-Za-z0-9._:-]+)*)+$`)
 
 	dockerBuilderImagePullPolicy, err := k8s.PullPolicyFromString(conf.DockerBuilderImagePullPolicy)
 	if err != nil {
@@ -222,6 +227,7 @@ func build(
 	}
 
 	log.Info("Starting build... but first, coffee!")
+	log.Debug("Use image %s: %s", stack["name"], stack["image"])
 	log.Debug("Starting pod %s", buildPodName)
 	json, err := prettyPrintJSON(pod)
 	if err == nil {
@@ -249,7 +255,7 @@ func build(
 	req := kubeClient.CoreV1().RESTClient().Get().Namespace(newPod.Namespace).Name(newPod.Name).Resource("pods").SubResource("log").VersionedParams(
 		&corev1.PodLogOptions{
 			Follow: true,
-		}, metav1.ParameterCodec)
+		}, scheme.ParameterCodec)
 
 	rc, err := req.Stream(ctx.TODO())
 	if err != nil {

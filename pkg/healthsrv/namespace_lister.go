@@ -14,7 +14,7 @@ import (
 // for unit tests.
 type NamespaceLister interface {
 	// List lists all namespaces that are selected by the given label and field selectors.
-    List(ctx context.Context, opts metav1.ListOptions) (*corev1.NamespaceList, error)
+	List(ctx context.Context, opts metav1.ListOptions) (*corev1.NamespaceList, error)
 }
 
 type emptyNamespaceLister struct{}
@@ -30,7 +30,6 @@ type errNamespaceLister struct {
 func (e errNamespaceLister) List(ctx context.Context, opts metav1.ListOptions) (*corev1.NamespaceList, error) {
 	return nil, e.err
 }
-
 
 // listNamespaces calls nl.List(...) and sends the results back on the various given channels.
 // This func is intended to be run in a goroutine and communicates via the channels it's passed.

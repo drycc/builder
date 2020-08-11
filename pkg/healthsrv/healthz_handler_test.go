@@ -2,6 +2,7 @@ package healthsrv
 
 import (
 	"bytes"
+	"context"
 	"errors"
 	"fmt"
 	"io/ioutil"
@@ -9,7 +10,6 @@ import (
 	"net/http/httptest"
 	"strings"
 	"testing"
-	"context"
 	//"github.com/docker/distribution/context"
 
 	"github.com/arschles/assert"

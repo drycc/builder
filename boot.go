@@ -14,11 +14,11 @@ import (
 	"github.com/drycc/builder/pkg/conf"
 	"github.com/drycc/builder/pkg/gitreceive"
 	"github.com/drycc/builder/pkg/healthsrv"
+	"github.com/drycc/builder/pkg/k8s"
 	"github.com/drycc/builder/pkg/sshd"
 	"github.com/drycc/builder/pkg/sys"
 	pkglog "github.com/drycc/pkg/log"
 	"github.com/kelseyhightower/envconfig"
-	"github.com/drycc/builder/pkg/k8s"
 )
 
 const (

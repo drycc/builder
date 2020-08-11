@@ -1,11 +1,11 @@
 package storage
 
 import (
+	"context"
 	"errors"
+	"github.com/arschles/assert"
 	"testing"
 	"time"
-	"context"
-	"github.com/arschles/assert"
 	//"github.com/docker/distribution/context"
 	storagedriver "github.com/docker/distribution/registry/storage/driver"
 )

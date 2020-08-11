@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/drycc/controller-sdk-go/api"
+	"github.com/drycc/pkg/log"
 	"io/ioutil"
 	"os"
 	"strings"
@@ -60,6 +61,8 @@ func getStack(dirName string, config api.Config) map[string]string {
 	if len(Stacks) == 0 {
 		initStack()
 	}
+	log.Debug("Stacks: %s", Stacks)
+	log.Debug("Config values %s", config.Values)
 	if stackInterface, ok := config.Values["DRYCC_STACK"]; ok {
 		if strStack, ok := stackInterface.(string); ok {
 			for _, stack := range Stacks {
