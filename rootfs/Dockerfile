@@ -13,7 +13,7 @@ COPY . /
 
 COPY --from=mc /usr/bin/mc /usr/bin/mc
 
-RUN  sed -i 's/dl-cdn.alpinelinux.org/mirrors.ustc.edu.cn/g' /etc/apk/repositories \
+RUN  sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories \
     && apk add --update git sudo openssh-server coreutils tar xz jq bash\
     && mkdir -p /var/run/sshd  \
     && rm -rf /etc/ssh/ssh_host*  \
