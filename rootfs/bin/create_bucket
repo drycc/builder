@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -e
+
 # shellcheck disable=SC1091
 source /bin/normalize_storage
 has_bucket=$(mc ls minio -json|jq -r '.key'|grep -w "${MINIO_BUCKET}")
