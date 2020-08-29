@@ -8,7 +8,7 @@ require (
 	github.com/codegangsta/cli v1.9.0
 	github.com/docker/distribution v2.7.1+incompatible
 	github.com/docker/go-metrics v0.0.1 // indirect
-	github.com/drycc/controller-sdk-go v0.0.0-20200813035713-e73ce53533e7
+	github.com/drycc/controller-sdk-go v0.0.0-20200829135849-1d24c6efe272
 	github.com/drycc/pkg v0.0.0-20200811173146-1f2b2781a852
 	github.com/gorilla/mux v1.7.4 // indirect
 	github.com/kelseyhightower/envconfig v1.2.0
