@@ -1,10 +1,10 @@
 
 # Drycc Builder v2
 
-[![Build Status](https://travis-ci.org/drycc/builder.svg?branch=master)](https://travis-ci.org/drycc/builder)
-[![codecov](https://codecov.io/gh/drycc/builder/branch/master/graph/badge.svg)](https://codecov.io/gh/drycc/builder)
+[![Build Status](https://travis-ci.org/drycc/builder.svg?branch=main)](https://travis-ci.org/drycc/builder)
+[![codecov](https://codecov.io/gh/drycc/builder/branch/main/graph/badge.svg)](https://codecov.io/gh/drycc/builder)
 [![Go Report Card](https://goreportcard.com/badge/github.com/drycc/builder)](https://goreportcard.com/report/github.com/drycc/builder)
-[![codebeat badge](https://codebeat.co/badges/0507e5d5-163b-4280-84ea-83bd2e0c8e41)](https://codebeat.co/projects/github-com-drycc-builder-master)
+[![codebeat badge](https://codebeat.co/badges/0507e5d5-163b-4280-84ea-83bd2e0c8e41)](https://codebeat.co/projects/github-com-drycc-builder-main)
 
 Drycc - A Fork of Drycc Workflow
 
@@ -71,7 +71,7 @@ The [end-to-end tests](https://github.com/drycc/workflow-e2e) repository has our
 
 ## Running End-to-End Tests
 
-Please see [README.md](https://github.com/drycc/workflow-e2e/blob/master/README.md) on the end-to-end tests repository for instructions on how to set up your testing environment and run the tests.
+Please see [README.md](https://github.com/drycc/workflow-e2e/blob/main/README.md) on the end-to-end tests repository for instructions on how to set up your testing environment and run the tests.
 
 ## Dogfooding
 
