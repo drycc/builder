@@ -1,3 +1,6 @@
+FROM minio/mc:latest as mc
+
+
 FROM alpine:3.12
 
 RUN adduser \
@@ -8,10 +11,9 @@ RUN adduser \
 	git
 
 COPY . /
+COPY --from=mc /usr/bin/mc /bin/mc
 
-RUN wget https://dl.min.io/client/mc/release/linux-amd64/mc -O /bin/mc \
-  && chmod +x /bin/mc \
-  && apk add --update git sudo openssh-server coreutils tar xz jq bash \
+RUN apk add --update git sudo openssh-server coreutils tar xz jq bash \
   && mkdir -p /var/run/sshd \
   && rm -rf /etc/ssh/ssh_host* \
   && mkdir /apps \
