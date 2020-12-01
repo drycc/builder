@@ -8,6 +8,7 @@ DEV_ENV_IMAGE := drycc/go-dev
 DEV_ENV_WORK_DIR := /go/src/${REPO_PATH}
 DEV_ENV_PREFIX := docker run --rm -v ${CURDIR}:${DEV_ENV_WORK_DIR} -w ${DEV_ENV_WORK_DIR}
 DEV_ENV_CMD := ${DEV_ENV_PREFIX} ${DEV_ENV_IMAGE}
+PLATFORM ?= linux/amd64,linux/arm64
 
 # SemVer with build information is defined in the SemVer 2 spec, but Docker
 # doesn't allow +, so we use -.
@@ -45,6 +46,9 @@ test-cover:
 docker-build: build
 	docker build ${DOCKER_BUILD_FLAGS} -t ${IMAGE} rootfs
 	docker tag ${IMAGE} ${MUTABLE_IMAGE}
+
+docker-buildx:
+	docker buildx build --platform ${PLATFORM} -t ${IMAGE} rootfs --push
 
 check-kubectl:
 	@if [ -z $$(which kubectl) ]; then \
