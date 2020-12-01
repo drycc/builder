@@ -43,12 +43,12 @@ test-unit:
 test-cover:
 	${DEV_ENV_CMD} test-cover.sh
 
-docker-build: build
-	docker build ${DOCKER_BUILD_FLAGS} -t ${IMAGE} rootfs
+docker-build:
+	docker build ${DOCKER_BUILD_FLAGS} -t ${IMAGE} --build-arg LDFLAGS=${LDFLAGS} .
 	docker tag ${IMAGE} ${MUTABLE_IMAGE}
 
 docker-buildx:
-	docker buildx build --platform ${PLATFORM} -t ${IMAGE} rootfs --push
+	docker buildx build --platform ${PLATFORM} -t ${IMAGE} --build-arg LDFLAGS=${LDFLAGS} . --push
 
 check-kubectl:
 	@if [ -z $$(which kubectl) ]; then \
