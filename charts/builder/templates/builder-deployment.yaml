@@ -5,7 +5,7 @@ metadata:
   labels:
     heritage: drycc
   annotations:
-    component.drycc.cc/version: {{ .Values.docker_tag }}
+    component.drycc.cc/version: {{ .Values.image_tag }}
 spec:
   replicas: 1
   strategy:
@@ -24,8 +24,8 @@ spec:
       serviceAccount: drycc-builder
       containers:
         - name: drycc-builder
-          image: {{.Values.docker_registry}}{{.Values.org}}/builder:{{.Values.docker_tag}}
-          imagePullPolicy: {{.Values.pull_policy}}
+          image: {{.Values.image_registry}}{{.Values.org}}/builder:{{.Values.image_tag}}
+          imagePullPolicy: {{.Values.image_pull_policy}}
           ports:
             - containerPort: 2223
               name: ssh
@@ -62,12 +62,12 @@ spec:
               valueFrom:
                 configMapKeyRef:
                   name: slugbuilder-config
-                  key: pull_policy
+                  key: image_pull_policy
             - name: DOCKERBUILDER_IMAGE_PULL_POLICY
               valueFrom:
                 configMapKeyRef:
                   name: dockerbuilder-config
-                  key: pull_policy
+                  key: image_pull_policy
             # This var needs to be passed so that the minio client (https://github.com/minio/mc) will work in Alpine linux
             - name: "DOCKERIMAGE"
               value: "1"
