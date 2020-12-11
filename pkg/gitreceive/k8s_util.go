@@ -18,7 +18,7 @@ import (
 
 const (
 	slugBuilderName   = "drycc-slugbuilder"
-	dockerBuilderName = "drycc-dockerbuilder"
+	imagebuilderName = "drycc-imagebuilder"
 
 	tarPath         = "TAR_PATH"
 	putPath         = "PUT_PATH"
@@ -31,14 +31,14 @@ const (
 	envRoot         = "/tmp/env"
 )
 
-func dockerBuilderPodName(appName, shortSha string) string {
+func imagebuilderPodName(appName, shortSha string) string {
 	uid := uuid.New()[:8]
 	// NOTE(bacongobbler): pod names cannot exceed 63 characters in length, so we truncate
 	// the application name to stay under that limit when adding all the extra metadata to the name
 	if len(appName) > 33 {
 		appName = appName[:33]
 	}
-	return fmt.Sprintf("dockerbuild-%s-%s-%s", appName, shortSha, uid)
+	return fmt.Sprintf("imagebuild-%s-%s-%s", appName, shortSha, uid)
 }
 
 func slugBuilderPodName(appName, shortSha string) string {
@@ -51,7 +51,7 @@ func slugBuilderPodName(appName, shortSha string) string {
 	return fmt.Sprintf("slugbuild-%s-%s-%s", appName, shortSha, uid)
 }
 
-func dockerBuilderPod(
+func imagebuilderPod(
 	debug bool,
 	name,
 	namespace string,
@@ -71,27 +71,27 @@ func dockerBuilderPod(
 
 	pod := buildPod(debug, name, namespace, pullPolicy, nodeSelector, env)
 
-	// inject application envvars as a special envvar which will be handled by dockerbuilder to
+	// inject application envvars as a special envvar which will be handled by imagebuilder to
 	// inject them as build-time variables.
-	// NOTE(bacongobbler): docker-py takes buildargs as a json string in the form of
+	// NOTE(bacongobbler): image-py takes buildargs as a json string in the form of
 	//
 	// {"KEY": "value"}
 	//
 	// So we need to translate the map into json.
 	if _, ok := env["DRYCC_DOCKER_BUILD_ARGS_ENABLED"]; ok {
-		dockerBuildArgs, _ := json.Marshal(env)
-		addEnvToPod(pod, "DOCKER_BUILD_ARGS", string(dockerBuildArgs))
+		imageBuildArgs, _ := json.Marshal(env)
+		addEnvToPod(pod, "DOCKER_BUILD_ARGS", string(imageBuildArgs))
 	}
 
-	pod.Spec.Containers[0].Name = dockerBuilderName
+	pod.Spec.Containers[0].Name = imagebuilderName
 	pod.Spec.Containers[0].Image = image
 
 	addEnvToPod(pod, tarPath, tarKey)
 	addEnvToPod(pod, sourceVersion, gitShortHash)
 	addEnvToPod(pod, "IMG_NAME", imageName)
 	addEnvToPod(pod, builderStorage, storageType)
-	// inject existing DRYCC_REGISTRY_PROXY_HOST and PORT info to dockerbuilder
-	// see https://github.com/drycc/dockerbuilder/issues/83
+	// inject existing DRYCC_REGISTRY_PROXY_HOST and PORT info to imagebuilder
+	// see https://github.com/drycc/imagebuilder/issues/83
 	addEnvToPod(pod, "DRYCC_REGISTRY_PROXY_HOST", registryHost)
 	addEnvToPod(pod, "DRYCC_REGISTRY_PROXY_PORT", registryPort)
 

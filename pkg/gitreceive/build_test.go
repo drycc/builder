@@ -61,10 +61,10 @@ func TestBuild(t *testing.T) {
 	}
 
 	if err := build(config, storageDriver, nil, fs, env, "foo", sha); err == nil {
-		t.Error("expected running build() without setting config.DockerBuilderImagePullPolicy to fail")
+		t.Error("expected running build() without setting config.ImagebuilderImagePullPolicy to fail")
 	}
 
-	config.DockerBuilderImagePullPolicy = "Always"
+	config.ImagebuilderImagePullPolicy = "Always"
 	if err := build(config, storageDriver, nil, fs, env, "foo", sha); err == nil {
 		t.Error("expected running build() without setting config.SlugBuilderImagePullPolicy to fail")
 	}

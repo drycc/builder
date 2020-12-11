@@ -12,18 +12,18 @@ import (
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 )
 
-func TestDockerBuilderPodName(t *testing.T) {
-	name := dockerBuilderPodName("demo", "12345678")
-	if !strings.HasPrefix(name, "dockerbuild-demo-12345678-") {
-		t.Errorf("expected pod name dockerbuild-demo-12345678-*, got %s", name)
+func TestImagebuilderPodName(t *testing.T) {
+	name := imagebuilderPodName("demo", "12345678")
+	if !strings.HasPrefix(name, "imagebuild-demo-12345678-") {
+		t.Errorf("expected pod name imagebuild-demo-12345678-*, got %s", name)
 	}
 
-	name = dockerBuilderPodName("this-name-has-more-than-24-characters-in-length", "12345678")
-	if !strings.HasPrefix(name, "dockerbuild-this-name-has-more-than-24-charac-12345678-") {
-		t.Errorf("expected pod name dockerbuild-this-name-has-more-than-24-charac-12345678-*, got %s", name)
+	name = imagebuilderPodName("this-name-has-more-than-24-characters-in-length", "12345678")
+	if !strings.HasPrefix(name, "imagebuild-this-name-has-more-than-24-charac-12345678-") {
+		t.Errorf("expected pod name imagebuild-this-name-has-more-than-24-charac-12345678-*, got %s", name)
 	}
 	if len(name) > 63 {
-		t.Errorf("expected dockerbuilder pod name length to be <= 63 characters in length, got %d", len(name))
+		t.Errorf("expected imagebuilder pod name length to be <= 63 characters in length, got %d", len(name))
 	}
 }
 
@@ -58,7 +58,7 @@ type slugBuildCase struct {
 	builderPodNodeSelector     map[string]string
 }
 
-type dockerBuildCase struct {
+type imageBuildCase struct {
 	debug                        bool
 	name                         string
 	namespace                    string
@@ -66,8 +66,8 @@ type dockerBuildCase struct {
 	tarKey                       string
 	gitShortHash                 string
 	imgName                      string
-	dockerBuilderImage           string
-	dockerBuilderImagePullPolicy corev1.PullPolicy
+	imagebuilderImage           string
+	imagebuilderImagePullPolicy corev1.PullPolicy
 	storageType                  string
 	builderPodNodeSelector       map[string]string
 }
@@ -157,7 +157,7 @@ func TestBuildPod(t *testing.T) {
 		}
 	}
 
-	dockerBuilds := []dockerBuildCase{
+	imageBuilds := []imageBuildCase{
 		{true, "test", "default", emptyEnv, "tar", "deadbeef", "", "", corev1.PullAlways, "", nodeSelector1},
 		{true, "test", "default", env, "tar", "deadbeef", "", "", corev1.PullAlways, "", nodeSelector2},
 		{true, "test", "default", emptyEnv, "tar", "deadbeef", "img", "", corev1.PullAlways, "", emptyNodeSelector},
@@ -168,8 +168,8 @@ func TestBuildPod(t *testing.T) {
 		{true, "test", "default", buildArgsEnv, "tar", "deadbeef", "img", "customimage", corev1.PullIfNotPresent, "", emptyNodeSelector},
 	}
 	regEnv := map[string]string{"REG_LOC": "on-cluster"}
-	for _, build := range dockerBuilds {
-		pod = dockerBuilderPod(
+	for _, build := range imageBuilds {
+		pod = imagebuilderPod(
 			build.debug,
 			build.name,
 			build.namespace,
@@ -178,11 +178,11 @@ func TestBuildPod(t *testing.T) {
 			build.gitShortHash,
 			build.imgName,
 			build.storageType,
-			build.dockerBuilderImage,
+			build.imagebuilderImage,
 			"localhost",
 			"5555",
 			regEnv,
-			build.dockerBuilderImagePullPolicy,
+			build.imagebuilderImagePullPolicy,
 			build.builderPodNodeSelector,
 		)
 
@@ -200,15 +200,15 @@ func TestBuildPod(t *testing.T) {
 		if _, ok := build.env["DRYCC_DOCKER_BUILD_ARGS_ENABLED"]; ok {
 			checkForEnv(t, pod, "DOCKER_BUILD_ARGS", `{"DRYCC_DOCKER_BUILD_ARGS_ENABLED":"1","KEY":"VALUE"}`)
 		}
-		if build.dockerBuilderImage != "" {
-			if pod.Spec.Containers[0].Image != build.dockerBuilderImage {
-				t.Errorf("expected %v but returned %v", build.dockerBuilderImage, pod.Spec.Containers[0].Image)
+		if build.imagebuilderImage != "" {
+			if pod.Spec.Containers[0].Image != build.imagebuilderImage {
+				t.Errorf("expected %v but returned %v", build.imagebuilderImage, pod.Spec.Containers[0].Image)
 			}
 		}
-		if build.dockerBuilderImagePullPolicy != "" {
+		if build.imagebuilderImagePullPolicy != "" {
 			if pod.Spec.Containers[0].ImagePullPolicy != "" {
-				if pod.Spec.Containers[0].ImagePullPolicy != build.dockerBuilderImagePullPolicy {
-					t.Errorf("expected %v but returned %v", build.dockerBuilderImagePullPolicy, pod.Spec.Containers[0].ImagePullPolicy)
+				if pod.Spec.Containers[0].ImagePullPolicy != build.imagebuilderImagePullPolicy {
+					t.Errorf("expected %v but returned %v", build.imagebuilderImagePullPolicy, pod.Spec.Containers[0].ImagePullPolicy)
 				}
 			}
 		}

@@ -63,10 +63,10 @@ spec:
                 configMapKeyRef:
                   name: slugbuilder-config
                   key: image_pull_policy
-            - name: DOCKERBUILDER_IMAGE_PULL_POLICY
+            - name: IMAGEBUILDER_IMAGE_PULL_POLICY
               valueFrom:
                 configMapKeyRef:
-                  name: dockerbuilder-config
+                  name: imagebuilder-config
                   key: image_pull_policy
             # This var needs to be passed so that the minio client (https://github.com/minio/mc) will work in Alpine linux
             - name: "DOCKERIMAGE"
@@ -111,8 +111,8 @@ spec:
             - name: slugbuilder-config
               mountPath: /etc/slugbuilder
               readOnly: true
-            - name: dockerbuilder-config
-              mountPath: /etc/dockerbuilder
+            - name: imagebuilder-config
+              mountPath: /etc/imagebuilder
               readOnly: true
       volumes:
         - name: builder-key-auth
@@ -127,6 +127,6 @@ spec:
         - name: slugbuilder-config
           configMap:
             name: slugbuilder-config
-        - name: dockerbuilder-config
+        - name: imagebuilder-config
           configMap:
-            name: dockerbuilder-config
+            name: imagebuilder-config

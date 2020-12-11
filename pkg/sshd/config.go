@@ -15,7 +15,7 @@ type Config struct {
 	CleanerPollSleepDurationSec  int    `envconfig:"CLEANER_POLL_SLEEP_DURATION_SEC" default:"5"`
 	StorageType                  string `envconfig:"BUILDER_STORAGE" default:"minio"`
 	SlugBuilderImagePullPolicy   string `envconfig:"SLUGBUILDER_IMAGE_PULL_POLICY" default:"Always"`
-	DockerBuilderImagePullPolicy string `envconfig:"DOCKERBUILDER_IMAGE_PULL_POLICY" default:"Always"`
+	ImagebuilderImagePullPolicy string `envconfig:"IMAGEBUILDER_IMAGE_PULL_POLICY" default:"Always"`
 	LockTimeout                  int    `envconfig:"GIT_LOCK_TIMEOUT" default:"10"`
 }
 

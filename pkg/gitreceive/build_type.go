@@ -37,13 +37,13 @@ func initStack() error {
 		var stacksSlugbuilder []map[string]string
 		err = json.Unmarshal(data, &stacksSlugbuilder)
 		if err == nil {
-			data, err = ioutil.ReadFile("/etc/dockerbuilder/images.json")
+			data, err = ioutil.ReadFile("/etc/imagebuilder/images.json")
 			if err == nil {
-				var stacksDockerbuilder []map[string]string
-				err = json.Unmarshal(data, &stacksDockerbuilder)
+				var stacksImagebuilder []map[string]string
+				err = json.Unmarshal(data, &stacksImagebuilder)
 				if err == nil {
 					// Stacks order represents priority
-					Stacks = stacksDockerbuilder
+					Stacks = stacksImagebuilder
 					Stacks = append(Stacks, stacksSlugbuilder...)
 				}
 				return nil

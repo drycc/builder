@@ -62,7 +62,7 @@ func build(
 	// Rewrite regular expression, compatible with slug type
 	storagedriver.PathRegexp = regexp.MustCompile(`^([A-Za-z0-9._:-]*(/[A-Za-z0-9._:-]+)*)+$`)
 
-	dockerBuilderImagePullPolicy, err := k8s.PullPolicyFromString(conf.DockerBuilderImagePullPolicy)
+	imagebuilderImagePullPolicy, err := k8s.PullPolicyFromString(conf.ImagebuilderImagePullPolicy)
 	if err != nil {
 		return err
 	}
@@ -164,7 +164,7 @@ func build(
 	}
 
 	if strings.Contains(stack["name"], "container") {
-		buildPodName = dockerBuilderPodName(appName, gitSha.Short())
+		buildPodName = imagebuilderPodName(appName, gitSha.Short())
 		registryLocation := conf.RegistryLocation
 		registryEnv := make(map[string]string)
 		if registryLocation != "on-cluster" {
@@ -176,7 +176,7 @@ func build(
 		}
 		registryEnv["DRYCC_REGISTRY_LOCATION"] = registryLocation
 
-		pod = dockerBuilderPod(
+		pod = imagebuilderPod(
 			conf.Debug,
 			buildPodName,
 			conf.PodNamespace,
@@ -189,7 +189,7 @@ func build(
 			conf.RegistryHost,
 			conf.RegistryPort,
 			registryEnv,
-			dockerBuilderImagePullPolicy,
+			imagebuilderImagePullPolicy,
 			builderPodNodeSelector,
 		)
 	} else {
