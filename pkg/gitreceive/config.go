@@ -35,7 +35,7 @@ type Config struct {
 	ObjectStorageWaitDurationMSec int    `envconfig:"OBJECT_STORAGE_WAIT_DURATION" default:"300000"` // 5 minutes
 	SessionIdleIntervalMsec       int    `envconfig:"SESSION_IDLE_INTERVAL" default:"10000"`         // 10 seconds
 	SlugBuilderImagePullPolicy    string `envconfig:"SLUGBUILDER_IMAGE_PULL_POLICY" default:"Always"`
-	ImagebuilderImagePullPolicy  string `envconfig:"IMAGEBUILDER_IMAGE_PULL_POLICY" default:"Always"`
+	ImagebuilderImagePullPolicy   string `envconfig:"IMAGEBUILDER_IMAGE_PULL_POLICY" default:"Always"`
 	StorageType                   string `envconfig:"BUILDER_STORAGE" default:"minio"`
 	BuilderPodNodeSelector        string `envconfig:"BUILDER_POD_NODE_SELECTOR" default:""`
 }

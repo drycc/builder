@@ -59,17 +59,17 @@ type slugBuildCase struct {
 }
 
 type imageBuildCase struct {
-	debug                        bool
-	name                         string
-	namespace                    string
-	env                          map[string]interface{}
-	tarKey                       string
-	gitShortHash                 string
-	imgName                      string
+	debug                       bool
+	name                        string
+	namespace                   string
+	env                         map[string]interface{}
+	tarKey                      string
+	gitShortHash                string
+	imgName                     string
 	imagebuilderImage           string
 	imagebuilderImagePullPolicy corev1.PullPolicy
-	storageType                  string
-	builderPodNodeSelector       map[string]string
+	storageType                 string
+	builderPodNodeSelector      map[string]string
 }
 
 func TestBuildPod(t *testing.T) {

@@ -3,9 +3,9 @@ language: go
 services:
 - docker
 script:
-  - make bootstrap
-  - make test
-  - make test-cover
+  - DEV_REGISTRY="docker.io" make bootstrap
+  - DEV_REGISTRY="docker.io" make test
+  - DEV_REGISTRY="docker.io" make test-cover
 notifications:
   slack:
     rooms:

@@ -17,7 +17,7 @@ import (
 )
 
 const (
-	slugBuilderName   = "drycc-slugbuilder"
+	slugBuilderName  = "drycc-slugbuilder"
 	imagebuilderName = "drycc-imagebuilder"
 
 	tarPath         = "TAR_PATH"
