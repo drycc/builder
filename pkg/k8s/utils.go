@@ -33,3 +33,10 @@ func PullPolicyFromString(ppStr string) (v1.PullPolicy, error) {
 	}
 	return candidatePP, nil
 }
+
+// SecurityContextFromPrivileged create api.SecurityContext by privileged.
+func SecurityContextFromPrivileged(privileged bool) *v1.SecurityContext {
+	return &v1.SecurityContext{
+		Privileged: &privileged,
+	}
+}

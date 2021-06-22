@@ -165,6 +165,7 @@ func buildPod(
 			Containers: []corev1.Container{
 				{
 					ImagePullPolicy: pullPolicy,
+					SecurityContext: k8s.SecurityContextFromPrivileged(true),
 				},
 			},
 			Volumes: []corev1.Volume{},
