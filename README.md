@@ -24,7 +24,7 @@ The builder is primarily a git server that responds to `git push`es by executing
   - Otherwise, if `BUILDER_STORAGE` is `minio` and the `DRYCC_MINIO_SERVICE_HOST` and `DRYCC_MINIO_SERVICE_PORT` environment variables exist (these are standard [Kubernetes service discovery environment variables](http://kubernetes.io/docs/user-guide/services/#environment-variables)), saves to the [S3 API][s3-api-ref] compatible server at `http://$DRYCC_MINIO_SERVICE_HOST:$DRYCC_MINIO_SERVICE_HOST`
 3. Starts a new [Kubernetes Pod](http://kubernetes.io/docs/user-guide/pods/) to build the code, according to the following rules:
   - If a `Dockerfile` is present in the codebase, starts a [`imagebuilder`](https://github.com/drycc/imagebuilder) pod, configured to download the code to build from the URL computed in the previous step.
-  - Otherwise, starts a [`slugbuilder`](https://github.com/drycc/slugbuilder) pod, configured to download the code to build from the URL computed in the previous step.
+  - Otherwise, starts a [`buildpacker`](https://github.com/drycc/buildpacker) pod, configured to download the code to build from the URL computed in the previous step.
 
 # Supported Off-Cluster Storage Backends
 

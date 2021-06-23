@@ -1,16 +1,17 @@
 package gitreceive
 
 import (
-	"github.com/drycc/controller-sdk-go/api"
 	"os"
 	"testing"
+
+	"github.com/drycc/controller-sdk-go/api"
 )
 
 func TestGetStack(t *testing.T) {
 	tmpDir := os.TempDir()
 	config := api.Config{}
 	stack := getStack(tmpDir, config)
-	if stack["name"] != "container" {
+	if stack["name"] != "buildpack" {
 		t.Fatalf("expected procfile build, got %s", stack)
 	}
 	if _, err := os.Create(tmpDir + "/Dockerfile"); err != nil {
@@ -35,10 +36,10 @@ func TestGetStack(t *testing.T) {
 		}
 	}()
 	config.Values = map[string]interface{}{
-		"DRYCC_STACK": "heroku-18",
+		"DRYCC_STACK": "buildpack",
 	}
 	stack = getStack(tmpDir, config)
-	if stack["name"] != "heroku-18" {
+	if stack["name"] != "buildpack" {
 		t.Fatalf("expected procfile build, got %s", stack)
 	}
 

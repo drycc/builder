@@ -30,6 +30,13 @@ import (
 	"k8s.io/client-go/kubernetes/scheme"
 )
 
+const (
+	// TarKeyPattern is the template for storing tar key files.
+	TarKeyPattern = "%s/tar"
+	// GitKeyPattern is the template for storing git key files.
+	GitKeyPattern = "home/%s:git-%s"
+)
+
 // repoCmd returns exec.Command(first, others...) with its current working directory repoDir
 func repoCmd(repoDir, first string, others ...string) *exec.Cmd {
 	cmd := exec.Command(first, others...)
@@ -62,16 +69,6 @@ func build(
 	// Rewrite regular expression, compatible with slug type
 	storagedriver.PathRegexp = regexp.MustCompile(`^([A-Za-z0-9._:-]*(/[A-Za-z0-9._:-]+)*)+$`)
 
-	imagebuilderImagePullPolicy, err := k8s.PullPolicyFromString(conf.ImagebuilderImagePullPolicy)
-	if err != nil {
-		return err
-	}
-
-	slugBuilderImagePullPolicy, err := k8s.PullPolicyFromString(conf.SlugBuilderImagePullPolicy)
-	if err != nil {
-		return err
-	}
-
 	repo := conf.Repository
 	gitSha, err := git.NewSha(rawGitSha)
 	if err != nil {
@@ -83,7 +80,6 @@ func build(
 	repoDir := filepath.Join(conf.GitHome, repo)
 	buildDir := filepath.Join(repoDir, "build")
 
-	slugName := fmt.Sprintf("%s:git-%s", appName, gitSha.Short())
 	if err := os.MkdirAll(buildDir, os.ModeDir); err != nil {
 		return fmt.Errorf("making the build directory %s (%s)", buildDir, err)
 	}
@@ -107,20 +103,6 @@ func build(
 	appConf, err := hooks.GetAppConfig(client, conf.Username, appName)
 	if controller.CheckAPICompat(client, err) != nil {
 		return err
-	}
-
-	_, disableCaching := appConf.Values["DRYCC_DISABLE_CACHE"]
-	slugBuilderInfo := NewSlugBuilderInfo(appName, gitSha.Short(), disableCaching)
-
-	if slugBuilderInfo.DisableCaching() {
-		log.Debug("caching disabled for app %s", appName)
-		// If cache file exists, delete it
-		if _, err := storageDriver.Stat(context.Background(), slugBuilderInfo.CacheKey()); err == nil {
-			log.Debug("deleting cache %s for app %s", slugBuilderInfo.CacheKey(), appName)
-			if err := storageDriver.Delete(context.Background(), slugBuilderInfo.CacheKey()); err != nil {
-				return err
-			}
-		}
 	}
 
 	// build a tarball from the new objects
@@ -148,83 +130,65 @@ func build(
 		return fmt.Errorf("error while reading file %s: (%s)", appTgz, err)
 	}
 
-	log.Debug("Uploading tar to %s", slugBuilderInfo.TarKey())
+	tarKey := fmt.Sprintf(TarKeyPattern, fmt.Sprintf(GitKeyPattern, appName, gitSha.Short()))
+	log.Debug("Uploading tar to %s", tarKey)
 
-	if err := storageDriver.PutContent(context.Background(), slugBuilderInfo.TarKey(), appTgzdata); err != nil {
-		return fmt.Errorf("uploading %s to %s (%v)", absAppTgz, slugBuilderInfo.TarKey(), err)
+	if err := storageDriver.PutContent(context.Background(), tarKey, appTgzdata); err != nil {
+		return fmt.Errorf("uploading %s to %s (%v)", absAppTgz, tarKey, err)
 	}
-
-	var pod *corev1.Pod
-	var buildPodName string
-	image := appName
 
 	builderPodNodeSelector, err := buildBuilderPodNodeSelector(conf.BuilderPodNodeSelector)
 	if err != nil {
 		return fmt.Errorf("error build builder pod node selector %s", err)
 	}
 
+	var builderName string
+	var imagePullPolicy corev1.PullPolicy
+	var securityContext corev1.SecurityContext
 	if strings.Contains(stack["name"], "container") {
-		buildPodName = imagebuilderPodName(appName, gitSha.Short())
-		registryLocation := conf.RegistryLocation
-		registryEnv := make(map[string]string)
-		if registryLocation != "on-cluster" {
-			registryEnv, err = getRegistryDetails(kubeClient.CoreV1(), &image, registryLocation, conf.PodNamespace)
-			if err != nil {
-				return fmt.Errorf("error getting private registry details %s", err)
-			}
-			image = image + ":git-" + gitSha.Short()
-		}
-		registryEnv["DRYCC_REGISTRY_LOCATION"] = registryLocation
+		builderName = "drycc-imagebuilder"
+		imagePullPolicy, err = k8s.PullPolicyFromString(conf.ImagebuilderImagePullPolicy)
+		securityContext = k8s.SecurityContextFromPrivileged(false)
 
-		pod = imagebuilderPod(
-			conf.Debug,
-			buildPodName,
-			conf.PodNamespace,
-			appConf.Values,
-			slugBuilderInfo.TarKey(),
-			gitSha.Short(),
-			slugName,
-			conf.StorageType,
-			stack["image"],
-			conf.RegistryHost,
-			conf.RegistryPort,
-			registryEnv,
-			imagebuilderImagePullPolicy,
-			builderPodNodeSelector,
-		)
 	} else {
-		buildPodName = slugBuilderPodName(appName, gitSha.Short())
-
-		cacheKey := ""
-		if !slugBuilderInfo.DisableCaching() {
-			cacheKey = slugBuilderInfo.CacheKey()
-		}
-		envSecretName := fmt.Sprintf("%s-build-env", appName)
-		err = createAppEnvConfigSecret(kubeClient.CoreV1().Secrets(conf.PodNamespace), envSecretName, appConf.Values)
-		if err != nil {
-			return fmt.Errorf("error creating/updating secret %s: (%s)", envSecretName, err)
-		}
-		defer func() {
-			if err := kubeClient.CoreV1().Secrets(conf.PodNamespace).Delete(ctx.TODO(), envSecretName, metav1.DeleteOptions{}); err != nil {
-				log.Info("unable to delete secret %s (%s)", envSecretName, err)
-			}
-		}()
-		pod = slugbuilderPod(
-			conf.Debug,
-			buildPodName,
-			conf.PodNamespace,
-			appConf.Values,
-			envSecretName,
-			slugBuilderInfo.TarKey(),
-			slugBuilderInfo.PushKey(),
-			cacheKey,
-			gitSha.Short(),
-			conf.StorageType,
-			stack["image"],
-			slugBuilderImagePullPolicy,
-			builderPodNodeSelector,
-		)
+		builderName = "drycc-buildpacker"
+		imagePullPolicy, err = k8s.PullPolicyFromString(conf.BuildpackerImagePullPolicy)
+		securityContext = k8s.SecurityContextFromPrivileged(true)
 	}
+	if err != nil {
+		return err
+	}
+
+	imageName := fmt.Sprintf("%s:git-%s", appName, gitSha.Short())
+	buildPodName := imagebuilderPodName(appName, gitSha.Short())
+	registryLocation := conf.RegistryLocation
+	registryEnv := make(map[string]string)
+	if registryLocation != "on-cluster" {
+		registryEnv, err = getRegistryDetails(kubeClient.CoreV1(), &imageName, registryLocation, conf.PodNamespace)
+		if err != nil {
+			return fmt.Errorf("error getting private registry details %s", err)
+		}
+	}
+	registryEnv["DRYCC_REGISTRY_LOCATION"] = registryLocation
+
+	pod := createBuilderPod(
+		conf.Debug,
+		buildPodName,
+		conf.PodNamespace,
+		appConf.Values,
+		tarKey,
+		gitSha.Short(),
+		imageName,
+		conf.StorageType,
+		builderName,
+		stack["image"],
+		conf.RegistryHost,
+		conf.RegistryPort,
+		registryEnv,
+		imagePullPolicy,
+		securityContext,
+		builderPodNodeSelector,
+	)
 
 	log.Info("Starting build... but first, coffee!")
 	log.Debug("Use image %s: %s", stack["name"], stack["image"])
@@ -296,7 +260,7 @@ func build(
 	}
 	log.Debug("Done")
 
-	procType, err := getProcFile(storageDriver, tmpDir, slugBuilderInfo.AbsoluteProcfileKey(), stack)
+	procType, err := getProcfile(storageDriver, tmpDir, stack)
 	if err != nil {
 		return err
 	}
@@ -305,10 +269,7 @@ func build(
 
 	quit := progress("...", conf.SessionIdleInterval())
 	log.Info("Launching App...")
-	if stack["name"] != "container" {
-		image = slugBuilderInfo.AbsoluteSlugObjectKey()
-	}
-	release, err := hooks.CreateBuild(client, conf.Username, conf.App(), image, stack["name"], gitSha.Short(), procType, stack["name"] == "container")
+	release, err := hooks.CreateBuild(client, conf.Username, conf.App(), imageName, stack["name"], gitSha.Short(), procType, stack["name"] == "container")
 	quit <- true
 	<-quit
 	if controller.CheckAPICompat(client, err) != nil {
@@ -350,8 +311,12 @@ func prettyPrintJSON(data interface{}) (string, error) {
 	return formatted.String(), nil
 }
 
-func getProcFile(getter storage.ObjectGetter, dirName, procfileKey string, stack map[string]string) (dryccAPI.ProcessType, error) {
+func getProcfile(getter storage.ObjectGetter, dirName string, stack map[string]string) (dryccAPI.ProcessType, error) {
 	procType := dryccAPI.ProcessType{}
+	_, err := os.Stat(fmt.Sprintf("%s/project.toml", dirName))
+	if err == nil || stack["name"] == "container" {
+		return procType, nil
+	}
 	if _, err := os.Stat(fmt.Sprintf("%s/Procfile", dirName)); err == nil {
 		rawProcFile, err := ioutil.ReadFile(fmt.Sprintf("%s/Procfile", dirName))
 		if err != nil {
@@ -362,16 +327,5 @@ func getProcFile(getter storage.ObjectGetter, dirName, procfileKey string, stack
 		}
 		return procType, nil
 	}
-	if stack["name"] == "container" {
-		return procType, nil
-	}
-	log.Debug("Procfile not present. Getting it from the buildpack")
-	rawProcFile, err := getter.GetContent(context.Background(), procfileKey)
-	if err != nil {
-		return nil, fmt.Errorf("error in reading %s (%s)", procfileKey, err)
-	}
-	if err := yaml.Unmarshal(rawProcFile, &procType); err != nil {
-		return nil, fmt.Errorf("procfile %s is malformed (%s)", procfileKey, err)
-	}
-	return procType, nil
+	return nil, fmt.Errorf("no Procfile can be matched in (%s)", dirName)
 }

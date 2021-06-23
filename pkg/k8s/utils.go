@@ -2,7 +2,8 @@ package k8s
 
 import (
 	"fmt"
-	"k8s.io/api/core/v1"
+
+	v1 "k8s.io/api/core/v1"
 )
 
 var (
@@ -35,8 +36,8 @@ func PullPolicyFromString(ppStr string) (v1.PullPolicy, error) {
 }
 
 // SecurityContextFromPrivileged create api.SecurityContext by privileged.
-func SecurityContextFromPrivileged(privileged bool) *v1.SecurityContext {
-	return &v1.SecurityContext{
+func SecurityContextFromPrivileged(privileged bool) v1.SecurityContext {
+	return v1.SecurityContext{
 		Privileged: &privileged,
 	}
 }

@@ -18,6 +18,7 @@ import (
 	"github.com/drycc/builder/pkg/sys"
 	"github.com/drycc/pkg/log"
 	corev1 "k8s.io/api/core/v1"
+
 	//"k8s.io/apimachinery/pkg/labels"
 	//"k8s.io/apimachinery/pkg/fields"
 	//"k8s.io/apimachinery/pkg/apis/meta/internalversion"
@@ -89,17 +90,7 @@ func dirHasGitSuffix(dir string) bool {
 
 func deleteFromObjectStore(app string, storageDriver storagedriver.StorageDriver) error {
 
-	cacheKey := fmt.Sprintf(gitreceive.CacheKeyPattern, app)
-
-	// if cache file exists, delete it
-	if _, err := storageDriver.Stat(context.Background(), cacheKey); err == nil {
-		log.Info("Cleaner deleting cache %s for app %s", cacheKey, app)
-		if err := storageDriver.Delete(context.Background(), cacheKey); err != nil {
-			return err
-		}
-	}
-
-	// delete all slug files matching app
+	// delete all files matching app
 	objs, err := storageDriver.List(context.Background(), "home")
 	if err != nil {
 		return err
@@ -113,7 +104,7 @@ func deleteFromObjectStore(app string, storageDriver storagedriver.StorageDriver
 
 	for _, obj := range objs {
 		if gitRegex.MatchString(obj) {
-			log.Info("Cleaner deleting slug %s for app %s", obj, app)
+			log.Info("Cleaner deleting %s for app %s", obj, app)
 			if err := storageDriver.Delete(context.Background(), obj); err != nil {
 				return err
 			}

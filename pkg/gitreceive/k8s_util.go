@@ -17,18 +17,12 @@ import (
 )
 
 const (
-	slugBuilderName  = "drycc-slugbuilder"
-	imagebuilderName = "drycc-imagebuilder"
-
 	tarPath         = "TAR_PATH"
-	putPath         = "PUT_PATH"
-	cachePath       = "CACHE_PATH"
 	debugKey        = "DRYCC_DEBUG"
 	sourceVersion   = "SOURCE_VERSION"
 	objectStore     = "objectstorage-keyfile"
 	builderStorage  = "BUILDER_STORAGE"
 	objectStorePath = "/var/run/secrets/drycc/objectstore/creds"
-	envRoot         = "/tmp/env"
 )
 
 func imagebuilderPodName(appName, shortSha string) string {
@@ -41,17 +35,7 @@ func imagebuilderPodName(appName, shortSha string) string {
 	return fmt.Sprintf("imagebuild-%s-%s-%s", appName, shortSha, uid)
 }
 
-func slugBuilderPodName(appName, shortSha string) string {
-	uid := uuid.New()[:8]
-	// NOTE(bacongobbler): pod names cannot exceed 63 characters in length, so we truncate
-	// the application name to stay under that limit when adding all the extra metadata to the name
-	if len(appName) > 35 {
-		appName = appName[:35]
-	}
-	return fmt.Sprintf("slugbuild-%s-%s-%s", appName, shortSha, uid)
-}
-
-func imagebuilderPod(
+func createBuilderPod(
 	debug bool,
 	name,
 	namespace string,
@@ -60,16 +44,17 @@ func imagebuilderPod(
 	gitShortHash string,
 	imageName,
 	storageType,
-	image,
+	builderName,
+	builderImage,
 	registryHost,
 	registryPort string,
 	registryEnv map[string]string,
 	pullPolicy corev1.PullPolicy,
+	securityContext corev1.SecurityContext,
 	nodeSelector map[string]string,
-	//) *api.Pod {
 ) *corev1.Pod {
 
-	pod := buildPod(debug, name, namespace, pullPolicy, nodeSelector, env)
+	pod := buildPod(debug, name, namespace, pullPolicy, securityContext, nodeSelector, env)
 
 	// inject application envvars as a special envvar which will be handled by imagebuilder to
 	// inject them as build-time variables.
@@ -83,8 +68,8 @@ func imagebuilderPod(
 		addEnvToPod(pod, "DOCKER_BUILD_ARGS", string(imageBuildArgs))
 	}
 
-	pod.Spec.Containers[0].Name = imagebuilderName
-	pod.Spec.Containers[0].Image = image
+	pod.Spec.Containers[0].Name = builderName
+	pod.Spec.Containers[0].Image = builderImage
 
 	addEnvToPod(pod, tarPath, tarKey)
 	addEnvToPod(pod, sourceVersion, gitShortHash)
@@ -102,61 +87,13 @@ func imagebuilderPod(
 	return &pod
 }
 
-func slugbuilderPod(
-	debug bool,
-	name,
-	namespace string,
-	env map[string]interface{},
-	envSecretName string,
-	tarKey,
-	putKey,
-	cacheKey,
-	gitShortHash string,
-	storageType,
-	image string,
-	pullPolicy corev1.PullPolicy,
-	nodeSelector map[string]string,
-) *corev1.Pod {
-
-	pod := buildPod(debug, name, namespace, pullPolicy, nodeSelector, nil)
-
-	pod.Spec.Volumes = append(pod.Spec.Volumes, corev1.Volume{
-		Name: envSecretName,
-		VolumeSource: corev1.VolumeSource{
-			Secret: &corev1.SecretVolumeSource{
-				SecretName: envSecretName,
-			},
-		},
-	})
-
-	pod.Spec.Containers[0].VolumeMounts = append(pod.Spec.Containers[0].VolumeMounts, corev1.VolumeMount{
-		Name:      envSecretName,
-		MountPath: envRoot,
-		ReadOnly:  true,
-	})
-
-	pod.Spec.Containers[0].Name = slugBuilderName
-	pod.Spec.Containers[0].Image = image
-
-	// If cacheKey is set, add it to environment
-	if cacheKey != "" {
-		addEnvToPod(pod, cachePath, cacheKey)
-	}
-
-	addEnvToPod(pod, tarPath, tarKey)
-	addEnvToPod(pod, putPath, putKey)
-	addEnvToPod(pod, sourceVersion, gitShortHash)
-	addEnvToPod(pod, builderStorage, storageType)
-
-	return &pod
-}
-
 func buildPod(
 	debug bool,
 	name,
 	namespace string,
 	//pullPolicy api.PullPolicy,
 	pullPolicy corev1.PullPolicy,
+	securityContext corev1.SecurityContext,
 	nodeSelector map[string]string,
 	env map[string]interface{}) corev1.Pod {
 	pod := corev1.Pod{
@@ -165,7 +102,7 @@ func buildPod(
 			Containers: []corev1.Container{
 				{
 					ImagePullPolicy: pullPolicy,
-					SecurityContext: k8s.SecurityContextFromPrivileged(true),
+					SecurityContext: &securityContext,
 				},
 			},
 			Volumes: []corev1.Volume{},

@@ -5,12 +5,14 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/arschles/assert"
 	"io/ioutil"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"testing"
+
+	"github.com/arschles/assert"
+
 	//"github.com/docker/distribution/context"
 	"github.com/docker/distribution/registry/storage/driver/factory"
 	_ "github.com/docker/distribution/registry/storage/driver/inmemory"
@@ -66,10 +68,10 @@ func TestBuild(t *testing.T) {
 
 	config.ImagebuilderImagePullPolicy = "Always"
 	if err := build(config, storageDriver, nil, fs, env, "foo", sha); err == nil {
-		t.Error("expected running build() without setting config.SlugBuilderImagePullPolicy to fail")
+		t.Error("expected running build() without setting config.BuildpackerImagePullPolicy to fail")
 	}
 
-	config.SlugBuilderImagePullPolicy = "Always"
+	config.BuildpackerImagePullPolicy = "Always"
 
 	err = build(config, storageDriver, nil, fs, env, "foo", "abc123")
 	expected := "git sha abc123 was invalid"
@@ -106,7 +108,7 @@ func TestRepoCmd(t *testing.T) {
 	}
 }
 
-func TestGetProcFileFromRepoSuccess(t *testing.T) {
+func TestGetProcfileFromRepoSuccess(t *testing.T) {
 	tmpDir, err := ioutil.TempDir("", "tmpdir")
 	if err != nil {
 		t.Fatalf("error creating temp directory (%s)", err)
@@ -123,16 +125,16 @@ func TestGetProcFileFromRepoSuccess(t *testing.T) {
 	getter := &storage.FakeObjectGetter{}
 	config := api.Config{}
 	config.Values = map[string]interface{}{
-		"DRYCC_STACK": "heroku-18",
+		"DRYCC_STACK": "buildpack",
 	}
-	procType, err := getProcFile(getter, tmpDir, objKey, getStack(tmpDir, config))
+	procType, err := getProcfile(getter, tmpDir, getStack(tmpDir, config))
 	actualData := api.ProcessType{}
 	yaml.Unmarshal(data, &actualData)
 	assert.NoErr(t, err)
 	assert.Equal(t, procType, actualData, "data")
 }
 
-func TestGetProcFileFromRepoFailure(t *testing.T) {
+func TestGetProcfileFromRepoFailure(t *testing.T) {
 	tmpDir, err := ioutil.TempDir("", "tmpdir")
 	if err != nil {
 		t.Fatalf("error creating temp directory (%s)", err)
@@ -149,14 +151,14 @@ func TestGetProcFileFromRepoFailure(t *testing.T) {
 	getter := &storage.FakeObjectGetter{}
 	config := api.Config{}
 	config.Values = map[string]interface{}{
-		"DRYCC_STACK": "heroku-18",
+		"DRYCC_STACK": "buildpack",
 	}
-	_, err = getProcFile(getter, tmpDir, objKey, getStack(tmpDir, config))
+	_, err = getProcfile(getter, tmpDir, getStack(tmpDir, config))
 
 	assert.True(t, err != nil, "no error received when there should have been")
 }
 
-func TestGetProcFileFromServerSuccess(t *testing.T) {
+func TestGetProcfileFromServerSuccess(t *testing.T) {
 	data := []byte("web: example-go")
 	getter := &storage.FakeObjectGetter{
 		Fn: func(context.Context, string) ([]byte, error) {
@@ -166,17 +168,16 @@ func TestGetProcFileFromServerSuccess(t *testing.T) {
 	tmpDir := os.TempDir()
 	config := api.Config{}
 	config.Values = map[string]interface{}{
-		"DRYCC_STACK": "heroku-18",
+		"DRYCC_STACK": "buildpack",
 	}
 
-	procType, err := getProcFile(getter, "", objKey, getStack(tmpDir, config))
+	_, err := getProcfile(getter, "", getStack(tmpDir, config))
 	actualData := api.ProcessType{}
 	yaml.Unmarshal(data, &actualData)
-	assert.NoErr(t, err)
-	assert.Equal(t, procType, actualData, "data")
+	assert.Err(t, err, fmt.Errorf("no Procfile can be matched in (%s)", ""))
 }
 
-func TestGetProcFileFromServerFailure(t *testing.T) {
+func TestGetProcfileFromServerFailure(t *testing.T) {
 	expectedErr := errors.New("test error")
 	getter := &storage.FakeObjectGetter{
 		Fn: func(context.Context, string) ([]byte, error) {
@@ -186,10 +187,10 @@ func TestGetProcFileFromServerFailure(t *testing.T) {
 	tmpDir := os.TempDir()
 	config := api.Config{}
 	config.Values = map[string]interface{}{
-		"DRYCC_STACK": "heroku-18",
+		"DRYCC_STACK": "buildpack",
 	}
-	_, err := getProcFile(getter, "", objKey, getStack(tmpDir, config))
-	assert.Err(t, err, fmt.Errorf("error in reading %s (%s)", objKey, expectedErr))
+	_, err := getProcfile(getter, "", getStack(tmpDir, config))
+	assert.Err(t, err, fmt.Errorf("no Procfile can be matched in (%s)", ""))
 	assert.True(t, err != nil, "no error received when there should have been")
 }
 

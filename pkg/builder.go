@@ -1,6 +1,6 @@
 // Package pkg provides common libraries for the Drycc builder.
 //
-// The Drycc builder is responsible for building slugs and docker images for use in the Drycc
+// The Drycc builder is responsible for building buildpack and docker images for use in the Drycc
 // on the Drycc PaaS platform.
 package pkg
 

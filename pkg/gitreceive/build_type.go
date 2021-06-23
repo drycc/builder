@@ -3,26 +3,22 @@ package gitreceive
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/drycc/controller-sdk-go/api"
-	"github.com/drycc/pkg/log"
 	"io/ioutil"
 	"os"
-	"strings"
+
+	"github.com/drycc/controller-sdk-go/api"
+	"github.com/drycc/pkg/log"
 )
 
 // defaultStacks is default stacks json, order represents priority
 var defaultStacks = `[
+	{
+        "name": "buildpack",
+        "image": "drycc/buildpacker:canary"
+    },
     {
         "name": "container",
-        "image": "drycc/container:canary"
-    },
-    {
-        "name": "heroku-20",
-        "image": "drycc/slugrunner:canary.heroku-20"
-    },
-    {
-        "name": "heroku-18",
-        "image": "drycc/slugrunner:canary.heroku-18"
+        "image": "drycc/imagebuilder:canary"
     }
 
 ]`
@@ -32,10 +28,10 @@ var Stacks []map[string]string
 
 // initStack load stack by config
 func initStack() error {
-	data, err := ioutil.ReadFile("/etc/slugbuilder/images.json")
+	data, err := ioutil.ReadFile("/etc/buildpacker/images.json")
 	if err == nil {
-		var stacksSlugbuilder []map[string]string
-		err = json.Unmarshal(data, &stacksSlugbuilder)
+		var stacksBuildpacker []map[string]string
+		err = json.Unmarshal(data, &stacksBuildpacker)
 		if err == nil {
 			data, err = ioutil.ReadFile("/etc/imagebuilder/images.json")
 			if err == nil {
@@ -44,7 +40,7 @@ func initStack() error {
 				if err == nil {
 					// Stacks order represents priority
 					Stacks = stacksImagebuilder
-					Stacks = append(Stacks, stacksSlugbuilder...)
+					Stacks = append(Stacks, stacksBuildpacker...)
 				}
 				return nil
 			}
@@ -71,7 +67,7 @@ func getStack(dirName string, config api.Config) map[string]string {
 
 	if _, err := os.Stat(fmt.Sprintf("%s/Dockerfile", dirName)); err == nil {
 		for _, stack := range Stacks {
-			if strings.Contains(stack["name"], "container") {
+			if stack["name"] == "container" {
 				return stack
 			}
 		}
@@ -79,7 +75,13 @@ func getStack(dirName string, config api.Config) map[string]string {
 
 	if _, err := os.Stat(fmt.Sprintf("%s/Procfile", dirName)); err == nil {
 		for _, stack := range Stacks {
-			if strings.Contains(stack["name"], "heroku") {
+			if stack["name"] == "buildpack" {
+				return stack
+			}
+		}
+	} else if _, err := os.Stat(fmt.Sprintf("%s/project.toml", dirName)); err == nil {
+		for _, stack := range Stacks {
+			if stack["name"] == "buildpack" {
 				return stack
 			}
 		}
