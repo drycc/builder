@@ -18,7 +18,6 @@ import (
 	"github.com/drycc/builder/pkg/controller"
 	"github.com/drycc/builder/pkg/git"
 	"github.com/drycc/builder/pkg/k8s"
-	"github.com/drycc/builder/pkg/storage"
 	"github.com/drycc/builder/pkg/sys"
 	dryccAPI "github.com/drycc/controller-sdk-go/api"
 	"github.com/drycc/controller-sdk-go/hooks"
@@ -141,35 +140,25 @@ func build(
 	if err != nil {
 		return fmt.Errorf("error build builder pod node selector %s", err)
 	}
-
-	var builderName string
-	var imagePullPolicy corev1.PullPolicy
-	var securityContext corev1.SecurityContext
-	if strings.Contains(stack["name"], "container") {
-		builderName = "drycc-imagebuilder"
-		imagePullPolicy, err = k8s.PullPolicyFromString(conf.ImagebuilderImagePullPolicy)
-		securityContext = k8s.SecurityContextFromPrivileged(false)
-
-	} else {
-		builderName = "drycc-buildpacker"
-		imagePullPolicy, err = k8s.PullPolicyFromString(conf.BuildpackerImagePullPolicy)
-		securityContext = k8s.SecurityContextFromPrivileged(true)
-	}
+	builderName := "drycc-imagebuilder"
+	imagePullPolicy, err := k8s.PullPolicyFromString(conf.ImagebuilderImagePullPolicy)
 	if err != nil {
 		return err
 	}
+	securityContext := k8s.SecurityContextFromPrivileged(true)
 
 	imageName := fmt.Sprintf("%s:git-%s", appName, gitSha.Short())
 	buildPodName := imagebuilderPodName(appName, gitSha.Short())
 	registryLocation := conf.RegistryLocation
-	registryEnv := make(map[string]string)
+	builderImageEnv := make(map[string]string)
 	if registryLocation != "on-cluster" {
-		registryEnv, err = getRegistryDetails(kubeClient.CoreV1(), &imageName, registryLocation, conf.PodNamespace)
+		builderImageEnv, err = getRegistryDetails(kubeClient.CoreV1(), &imageName, registryLocation, conf.PodNamespace)
 		if err != nil {
 			return fmt.Errorf("error getting private registry details %s", err)
 		}
 	}
-	registryEnv["DRYCC_REGISTRY_LOCATION"] = registryLocation
+	builderImageEnv["DRYCC_STACK"] = stack["name"]
+	builderImageEnv["DRYCC_REGISTRY_LOCATION"] = registryLocation
 
 	pod := createBuilderPod(
 		conf.Debug,
@@ -184,7 +173,7 @@ func build(
 		stack["image"],
 		conf.RegistryHost,
 		conf.RegistryPort,
-		registryEnv,
+		builderImageEnv,
 		imagePullPolicy,
 		securityContext,
 		builderPodNodeSelector,
@@ -260,16 +249,19 @@ func build(
 	}
 	log.Debug("Done")
 
-	procType, err := getProcfile(storageDriver, tmpDir, stack)
+	procfile, err := getProcfile(tmpDir, stack)
 	if err != nil {
 		return err
 	}
-
+	dockerfile, err := getDockerfile(tmpDir, stack)
+	if err != nil {
+		return err
+	}
 	log.Info("Build complete.")
 
 	quit := progress("...", conf.SessionIdleInterval())
 	log.Info("Launching App...")
-	release, err := hooks.CreateBuild(client, conf.Username, conf.App(), imageName, stack["name"], gitSha.Short(), procType, stack["name"] == "container")
+	release, err := hooks.CreateBuild(client, conf.Username, conf.App(), imageName, stack["name"], gitSha.Short(), procfile, dockerfile)
 	quit <- true
 	<-quit
 	if controller.CheckAPICompat(client, err) != nil {
@@ -311,21 +303,34 @@ func prettyPrintJSON(data interface{}) (string, error) {
 	return formatted.String(), nil
 }
 
-func getProcfile(getter storage.ObjectGetter, dirName string, stack map[string]string) (dryccAPI.ProcessType, error) {
-	procType := dryccAPI.ProcessType{}
+func getProcfile(dirName string, stack map[string]string) (dryccAPI.ProcessType, error) {
+	procfile := dryccAPI.ProcessType{}
 	_, err := os.Stat(fmt.Sprintf("%s/project.toml", dirName))
 	if err == nil || stack["name"] == "container" {
-		return procType, nil
+		return procfile, nil
 	}
 	if _, err := os.Stat(fmt.Sprintf("%s/Procfile", dirName)); err == nil {
 		rawProcFile, err := ioutil.ReadFile(fmt.Sprintf("%s/Procfile", dirName))
 		if err != nil {
 			return nil, fmt.Errorf("error in reading %s/Procfile (%s)", dirName, err)
 		}
-		if err := yaml.Unmarshal(rawProcFile, &procType); err != nil {
+		if err := yaml.Unmarshal(rawProcFile, &procfile); err != nil {
 			return nil, fmt.Errorf("procfile %s/ProcFile is malformed (%s)", dirName, err)
 		}
-		return procType, nil
+		return procfile, nil
 	}
 	return nil, fmt.Errorf("no Procfile can be matched in (%s)", dirName)
+}
+
+func getDockerfile(dirName string, stack map[string]string) (string, error) {
+	if stack["name"] == "container" {
+		if _, err := os.Stat(fmt.Sprintf("%s/Dockerfile", dirName)); err == nil {
+			rawDockerfile, err := ioutil.ReadFile(fmt.Sprintf("%s/Dockerfile", dirName))
+			if err != nil {
+				return "", fmt.Errorf("error in reading %s/Dockerfile (%s)", dirName, err)
+			}
+			return string(rawDockerfile), nil
+		}
+	}
+	return "", nil
 }

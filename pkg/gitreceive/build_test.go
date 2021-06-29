@@ -2,8 +2,6 @@ package gitreceive
 
 import (
 	"bytes"
-	"context"
-	"errors"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -17,15 +15,10 @@ import (
 	"github.com/docker/distribution/registry/storage/driver/factory"
 	_ "github.com/docker/distribution/registry/storage/driver/inmemory"
 	builderconf "github.com/drycc/builder/pkg/conf"
-	"github.com/drycc/builder/pkg/storage"
 	"github.com/drycc/builder/pkg/sys"
 	"github.com/drycc/controller-sdk-go/api"
 	"github.com/drycc/pkg/log"
 	"gopkg.in/yaml.v2"
-)
-
-const (
-	objKey = "myobj"
 )
 
 type testJSONStruct struct {
@@ -68,10 +61,8 @@ func TestBuild(t *testing.T) {
 
 	config.ImagebuilderImagePullPolicy = "Always"
 	if err := build(config, storageDriver, nil, fs, env, "foo", sha); err == nil {
-		t.Error("expected running build() without setting config.BuildpackerImagePullPolicy to fail")
+		t.Error("expected running build() without setting config.ImagebuilderImagePullPolicy to fail")
 	}
-
-	config.BuildpackerImagePullPolicy = "Always"
 
 	err = build(config, storageDriver, nil, fs, env, "foo", "abc123")
 	expected := "git sha abc123 was invalid"
@@ -122,12 +113,11 @@ func TestGetProcfileFromRepoSuccess(t *testing.T) {
 			t.Fatalf("failed to remove Procfile from %s (%s)", tmpDir, err)
 		}
 	}()
-	getter := &storage.FakeObjectGetter{}
 	config := api.Config{}
 	config.Values = map[string]interface{}{
 		"DRYCC_STACK": "buildpack",
 	}
-	procType, err := getProcfile(getter, tmpDir, getStack(tmpDir, config))
+	procType, err := getProcfile(tmpDir, getStack(tmpDir, config))
 	actualData := api.ProcessType{}
 	yaml.Unmarshal(data, &actualData)
 	assert.NoErr(t, err)
@@ -148,48 +138,36 @@ func TestGetProcfileFromRepoFailure(t *testing.T) {
 			t.Fatalf("failed to remove Procfile from %s (%s)", tmpDir, err)
 		}
 	}()
-	getter := &storage.FakeObjectGetter{}
 	config := api.Config{}
 	config.Values = map[string]interface{}{
 		"DRYCC_STACK": "buildpack",
 	}
-	_, err = getProcfile(getter, tmpDir, getStack(tmpDir, config))
+	_, err = getProcfile(tmpDir, getStack(tmpDir, config))
 
 	assert.True(t, err != nil, "no error received when there should have been")
 }
 
 func TestGetProcfileFromServerSuccess(t *testing.T) {
 	data := []byte("web: example-go")
-	getter := &storage.FakeObjectGetter{
-		Fn: func(context.Context, string) ([]byte, error) {
-			return data, nil
-		},
-	}
 	tmpDir := os.TempDir()
 	config := api.Config{}
 	config.Values = map[string]interface{}{
 		"DRYCC_STACK": "buildpack",
 	}
 
-	_, err := getProcfile(getter, "", getStack(tmpDir, config))
+	_, err := getProcfile("", getStack(tmpDir, config))
 	actualData := api.ProcessType{}
 	yaml.Unmarshal(data, &actualData)
 	assert.Err(t, err, fmt.Errorf("no Procfile can be matched in (%s)", ""))
 }
 
 func TestGetProcfileFromServerFailure(t *testing.T) {
-	expectedErr := errors.New("test error")
-	getter := &storage.FakeObjectGetter{
-		Fn: func(context.Context, string) ([]byte, error) {
-			return []byte("web: example-go"), expectedErr
-		},
-	}
 	tmpDir := os.TempDir()
 	config := api.Config{}
 	config.Values = map[string]interface{}{
 		"DRYCC_STACK": "buildpack",
 	}
-	_, err := getProcfile(getter, "", getStack(tmpDir, config))
+	_, err := getProcfile("", getStack(tmpDir, config))
 	assert.Err(t, err, fmt.Errorf("no Procfile can be matched in (%s)", ""))
 	assert.True(t, err != nil, "no error received when there should have been")
 }

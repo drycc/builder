@@ -17,12 +17,14 @@ import (
 )
 
 const (
-	tarPath         = "TAR_PATH"
-	debugKey        = "DRYCC_DEBUG"
-	sourceVersion   = "SOURCE_VERSION"
-	objectStore     = "objectstorage-keyfile"
-	builderStorage  = "BUILDER_STORAGE"
-	objectStorePath = "/var/run/secrets/drycc/objectstore/creds"
+	tarPath                = "TAR_PATH"
+	debugKey               = "DRYCC_DEBUG"
+	sourceVersion          = "SOURCE_VERSION"
+	objectStore            = "objectstorage-keyfile"
+	builderStorage         = "BUILDER_STORAGE"
+	objectStorePath        = "/var/run/secrets/drycc/objectstore/creds"
+	imagebuilderConfig     = "imagebuilder-config"
+	imagebuilderConfigPath = "/etc/imagebuilder"
 )
 
 func imagebuilderPodName(appName, shortSha string) string {
@@ -48,7 +50,7 @@ func createBuilderPod(
 	builderImage,
 	registryHost,
 	registryPort string,
-	registryEnv map[string]string,
+	builderImageEnv map[string]string,
 	pullPolicy corev1.PullPolicy,
 	securityContext corev1.SecurityContext,
 	nodeSelector map[string]string,
@@ -80,7 +82,7 @@ func createBuilderPod(
 	addEnvToPod(pod, "DRYCC_REGISTRY_PROXY_HOST", registryHost)
 	addEnvToPod(pod, "DRYCC_REGISTRY_PROXY_PORT", registryPort)
 
-	for key, value := range registryEnv {
+	for key, value := range builderImageEnv {
 		addEnvToPod(pod, key, value)
 	}
 
@@ -129,6 +131,24 @@ func buildPod(
 		{
 			Name:      objectStore,
 			MountPath: objectStorePath,
+			ReadOnly:  true,
+		},
+	}
+	pod.Spec.Volumes = append(pod.Spec.Volumes, corev1.Volume{
+		Name: objectStore,
+		VolumeSource: corev1.VolumeSource{
+			ConfigMap: &corev1.ConfigMapVolumeSource{
+				LocalObjectReference: corev1.LocalObjectReference{
+					Name: imagebuilderConfig,
+				},
+			},
+		},
+	})
+
+	pod.Spec.Containers[0].VolumeMounts = []corev1.VolumeMount{
+		{
+			Name:      imagebuilderConfig,
+			MountPath: imagebuilderConfigPath,
 			ReadOnly:  true,
 		},
 	}

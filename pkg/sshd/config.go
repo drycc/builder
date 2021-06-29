@@ -14,7 +14,6 @@ type Config struct {
 	HealthSrvTestStorageRegion  string `envconfig:"STORAGE_REGION" default:"us-east-1"`
 	CleanerPollSleepDurationSec int    `envconfig:"CLEANER_POLL_SLEEP_DURATION_SEC" default:"5"`
 	StorageType                 string `envconfig:"BUILDER_STORAGE" default:"minio"`
-	BuildpackerImagePullPolicy  string `envconfig:"BUILDPACKER_IMAGE_PULL_POLICY" default:"Always"`
 	ImagebuilderImagePullPolicy string `envconfig:"IMAGEBUILDER_IMAGE_PULL_POLICY" default:"Always"`
 	LockTimeout                 int    `envconfig:"GIT_LOCK_TIMEOUT" default:"10"`
 }

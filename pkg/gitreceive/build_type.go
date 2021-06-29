@@ -14,7 +14,7 @@ import (
 var defaultStacks = `[
 	{
         "name": "buildpack",
-        "image": "drycc/buildpacker:canary"
+        "image": "drycc/imagebuilder:canary"
     },
     {
         "name": "container",
@@ -28,24 +28,11 @@ var Stacks []map[string]string
 
 // initStack load stack by config
 func initStack() error {
-	data, err := ioutil.ReadFile("/etc/buildpacker/images.json")
+	data, err := ioutil.ReadFile("/etc/imagebuilder/images.json")
 	if err == nil {
-		var stacksBuildpacker []map[string]string
-		err = json.Unmarshal(data, &stacksBuildpacker)
-		if err == nil {
-			data, err = ioutil.ReadFile("/etc/imagebuilder/images.json")
-			if err == nil {
-				var stacksImagebuilder []map[string]string
-				err = json.Unmarshal(data, &stacksImagebuilder)
-				if err == nil {
-					// Stacks order represents priority
-					Stacks = stacksImagebuilder
-					Stacks = append(Stacks, stacksBuildpacker...)
-				}
-				return nil
-			}
-		}
+		return json.Unmarshal(data, &Stacks)
 	}
+
 	return json.Unmarshal([]byte(defaultStacks), &Stacks)
 }
 

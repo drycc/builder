@@ -58,11 +58,6 @@ spec:
             # Set GIT_LOCK_TIMEOUT to number of minutes you want to wait to git push again to the same repository
             - name: "GIT_LOCK_TIMEOUT"
               value: "30"
-            - name: buildpackER_IMAGE_PULL_POLICY
-              valueFrom:
-                configMapKeyRef:
-                  name: build pa c ker-config
-                  key: image_pull_policy
             - name: IMAGEBUILDER_IMAGE_PULL_POLICY
               valueFrom:
                 configMapKeyRef:
@@ -108,9 +103,6 @@ spec:
             - name: objectstore-creds
               mountPath: /var/run/secrets/drycc/objectstore/creds
               readOnly: true
-            - name: buildpacker-config
-              mountPath: /etc/buildpacker
-              readOnly: true
             - name: imagebuilder-config
               mountPath: /etc/imagebuilder
               readOnly: true
@@ -124,9 +116,6 @@ spec:
         - name: objectstore-creds
           secret:
             secretName: objectstorage-keyfile
-        - name: buildpacker-config
-          configMap:
-            name: buildpacker-config
         - name: imagebuilder-config
           configMap:
             name: imagebuilder-config

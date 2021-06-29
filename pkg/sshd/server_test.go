@@ -250,7 +250,7 @@ func runServer(
 
 	go func() {
 		if err := Serve(config, c, gitHome, pushLock, testAddr, "mock"); err != nil {
-			t.Fatalf("Failed serving with %s", err)
+			t.Errorf("Failed serving with %s", err)
 		}
 	}()
 }

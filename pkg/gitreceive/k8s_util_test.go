@@ -47,7 +47,6 @@ func TestBuildPod(t *testing.T) {
 
 	env := make(map[string]interface{})
 	env["KEY"] = "VALUE"
-	env["BUILDPACK_URL"] = "buildpack"
 	buildArgsEnv := make(map[string]interface{})
 	buildArgsEnv["DRYCC_DOCKER_BUILD_ARGS_ENABLED"] = "1"
 	buildArgsEnv["KEY"] = "VALUE"
@@ -72,7 +71,7 @@ func TestBuildPod(t *testing.T) {
 		{true, "test", "default", env, "tar", "deadbeef", "img", "imagebuilder", "customimage", corev1.PullNever, "", nil},
 		{true, "test", "default", buildArgsEnv, "tar", "deadbeef", "img", "imagebuilder", "customimage", corev1.PullIfNotPresent, "", emptyNodeSelector},
 	}
-	regEnv := map[string]string{"REG_LOC": "on-cluster"}
+	buildImageEnv := map[string]string{"REG_LOC": "on-cluster"}
 	for _, build := range imageBuilds {
 		pod = createBuilderPod(
 			build.debug,
@@ -87,7 +86,7 @@ func TestBuildPod(t *testing.T) {
 			build.imagebuilderImage,
 			"localhost",
 			"5555",
-			regEnv,
+			buildImageEnv,
 			build.imagebuilderImagePullPolicy,
 			k8s.SecurityContextFromPrivileged(false),
 			build.builderPodNodeSelector,
