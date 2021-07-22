@@ -135,7 +135,7 @@ func buildPod(
 		},
 	}
 	pod.Spec.Volumes = append(pod.Spec.Volumes, corev1.Volume{
-		Name: objectStore,
+		Name: imagebuilderConfig,
 		VolumeSource: corev1.VolumeSource{
 			ConfigMap: &corev1.ConfigMapVolumeSource{
 				LocalObjectReference: corev1.LocalObjectReference{
@@ -145,13 +145,11 @@ func buildPod(
 		},
 	})
 
-	pod.Spec.Containers[0].VolumeMounts = []corev1.VolumeMount{
-		{
-			Name:      imagebuilderConfig,
-			MountPath: imagebuilderConfigPath,
-			ReadOnly:  true,
-		},
-	}
+	pod.Spec.Containers[0].VolumeMounts = append(pod.Spec.Containers[0].VolumeMounts, corev1.VolumeMount{
+		Name:      imagebuilderConfig,
+		MountPath: imagebuilderConfigPath,
+		ReadOnly:  true,
+	})
 
 	if len(pod.Spec.Containers) > 0 {
 		for k, v := range env {
