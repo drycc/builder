@@ -305,10 +305,6 @@ func prettyPrintJSON(data interface{}) (string, error) {
 
 func getProcfile(dirName string, stack map[string]string) (dryccAPI.ProcessType, error) {
 	procfile := dryccAPI.ProcessType{}
-	_, err := os.Stat(fmt.Sprintf("%s/project.toml", dirName))
-	if err == nil || stack["name"] == "container" {
-		return procfile, nil
-	}
 	if _, err := os.Stat(fmt.Sprintf("%s/Procfile", dirName)); err == nil {
 		rawProcFile, err := ioutil.ReadFile(fmt.Sprintf("%s/Procfile", dirName))
 		if err != nil {
