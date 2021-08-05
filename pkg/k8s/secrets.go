@@ -2,11 +2,13 @@ package k8s
 
 import (
 	"context"
-	"k8s.io/api/core/v1"
+
 	corev1 "k8s.io/api/core/v1"
+	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/apimachinery/pkg/watch"
+	applyconfigurationscorev1 "k8s.io/client-go/applyconfigurations/core/v1"
 	typedcorev1 "k8s.io/client-go/kubernetes/typed/core/v1"
 )
 
@@ -56,6 +58,10 @@ func (f *FakeSecret) DeleteCollection(ctx context.Context, opts metav1.DeleteOpt
 
 // Patch is the interface definition.
 func (f *FakeSecret) Patch(ctx context.Context, name string, pt types.PatchType, data []byte, opts metav1.PatchOptions, subresources ...string) (*v1.Secret, error) {
+	return &v1.Secret{}, nil
+}
+
+func (f *FakeSecret) Apply(ctx context.Context, secret *applyconfigurationscorev1.SecretApplyConfiguration, opts metav1.ApplyOptions) (result *v1.Secret, err error) {
 	return &v1.Secret{}, nil
 }
 

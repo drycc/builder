@@ -5,7 +5,6 @@ import (
 	"os"
 	"runtime"
 
-	"github.com/codegangsta/cli"
 	storagedriver "github.com/docker/distribution/registry/storage/driver"
 	"github.com/docker/distribution/registry/storage/driver/factory"
 	_ "github.com/docker/distribution/registry/storage/driver/s3-aws"
@@ -19,6 +18,7 @@ import (
 	"github.com/drycc/builder/pkg/sys"
 	pkglog "github.com/drycc/pkg/log"
 	"github.com/kelseyhightower/envconfig"
+	"github.com/urfave/cli"
 )
 
 const (
