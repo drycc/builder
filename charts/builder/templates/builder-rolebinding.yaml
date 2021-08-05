@@ -1,7 +1,6 @@
 {{- if (.Values.global.use_rbac) -}}
-{{- if (.Capabilities.APIVersions.Has (include "rbacAPIVersion" .)) -}}
 kind: RoleBinding
-apiVersion: {{ template "rbacAPIVersion" . }}
+apiVersion: rbac.authorization.k8s.io/v1
 metadata:
   name: drycc-builder
   labels:
@@ -14,5 +13,4 @@ roleRef:
 subjects:
 - kind: ServiceAccount
   name: drycc-builder
-{{- end -}}
 {{- end -}}
