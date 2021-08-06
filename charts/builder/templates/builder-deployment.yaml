@@ -24,7 +24,7 @@ spec:
       serviceAccount: drycc-builder
       containers:
         - name: drycc-builder
-          image: {{.Values.image_registry}}/{{.Values.org}}/builder:{{.Values.image_tag}}
+          image: {{.Values.image_registry}}/{{.Values.image_org}}/builder:{{.Values.image_tag}}
           imagePullPolicy: {{.Values.image_pull_policy}}
           ports:
             - containerPort: 2223
