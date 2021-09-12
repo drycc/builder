@@ -22,78 +22,87 @@ spec:
         app: drycc-builder
     spec:
       serviceAccount: drycc-builder
+      initContainers:
+      - name: drycc-builder-init
+        image: docker.io/drycc/python-dev:latest
+        imagePullPolicy: {{.Values.image_pull_policy}}
+        command:
+          - netcat
+          - -v
+          - -a
+          - $(DRYCC_MINIO_SERVICE_HOST):$(DRYCC_MINIO_SERVICE_PORT)
       containers:
-        - name: drycc-builder
-          image: {{.Values.image_registry}}/{{.Values.image_org}}/builder:{{.Values.image_tag}}
-          imagePullPolicy: {{.Values.image_pull_policy}}
-          ports:
-            - containerPort: 2223
-              name: ssh
-            - containerPort: 8092
-              name: healthsrv
+      - name: drycc-builder
+        image: {{.Values.image_registry}}/{{.Values.image_org}}/builder:{{.Values.image_tag}}
+        imagePullPolicy: {{.Values.image_pull_policy}}
+        ports:
+          - containerPort: 2223
+            name: ssh
+          - containerPort: 8092
+            name: healthsrv
 {{- if or (.Values.limits_cpu) (.Values.limits_memory)}}
-          resources:
-            limits:
+        resources:
+          limits:
 {{- if (.Values.limits_cpu) }}
-              cpu: {{.Values.limits_cpu}}
+            cpu: {{.Values.limits_cpu}}
 {{- end}}
 {{- if (.Values.limits_memory) }}
-              memory: {{.Values.limits_memory}}
+            memory: {{.Values.limits_memory}}
 {{- end}}
 {{- end}}
-          env:
-            # NOTE(bacongobbler): use drycc/registry_proxy to work around Docker --insecure-registry requirements
-            - name: "DRYCC_REGISTRY_PROXY_HOST"
-              value: "127.0.0.1"
-            - name: "DRYCC_REGISTRY_PROXY_PORT"
-              value: "{{ .Values.global.registry_proxy_port }}"
-            - name: "HEALTH_SERVER_PORT"
-              value: "8092"
-            - name: "EXTERNAL_PORT"
-              value: "2223"
-            - name: BUILDER_STORAGE
-              value: "{{ .Values.global.storage }}"
-            - name: "DRYCC_REGISTRY_LOCATION"
-              value: "{{ .Values.global.registry_location }}"
-            # Set GIT_LOCK_TIMEOUT to number of minutes you want to wait to git push again to the same repository
-            - name: "GIT_LOCK_TIMEOUT"
-              value: "30"
-            - name: IMAGEBUILDER_IMAGE_PULL_POLICY
-              valueFrom:
-                configMapKeyRef:
-                  name: imagebuilder-config
-                  key: image_pull_policy
-            # This var needs to be passed so that the minio client (https://github.com/minio/mc) will work in Alpine linux
-            - name: "DOCKERIMAGE"
-              value: "1"
-            - name: "DRYCC_DEBUG"
-              value: "false"
-            - name: "POD_NAMESPACE"
-              valueFrom:
-                fieldRef:
-                  fieldPath: metadata.namespace
-            - name: DRYCC_BUILDER_KEY
-              valueFrom:
-                secretKeyRef:
-                  name: builder-key-auth
-                  key: builder-key
+        env:
+          # NOTE(bacongobbler): use drycc/registry_proxy to work around Docker --insecure-registry requirements
+          - name: "DRYCC_REGISTRY_PROXY_HOST"
+            value: "127.0.0.1"
+          - name: "DRYCC_REGISTRY_PROXY_PORT"
+            value: "{{ .Values.global.registry_proxy_port }}"
+          - name: "HEALTH_SERVER_PORT"
+            value: "8092"
+          - name: "EXTERNAL_PORT"
+            value: "2223"
+          - name: BUILDER_STORAGE
+            value: "{{ .Values.global.storage }}"
+          - name: "DRYCC_REGISTRY_LOCATION"
+            value: "{{ .Values.global.registry_location }}"
+          # Set GIT_LOCK_TIMEOUT to number of minutes you want to wait to git push again to the same repository
+          - name: "GIT_LOCK_TIMEOUT"
+            value: "30"
+          - name: IMAGEBUILDER_IMAGE_PULL_POLICY
+            valueFrom:
+              configMapKeyRef:
+                name: imagebuilder-config
+                key: image_pull_policy
+          # This var needs to be passed so that the minio client (https://github.com/minio/mc) will work in Alpine linux
+          - name: "DOCKERIMAGE"
+            value: "1"
+          - name: "DRYCC_DEBUG"
+            value: "false"
+          - name: "POD_NAMESPACE"
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.namespace
+          - name: DRYCC_BUILDER_KEY
+            valueFrom:
+              secretKeyRef:
+                name: builder-key-auth
+                key: builder-key
 {{- if (.Values.builder_pod_node_selector) }}
-            - name: BUILDER_POD_NODE_SELECTOR
-              value: {{.Values.builder_pod_node_selector}}
+          - name: BUILDER_POD_NODE_SELECTOR
+            value: {{.Values.builder_pod_node_selector}}
 {{- end}}
-          livenessProbe:
-            httpGet:
-              path: /healthz
-              port: 8092
-            initialDelaySeconds: 30
-            timeoutSeconds: 1
-          readinessProbe:
-            httpGet:
-              path: /readiness
-              port: 8092
-            initialDelaySeconds: 30
-            timeoutSeconds: 1
-          volumeMounts:
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 8092
+          initialDelaySeconds: 30
+          timeoutSeconds: 1
+        readinessProbe:
+          httpGet:
+            path: /readiness
+            port: 8092
+          initialDelaySeconds: 30
+          timeoutSeconds: 1
+        volumeMounts:
             - name: builder-key-auth
               mountPath: /var/run/secrets/api/auth
               readOnly: true
