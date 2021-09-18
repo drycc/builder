@@ -11,6 +11,10 @@ service:
 # limits_memory: "50Mi"
 # builder_pod_node_selector: "disk:ssd"
 
+# When the TTL controller cleans up the Job. default: 6h
+# see: https://kubernetes.io/docs/concepts/workloads/controllers/job/#ttl-mechanism-for-finished-jobs
+ttl_seconds_after_finished: 21600
+
 global:
   # Role-Based Access Control for Kubernetes >= 1.5
   use_rbac: false

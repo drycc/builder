@@ -4,10 +4,13 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"os"
+	"strconv"
 	"time"
 
 	"github.com/drycc/builder/pkg/k8s"
 	"github.com/pborman/uuid"
+	batchv1 "k8s.io/api/batch/v1"
 	corev1 "k8s.io/api/core/v1"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -27,7 +30,7 @@ const (
 	imagebuilderConfigPath = "/etc/imagebuilder"
 )
 
-func imagebuilderPodName(appName, shortSha string) string {
+func imagebuilderJobName(appName, shortSha string) string {
 	uid := uuid.New()[:8]
 	// NOTE(bacongobbler): pod names cannot exceed 63 characters in length, so we truncate
 	// the application name to stay under that limit when adding all the extra metadata to the name
@@ -37,7 +40,7 @@ func imagebuilderPodName(appName, shortSha string) string {
 	return fmt.Sprintf("imagebuild-%s-%s-%s", appName, shortSha, uid)
 }
 
-func createBuilderPod(
+func createBuilderJob(
 	debug bool,
 	name,
 	namespace string,
@@ -54,9 +57,9 @@ func createBuilderPod(
 	pullPolicy corev1.PullPolicy,
 	securityContext corev1.SecurityContext,
 	nodeSelector map[string]string,
-) *corev1.Pod {
+) *batchv1.Job {
 
-	pod := buildPod(debug, name, namespace, pullPolicy, securityContext, nodeSelector, env)
+	job := buildJob(debug, name, namespace, pullPolicy, securityContext, nodeSelector, env)
 
 	// inject application envvars as a special envvar which will be handled by imagebuilder to
 	// inject them as build-time variables.
@@ -67,29 +70,32 @@ func createBuilderPod(
 	// So we need to translate the map into json.
 	if _, ok := env["DRYCC_DOCKER_BUILD_ARGS_ENABLED"]; ok {
 		imageBuildArgs, _ := json.Marshal(env)
-		addEnvToPod(pod, "DOCKER_BUILD_ARGS", string(imageBuildArgs))
+		addEnvToJob(job, "DOCKER_BUILD_ARGS", string(imageBuildArgs))
 	}
+	job.Spec.Template.Spec.Containers[0].Name = builderName
+	job.Spec.Template.Spec.Containers[0].Image = builderImage
 
-	pod.Spec.Containers[0].Name = builderName
-	pod.Spec.Containers[0].Image = builderImage
-
-	addEnvToPod(pod, tarPath, tarKey)
-	addEnvToPod(pod, sourceVersion, gitShortHash)
-	addEnvToPod(pod, "IMG_NAME", imageName)
-	addEnvToPod(pod, builderStorage, storageType)
+	addEnvToJob(job, tarPath, tarKey)
+	addEnvToJob(job, sourceVersion, gitShortHash)
+	addEnvToJob(job, "IMG_NAME", imageName)
+	addEnvToJob(job, builderStorage, storageType)
 	// inject existing DRYCC_REGISTRY_PROXY_HOST and PORT info to imagebuilder
 	// see https://github.com/drycc/imagebuilder/issues/83
-	addEnvToPod(pod, "DRYCC_REGISTRY_PROXY_HOST", registryHost)
-	addEnvToPod(pod, "DRYCC_REGISTRY_PROXY_PORT", registryPort)
+	addEnvToJob(job, "DRYCC_REGISTRY_PROXY_HOST", registryHost)
+	addEnvToJob(job, "DRYCC_REGISTRY_PROXY_PORT", registryPort)
 
 	for key, value := range builderImageEnv {
-		addEnvToPod(pod, key, value)
+		addEnvToJob(job, key, value)
 	}
 
-	return &pod
+	return &job
 }
 
-func buildPod(
+func newInt32(i int32) *int32 {
+	return &i
+}
+
+func buildJob(
 	debug bool,
 	name,
 	namespace string,
@@ -97,17 +103,34 @@ func buildPod(
 	pullPolicy corev1.PullPolicy,
 	securityContext corev1.SecurityContext,
 	nodeSelector map[string]string,
-	env map[string]interface{}) corev1.Pod {
-	pod := corev1.Pod{
-		Spec: corev1.PodSpec{
-			RestartPolicy: corev1.RestartPolicyNever,
-			Containers: []corev1.Container{
-				{
-					ImagePullPolicy: pullPolicy,
-					SecurityContext: &securityContext,
+	env map[string]interface{}) batchv1.Job {
+	TTLSecondsAfterFinished := newInt32(21600)
+	if os.Getenv("TTL_SECONDS_AFTER_FINISHED") != "" {
+		ttl, err := strconv.ParseInt(os.Getenv("TTL_SECONDS_AFTER_FINISHED"), 10, 32)
+		if err == nil {
+			TTLSecondsAfterFinished = newInt32(int32(ttl))
+		}
+	}
+
+	job := batchv1.Job{
+		Spec: batchv1.JobSpec{
+			BackoffLimit:            newInt32(0),
+			TTLSecondsAfterFinished: TTLSecondsAfterFinished,
+			Template: corev1.PodTemplateSpec{
+				ObjectMeta: metav1.ObjectMeta{
+					Labels: map[string]string{
+						"heritage": name,
+					},
+				},
+				Spec: corev1.PodSpec{
+					Containers: []corev1.Container{
+						{
+							ImagePullPolicy: pullPolicy,
+							SecurityContext: &securityContext,
+						},
+					},
 				},
 			},
-			Volumes: []corev1.Volume{},
 		},
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      name,
@@ -117,8 +140,10 @@ func buildPod(
 			},
 		},
 	}
-
-	pod.Spec.Volumes = append(pod.Spec.Volumes, corev1.Volume{
+	job.Spec.Template.Spec.RestartPolicy = corev1.RestartPolicyNever
+	job.Spec.Template.Spec.Containers[0].ImagePullPolicy = pullPolicy
+	job.Spec.Template.Spec.Containers[0].SecurityContext = &securityContext
+	job.Spec.Template.Spec.Volumes = append(job.Spec.Template.Spec.Volumes, corev1.Volume{
 		Name: objectStore,
 		VolumeSource: corev1.VolumeSource{
 			Secret: &corev1.SecretVolumeSource{
@@ -127,14 +152,14 @@ func buildPod(
 		},
 	})
 
-	pod.Spec.Containers[0].VolumeMounts = []corev1.VolumeMount{
+	job.Spec.Template.Spec.Containers[0].VolumeMounts = []corev1.VolumeMount{
 		{
 			Name:      objectStore,
 			MountPath: objectStorePath,
 			ReadOnly:  true,
 		},
 	}
-	pod.Spec.Volumes = append(pod.Spec.Volumes, corev1.Volume{
+	job.Spec.Template.Spec.Volumes = append(job.Spec.Template.Spec.Volumes, corev1.Volume{
 		Name: imagebuilderConfig,
 		VolumeSource: corev1.VolumeSource{
 			ConfigMap: &corev1.ConfigMapVolumeSource{
@@ -145,15 +170,15 @@ func buildPod(
 		},
 	})
 
-	pod.Spec.Containers[0].VolumeMounts = append(pod.Spec.Containers[0].VolumeMounts, corev1.VolumeMount{
+	job.Spec.Template.Spec.Containers[0].VolumeMounts = append(job.Spec.Template.Spec.Containers[0].VolumeMounts, corev1.VolumeMount{
 		Name:      imagebuilderConfig,
 		MountPath: imagebuilderConfigPath,
 		ReadOnly:  true,
 	})
 
-	if len(pod.Spec.Containers) > 0 {
+	if len(job.Spec.Template.Spec.Containers) > 0 {
 		for k, v := range env {
-			pod.Spec.Containers[0].Env = append(pod.Spec.Containers[0].Env, corev1.EnvVar{
+			job.Spec.Template.Spec.Containers[0].Env = append(job.Spec.Template.Spec.Containers[0].Env, corev1.EnvVar{
 				Name:  k,
 				Value: fmt.Sprintf("%v", v),
 			})
@@ -161,19 +186,19 @@ func buildPod(
 	}
 
 	if len(nodeSelector) > 0 {
-		pod.Spec.NodeSelector = nodeSelector
+		job.Spec.Template.Spec.NodeSelector = nodeSelector
 	}
 
 	if debug {
-		addEnvToPod(pod, debugKey, "1")
+		addEnvToJob(job, debugKey, "1")
 	}
 
-	return pod
+	return job
 }
 
-func addEnvToPod(pod corev1.Pod, key, value string) {
-	if len(pod.Spec.Containers) > 0 {
-		pod.Spec.Containers[0].Env = append(pod.Spec.Containers[0].Env, corev1.EnvVar{
+func addEnvToJob(job batchv1.Job, key, value string) {
+	if len(job.Spec.Template.Spec.Containers) > 0 {
+		job.Spec.Template.Spec.Containers[0].Env = append(job.Spec.Template.Spec.Containers[0].Env, corev1.EnvVar{
 			Name:  key,
 			Value: value,
 		})

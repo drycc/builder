@@ -8,17 +8,18 @@ import (
 
 	"github.com/arschles/assert"
 	"github.com/drycc/builder/pkg/k8s"
+	batchv1 "k8s.io/api/batch/v1"
 	corev1 "k8s.io/api/core/v1"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 )
 
 func TestImagebuilderPodName(t *testing.T) {
-	name := imagebuilderPodName("demo", "12345678")
+	name := imagebuilderJobName("demo", "12345678")
 	if !strings.HasPrefix(name, "imagebuild-demo-12345678-") {
 		t.Errorf("expected pod name imagebuild-demo-12345678-*, got %s", name)
 	}
 
-	name = imagebuilderPodName("this-name-has-more-than-24-characters-in-length", "12345678")
+	name = imagebuilderJobName("this-name-has-more-than-24-characters-in-length", "12345678")
 	if !strings.HasPrefix(name, "imagebuild-this-name-has-more-than-24-charac-12345678-") {
 		t.Errorf("expected pod name imagebuild-this-name-has-more-than-24-charac-12345678-*, got %s", name)
 	}
@@ -42,7 +43,7 @@ type imageBuildCase struct {
 	builderPodNodeSelector      map[string]string
 }
 
-func TestBuildPod(t *testing.T) {
+func TestBuildJob(t *testing.T) {
 	emptyEnv := make(map[string]interface{})
 
 	env := make(map[string]interface{})
@@ -50,7 +51,7 @@ func TestBuildPod(t *testing.T) {
 	buildArgsEnv := make(map[string]interface{})
 	buildArgsEnv["DRYCC_DOCKER_BUILD_ARGS_ENABLED"] = "1"
 	buildArgsEnv["KEY"] = "VALUE"
-	var pod *corev1.Pod
+	var job *batchv1.Job
 
 	emptyNodeSelector := make(map[string]string)
 
@@ -73,7 +74,7 @@ func TestBuildPod(t *testing.T) {
 	}
 	buildImageEnv := map[string]string{"REG_LOC": "on-cluster"}
 	for _, build := range imageBuilds {
-		pod = createBuilderPod(
+		job = createBuilderJob(
 			build.debug,
 			build.name,
 			build.namespace,
@@ -92,41 +93,41 @@ func TestBuildPod(t *testing.T) {
 			build.builderPodNodeSelector,
 		)
 
-		if pod.ObjectMeta.Name != build.name {
-			t.Errorf("expected %v but returned %v ", build.name, pod.ObjectMeta.Name)
+		if job.ObjectMeta.Name != build.name {
+			t.Errorf("expected %v but returned %v ", build.name, job.ObjectMeta.Name)
 		}
-		if pod.ObjectMeta.Namespace != build.namespace {
-			t.Errorf("expected %v but returned %v ", build.namespace, pod.ObjectMeta.Namespace)
+		if job.ObjectMeta.Namespace != build.namespace {
+			t.Errorf("expected %v but returned %v ", build.namespace, job.ObjectMeta.Namespace)
 		}
 
-		checkForEnv(t, pod, "SOURCE_VERSION", build.gitShortHash)
-		checkForEnv(t, pod, "TAR_PATH", build.tarKey)
-		checkForEnv(t, pod, "IMG_NAME", build.imgName)
-		checkForEnv(t, pod, "REG_LOC", "on-cluster")
+		checkForEnv(t, job, "SOURCE_VERSION", build.gitShortHash)
+		checkForEnv(t, job, "TAR_PATH", build.tarKey)
+		checkForEnv(t, job, "IMG_NAME", build.imgName)
+		checkForEnv(t, job, "REG_LOC", "on-cluster")
 		if _, ok := build.env["DRYCC_DOCKER_BUILD_ARGS_ENABLED"]; ok {
-			checkForEnv(t, pod, "DOCKER_BUILD_ARGS", `{"DRYCC_DOCKER_BUILD_ARGS_ENABLED":"1","KEY":"VALUE"}`)
+			checkForEnv(t, job, "DOCKER_BUILD_ARGS", `{"DRYCC_DOCKER_BUILD_ARGS_ENABLED":"1","KEY":"VALUE"}`)
 		}
 		if build.imagebuilderImage != "" {
-			if pod.Spec.Containers[0].Image != build.imagebuilderImage {
-				t.Errorf("expected %v but returned %v", build.imagebuilderImage, pod.Spec.Containers[0].Image)
+			if job.Spec.Template.Spec.Containers[0].Image != build.imagebuilderImage {
+				t.Errorf("expected %v but returned %v", build.imagebuilderImage, job.Spec.Template.Spec.Containers[0].Image)
 			}
 		}
 		if build.imagebuilderImagePullPolicy != "" {
-			if pod.Spec.Containers[0].ImagePullPolicy != "" {
-				if pod.Spec.Containers[0].ImagePullPolicy != build.imagebuilderImagePullPolicy {
-					t.Errorf("expected %v but returned %v", build.imagebuilderImagePullPolicy, pod.Spec.Containers[0].ImagePullPolicy)
+			if job.Spec.Template.Spec.Containers[0].ImagePullPolicy != "" {
+				if job.Spec.Template.Spec.Containers[0].ImagePullPolicy != build.imagebuilderImagePullPolicy {
+					t.Errorf("expected %v but returned %v", build.imagebuilderImagePullPolicy, job.Spec.Template.Spec.Containers[0].ImagePullPolicy)
 				}
 			}
 		}
 
-		if len(pod.Spec.NodeSelector) > 0 || len(build.builderPodNodeSelector) > 0 {
-			assert.Equal(t, pod.Spec.NodeSelector, build.builderPodNodeSelector, "node selector")
+		if len(job.Spec.Template.Spec.NodeSelector) > 0 || len(build.builderPodNodeSelector) > 0 {
+			assert.Equal(t, job.Spec.Template.Spec.NodeSelector, build.builderPodNodeSelector, "node selector")
 		}
 	}
 }
 
-func checkForEnv(t *testing.T, pod *corev1.Pod, key, expVal string) {
-	val, err := envValueFromKey(pod, key)
+func checkForEnv(t *testing.T, job *batchv1.Job, key, expVal string) {
+	val, err := envValueFromKey(job, key)
 	if err != nil {
 		t.Errorf("%v", err)
 	}
@@ -135,8 +136,8 @@ func checkForEnv(t *testing.T, pod *corev1.Pod, key, expVal string) {
 	}
 }
 
-func envValueFromKey(pod *corev1.Pod, key string) (string, error) {
-	for _, env := range pod.Spec.Containers[0].Env {
+func envValueFromKey(job *batchv1.Job, key string) (string, error) {
+	for _, env := range job.Spec.Template.Spec.Containers[0].Env {
 		if env.Name == key {
 			return env.Value, nil
 		}

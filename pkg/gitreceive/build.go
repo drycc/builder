@@ -148,7 +148,7 @@ func build(
 	securityContext := k8s.SecurityContextFromPrivileged(true)
 
 	imageName := fmt.Sprintf("%s:git-%s", appName, gitSha.Short())
-	buildPodName := imagebuilderPodName(appName, gitSha.Short())
+	buildJobName := imagebuilderJobName(appName, gitSha.Short())
 	registryLocation := conf.RegistryLocation
 	builderImageEnv := make(map[string]string)
 	if registryLocation != "on-cluster" {
@@ -160,9 +160,9 @@ func build(
 	builderImageEnv["DRYCC_STACK"] = stack["name"]
 	builderImageEnv["DRYCC_REGISTRY_LOCATION"] = registryLocation
 
-	pod := createBuilderPod(
+	job := createBuilderJob(
 		conf.Debug,
-		buildPodName,
+		buildJobName,
 		conf.PodNamespace,
 		appConf.Values,
 		tarKey,
@@ -181,17 +181,16 @@ func build(
 
 	log.Info("Starting build... but first, coffee!")
 	log.Debug("Use image %s: %s", stack["name"], stack["image"])
-	log.Debug("Starting pod %s", buildPodName)
-	json, err := prettyPrintJSON(pod)
+	log.Debug("Starting job %s", buildJobName)
+	json, err := prettyPrintJSON(job)
 	if err == nil {
-		log.Debug("Pod spec: %v", json)
+		log.Debug("Job spec: %v", json)
 	} else {
-		log.Debug("Error creating json representation of pod spec: %v", err)
+		log.Debug("Error creating json representation of Job spec: %v", err)
 	}
+	jobsInterface := kubeClient.BatchV1().Jobs(conf.PodNamespace)
 
-	podsInterface := kubeClient.CoreV1().Pods(conf.PodNamespace)
-
-	newPod, err := podsInterface.Create(ctx.TODO(), pod, metav1.CreateOptions{})
+	newJob, err := jobsInterface.Create(ctx.TODO(), job, metav1.CreateOptions{})
 	if err != nil {
 		return fmt.Errorf("creating builder pod (%s)", err)
 	}
@@ -201,11 +200,19 @@ func build(
 	defer close(stopCh)
 	go pw.Controller.Run(stopCh)
 
-	if err := waitForPod(pw, newPod.Namespace, newPod.Name, conf.SessionIdleInterval(), conf.BuilderPodTickDuration(), conf.BuilderPodWaitDuration()); err != nil {
+	if err := waitForPod(pw, newJob.Namespace, newJob.Name, conf.SessionIdleInterval(), conf.BuilderPodTickDuration(), conf.BuilderPodWaitDuration()); err != nil {
 		return fmt.Errorf("watching events for builder pod startup (%s)", err)
 	}
 
-	req := kubeClient.CoreV1().RESTClient().Get().Namespace(newPod.Namespace).Name(newPod.Name).Resource("pods").SubResource("log").VersionedParams(
+	options := metav1.ListOptions{
+		LabelSelector: fmt.Sprintf("heritage=%s", newJob.Name),
+	}
+	podList, err := kubeClient.CoreV1().Pods(newJob.Namespace).List(context.Background(), options)
+	if err != nil {
+		return fmt.Errorf("list pods %s fail: (%s)", newJob.Name, err)
+	}
+
+	req := kubeClient.CoreV1().RESTClient().Get().Namespace(newJob.Namespace).Name(podList.Items[0].Name).Resource("pods").SubResource("log").VersionedParams(
 		&corev1.PodLogOptions{
 			Follow: true,
 		}, scheme.ParameterCodec)
@@ -224,19 +231,19 @@ func build(
 
 	log.Debug(
 		"Waiting for the %s/%s pod to end. Checking every %s for %s",
-		newPod.Namespace,
-		newPod.Name,
+		newJob.Namespace,
+		newJob.Name,
 		conf.BuilderPodTickDuration(),
 		conf.BuilderPodWaitDuration(),
 	)
 	// check the state and exit code of the build pod.
 	// if the code is not 0 return error
-	if err := waitForPodEnd(pw, newPod.Namespace, newPod.Name, conf.BuilderPodTickDuration(), conf.BuilderPodWaitDuration()); err != nil {
+	if err := waitForPodEnd(pw, newJob.Namespace, newJob.Name, conf.BuilderPodTickDuration(), conf.BuilderPodWaitDuration()); err != nil {
 		return fmt.Errorf("error getting builder pod status (%s)", err)
 	}
 	log.Debug("Done")
 	log.Debug("Checking for builder pod exit code")
-	buildPod, err := kubeClient.CoreV1().Pods(newPod.Namespace).Get(ctx.TODO(), newPod.Name, metav1.GetOptions{})
+	buildPod, err := kubeClient.CoreV1().Pods(newJob.Namespace).Get(ctx.TODO(), podList.Items[0].Name, metav1.GetOptions{})
 	if err != nil {
 		return fmt.Errorf("error getting builder pod status (%s)", err)
 	}
