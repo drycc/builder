@@ -3,11 +3,13 @@ package storage
 import (
 	"context"
 	"errors"
-	"github.com/arschles/assert"
 	"testing"
 	"time"
-	//"github.com/docker/distribution/context"
-	storagedriver "github.com/docker/distribution/registry/storage/driver"
+
+	"github.com/arschles/assert"
+
+	//"github.com/distribution/distribution/v3/context"
+	storagedriver "github.com/distribution/distribution/v3/registry/storage/driver"
 )
 
 const (

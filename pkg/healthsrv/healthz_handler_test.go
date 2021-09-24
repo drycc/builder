@@ -10,11 +10,12 @@ import (
 	"net/http/httptest"
 	"strings"
 	"testing"
-	//"github.com/docker/distribution/context"
+
+	//"github.com/distribution/distribution/v3/context"
 
 	"github.com/arschles/assert"
 	"github.com/drycc/builder/pkg/sshd"
-	"github.com/drycc/controller-sdk-go"
+	drycc "github.com/drycc/controller-sdk-go"
 )
 
 var (

@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/docker/distribution/context"
-	storagedriver "github.com/docker/distribution/registry/storage/driver"
+	"github.com/distribution/distribution/v3/context"
+	storagedriver "github.com/distribution/distribution/v3/registry/storage/driver"
 )
 
 // ObjectExists determines whether the object in ${bucketName}/${objKey} exists, as reported by

@@ -6,7 +6,7 @@ import (
 	"os"
 	"strings"
 
-	storagedriver "github.com/docker/distribution/registry/storage/driver"
+	storagedriver "github.com/distribution/distribution/v3/registry/storage/driver"
 	builderconf "github.com/drycc/builder/pkg/conf"
 	"github.com/drycc/builder/pkg/sys"
 	"github.com/drycc/pkg/log"

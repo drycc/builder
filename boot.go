@@ -5,9 +5,9 @@ import (
 	"os"
 	"runtime"
 
-	storagedriver "github.com/docker/distribution/registry/storage/driver"
-	"github.com/docker/distribution/registry/storage/driver/factory"
-	_ "github.com/docker/distribution/registry/storage/driver/s3-aws"
+	storagedriver "github.com/distribution/distribution/v3/registry/storage/driver"
+	"github.com/distribution/distribution/v3/registry/storage/driver/factory"
+	_ "github.com/distribution/distribution/v3/registry/storage/driver/s3-aws"
 	"github.com/drycc/builder/pkg"
 	"github.com/drycc/builder/pkg/cleaner"
 	"github.com/drycc/builder/pkg/conf"

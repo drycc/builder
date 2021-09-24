@@ -2,11 +2,11 @@ package storage
 
 import (
 	"context"
-	//"github.com/docker/distribution/context"
-	storagedriver "github.com/docker/distribution/registry/storage/driver"
+	//"github.com/distribution/distribution/v3/context"
+	storagedriver "github.com/distribution/distribution/v3/registry/storage/driver"
 )
 
-// ObjectStatter is a *(github.com/docker/distribution/registry/storage/driver).StorageDriver compatible interface, restricted to
+// ObjectStatter is a *(github.com/distribution/distribution/v3/registry/storage/driver).StorageDriver compatible interface, restricted to
 // just the StatObject function. You can use it in your code for easier unit testing without
 // any external dependencies (like access to S3).
 type ObjectStatter interface {
@@ -31,7 +31,7 @@ func (f *FakeObjectStatter) Stat(ctx context.Context, path string) (storagedrive
 	return f.Fn(ctx, path)
 }
 
-// ObjectGetter is a *(github.com/docker/distribution/registry/storage/driver).StorageDriver compatible interface, restricted to
+// ObjectGetter is a *(github.com/distribution/distribution/v3/registry/storage/driver).StorageDriver compatible interface, restricted to
 // just the GetContent function. You can use it in your code for easier unit testing without
 // any external dependencies (like access to S3).
 type ObjectGetter interface {

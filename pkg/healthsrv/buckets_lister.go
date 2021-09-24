@@ -2,10 +2,10 @@ package healthsrv
 
 import (
 	"context"
-	//"github.com/docker/distribution/context"
+	//"github.com/distribution/distribution/v3/context"
 )
 
-// BucketLister is a *(github.com/docker/distribution/registry/storage/driver).StorageDriver compatible interface that provides just
+// BucketLister is a *(github.com/distribution/distribution/v3/registry/storage/driver).StorageDriver compatible interface that provides just
 // the List cross-section of functionality. It can also be implemented for unit tests.
 type BucketLister interface {
 	// List returns a list of the objects that are direct descendants of the given path.

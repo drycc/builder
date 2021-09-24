@@ -11,9 +11,9 @@ import (
 
 	"github.com/arschles/assert"
 
-	//"github.com/docker/distribution/context"
-	"github.com/docker/distribution/registry/storage/driver/factory"
-	_ "github.com/docker/distribution/registry/storage/driver/inmemory"
+	//"github.com/distribution/distribution/v3/context"
+	"github.com/distribution/distribution/v3/registry/storage/driver/factory"
+	_ "github.com/distribution/distribution/v3/registry/storage/driver/inmemory"
 	builderconf "github.com/drycc/builder/pkg/conf"
 	"github.com/drycc/builder/pkg/sys"
 	"github.com/drycc/controller-sdk-go/api"

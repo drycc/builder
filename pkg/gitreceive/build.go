@@ -13,8 +13,8 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/docker/distribution/context"
-	storagedriver "github.com/docker/distribution/registry/storage/driver"
+	"github.com/distribution/distribution/v3/context"
+	storagedriver "github.com/distribution/distribution/v3/registry/storage/driver"
 	"github.com/drycc/builder/pkg/controller"
 	"github.com/drycc/builder/pkg/git"
 	"github.com/drycc/builder/pkg/k8s"
