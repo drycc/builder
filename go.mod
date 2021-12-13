@@ -6,7 +6,7 @@ require (
 	github.com/arschles/assert v1.0.1-0.20191213221312-71f210f9375a
 	github.com/aws/aws-sdk-go v1.40.15
 	github.com/distribution/distribution/v3 v3.0.0-20210921140121-a60a3f69eb54
-	github.com/drycc/controller-sdk-go v0.0.0-20211124095117-dbf56da8c5a8
+	github.com/drycc/controller-sdk-go v0.0.0-20211213072304-8a9f2f28d524
 	github.com/drycc/pkg v0.0.0-20210826011456-c60b87108840
 	github.com/kelseyhightower/envconfig v1.4.0
 	github.com/pborman/uuid v1.2.1
