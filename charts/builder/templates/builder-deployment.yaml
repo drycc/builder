@@ -5,7 +5,7 @@ metadata:
   labels:
     heritage: drycc
   annotations:
-    component.drycc.cc/version: {{ .Values.image_tag }}
+    component.drycc.cc/version: {{ .Values.imageTag }}
 spec:
   replicas: 1
   strategy:
@@ -25,7 +25,7 @@ spec:
       initContainers:
       - name: drycc-builder-init
         image: docker.io/drycc/python-dev:latest
-        imagePullPolicy: {{.Values.image_pull_policy}}
+        imagePullPolicy: {{.Values.imagePullPolicy}}
         command:
           - netcat
           - -v
@@ -33,21 +33,21 @@ spec:
           - $(DRYCC_MINIO_SERVICE_HOST):$(DRYCC_MINIO_SERVICE_PORT)
       containers:
       - name: drycc-builder
-        image: {{.Values.image_registry}}/{{.Values.image_org}}/builder:{{.Values.image_tag}}
-        imagePullPolicy: {{.Values.image_pull_policy}}
+        image: {{.Values.imageRegistry}}/{{.Values.imageOrg}}/builder:{{.Values.imageTag}}
+        imagePullPolicy: {{.Values.imagePullPolicy}}
         ports:
           - containerPort: 2223
             name: ssh
           - containerPort: 8092
             name: healthsrv
-{{- if or (.Values.limits_cpu) (.Values.limits_memory)}}
+{{- if or (.Values.limitsCpu) (.Values.limitsMemory)}}
         resources:
           limits:
-{{- if (.Values.limits_cpu) }}
-            cpu: {{.Values.limits_cpu}}
+{{- if (.Values.limitsCpu) }}
+            cpu: {{.Values.limitsCpu}}
 {{- end}}
-{{- if (.Values.limits_memory) }}
-            memory: {{.Values.limits_memory}}
+{{- if (.Values.limitsMemory) }}
+            memory: {{.Values.limitsMemory}}
 {{- end}}
 {{- end}}
         env:
@@ -55,7 +55,7 @@ spec:
           - name: "DRYCC_REGISTRY_PROXY_HOST"
             value: "127.0.0.1"
           - name: "DRYCC_REGISTRY_PROXY_PORT"
-            value: "{{ .Values.global.registry_proxy_port }}"
+            value: "{{ .Values.global.registryProxyPort }}"
           - name: "HEALTH_SERVER_PORT"
             value: "8092"
           - name: "EXTERNAL_PORT"
@@ -63,9 +63,9 @@ spec:
           - name: BUILDER_STORAGE
             value: "{{ .Values.global.storage }}"
           - name: "DRYCC_REGISTRY_LOCATION"
-            value: "{{ .Values.global.registry_location }}"
+            value: "{{ .Values.global.registryLocation }}"
           - name: "TTL_SECONDS_AFTER_FINISHED"
-            value: "{{ .Values.global.ttl_seconds_after_finished }}"
+            value: "{{ .Values.global.ttlSecondsAfterFinished }}"
           # Set GIT_LOCK_TIMEOUT to number of minutes you want to wait to git push again to the same repository
           - name: "GIT_LOCK_TIMEOUT"
             value: "30"
@@ -73,7 +73,7 @@ spec:
             valueFrom:
               configMapKeyRef:
                 name: imagebuilder-config
-                key: image_pull_policy
+                key: imagePullPolicy
           # This var needs to be passed so that the minio client (https://github.com/minio/mc) will work in Alpine linux
           - name: "DOCKERIMAGE"
             value: "1"

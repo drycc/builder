@@ -1,20 +1,20 @@
-image_org: "drycc"
-image_pull_policy: "Always"
-image_tag: "canary"
-image_registry: "docker.io"
+imageOrg: "drycc"
+imagePullPolicy: "Always"
+imageTag: "canary"
+imageRegistry: "docker.io"
 service:
   # Service type default to LoadBalancer
   type: ClusterIP
   # If service.type is not set to NodePort, the following statement will be ignored.
   nodePort: ""
-# limits_cpu: "100m"
-# limits_memory: "50Mi"
+# limitsCpu: "100m"
+# limitsMemory: "50Mi"
 # builder_pod_node_selector: "disk:ssd"
 
 # When the TTL controller cleans up the Job. default: 6h
 # see: https://kubernetes.io/docs/concepts/workloads/controllers/job/#ttl-mechanism-for-finished-jobs
-ttl_seconds_after_finished: 21600
+ttlSecondsAfterFinished: 21600
 
 global:
   # Role-Based Access Control for Kubernetes >= 1.5
-  use_rbac: false
+  rbac: false
