@@ -3,6 +3,8 @@ imagePullPolicy: "Always"
 imageTag: "canary"
 imageRegistry: "docker.io"
 service:
+  # Provide any additional service annotations
+  annotations: {}
   # Service type default to LoadBalancer
   type: ClusterIP
   # If service.type is not set to NodePort, the following statement will be ignored.
