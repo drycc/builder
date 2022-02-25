@@ -5,7 +5,7 @@ include versioning.mk
 # dockerized development environment variables
 REPO_PATH := github.com/drycc/${SHORT_NAME}
 DEV_ENV_IMAGE := ${DEV_REGISTRY}/drycc/go-dev
-DEV_ENV_WORK_DIR := /go/src/${REPO_PATH}
+DEV_ENV_WORK_DIR := /opt/drycc/go/src/${REPO_PATH}
 DEV_ENV_PREFIX := docker run --rm -v ${CURDIR}:${DEV_ENV_WORK_DIR} -w ${DEV_ENV_WORK_DIR}
 DEV_ENV_CMD := ${DEV_ENV_PREFIX} ${DEV_ENV_IMAGE}
 PLATFORM ?= linux/amd64,linux/arm64
