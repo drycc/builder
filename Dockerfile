@@ -1,8 +1,8 @@
 FROM docker.io/drycc/go-dev:latest AS build
 ARG LDFLAGS
-ADD . /app
+ADD . /workspace
 RUN export GO111MODULE=on \
-  && cd /app \
+  && cd /workspace \
   && CGO_ENABLED=0 init-stack go build -ldflags "${LDFLAGS}" -o /usr/local/bin/boot boot.go
 
 
@@ -27,12 +27,13 @@ RUN install-packages git openssh-server coreutils xz-utils tar \
   && install-stack jq $JQ_VERSION \
   && mkdir -p /var/run/sshd \
   && rm -rf /etc/ssh/ssh_host* \
-  && mkdir /apps \
   && passwd -u git \
   && chmod +x /bin/create_bucket /bin/normalize_storage /docker-entrypoint.sh
 
-ENTRYPOINT ["init-stack", "/docker-entrypoint.sh"]
+USER git
+WORKDIR /home/git
 
+ENTRYPOINT ["init-stack", "/docker-entrypoint.sh"]
 CMD ["/usr/bin/boot", "server"]
 
 EXPOSE 2223
