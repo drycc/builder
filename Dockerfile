@@ -8,11 +8,12 @@ RUN export GO111MODULE=on \
 
 FROM docker.io/drycc/base:bullseye
 
-RUN adduser --system \
-   --shell /bin/sh \
-   --home /home/git \
-   --group \
-   git
+ARG DRYCC_UID=1001
+ARG DRYCC_GID=1001
+ARG DRYCC_HOME_DIR=/workspace
+
+RUN groupadd drycc --gid ${DRYCC_GID} \
+  && useradd drycc -u ${DRYCC_UID} -g ${DRYCC_GID} -s /bin/bash -m -d ${DRYCC_HOME_DIR}
 
 COPY rootfs/bin /bin/
 COPY rootfs/etc/ssh /etc/ssh/
@@ -27,11 +28,10 @@ RUN install-packages git openssh-server coreutils xz-utils tar \
   && install-stack jq $JQ_VERSION \
   && mkdir -p /var/run/sshd \
   && rm -rf /etc/ssh/ssh_host* \
-  && passwd -u git \
   && chmod +x /bin/create_bucket /bin/normalize_storage /docker-entrypoint.sh
 
-USER git
-WORKDIR /home/git
+USER drycc
+WORKDIR ${DRYCC_HOME_DIR}
 
 ENTRYPOINT ["init-stack", "/docker-entrypoint.sh"]
 CMD ["/usr/bin/boot", "server"]

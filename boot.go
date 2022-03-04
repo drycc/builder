@@ -24,7 +24,7 @@ import (
 const (
 	serverConfAppName     = "drycc-builder-server"
 	gitReceiveConfAppName = "drycc-builder-git-receive"
-	gitHomeDir            = "/home/git"
+	gitHomeDir            = "/workspace"
 )
 
 func init() {

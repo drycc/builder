@@ -79,7 +79,7 @@ func build(
 	repoDir := filepath.Join(conf.GitHome, repo)
 	buildDir := filepath.Join(repoDir, "build")
 
-	if err := os.MkdirAll(buildDir, os.ModeDir); err != nil {
+	if err := os.MkdirAll(buildDir, 0700); err != nil {
 		return fmt.Errorf("making the build directory %s (%s)", buildDir, err)
 	}
 
