@@ -126,7 +126,7 @@ steps:
   commands:
   - IMAGE_TAG=$([ ! -z $DRONE_TAG ] && echo \"${DRONE_TAG:1}\" || echo \"canary\")
   - sed -i "s/imageTag:\ \"canary\"/imageTag:\ $IMAGE_TAG/g" charts/builder/values.yaml
-  - helm package charts/builder --version ${DRONE_TAG:-v1.0.0}
+  - helm package -u charts/builder --version ${DRONE_TAG:-v1.0.0}
   - curl -u $CHARTMUSEUM_USERNAME:$CHARTMUSEUM_PASSWORD -F chart=@builder-${DRONE_TAG:-v1.0.0}.tgz "$CHARTMUSEUM_API/api/$([ -z $DRONE_TAG ] && echo testing || echo stable)/charts"
   environment:
     CHARTMUSEUM_USERNAME:

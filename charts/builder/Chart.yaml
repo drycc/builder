@@ -1,7 +1,12 @@
 name: builder
+apiVersion: v2
 home: https://github.com/drycc/builder
-version: v1.0.0
+dependencies:
+  - name: common
+    repository: https://charts.drycc.cc/stable
+    version: 1.x.x
 description: Git server and application builder for Drycc Workflow.
 maintainers:
   - name: Drycc Team
     email: engineering@drycc.com
+version: v1.0.0
