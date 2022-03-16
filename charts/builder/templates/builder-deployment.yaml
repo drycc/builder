@@ -21,6 +21,7 @@ spec:
       labels:
         app: drycc-builder
     spec:
+      {{- include "builder.affinity" . | indent 6 }}
       serviceAccount: drycc-builder
       initContainers:
       - name: drycc-builder-init
