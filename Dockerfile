@@ -11,7 +11,7 @@ FROM docker.io/drycc/base:bullseye
 ENV DRYCC_UID=1001 \
   DRYCC_GID=1001 \
   DRYCC_HOME_DIR=/workspace \
-  MC_VERSION="2022.02.26.03.58.31" \
+  MC_VERSION="2022.04.01.23.44.48" \
   JQ_VERSION="1.6"
 
 RUN groupadd drycc --gid ${DRYCC_GID} \
