@@ -14,11 +14,11 @@ import (
 var defaultStacks = `[
 	{
         "name": "buildpack",
-        "image": "drycc/imagebuilder:canary"
+        "image": "registry.drycc.cc/drycc/imagebuilder:canary"
     },
     {
         "name": "container",
-        "image": "drycc/imagebuilder:canary"
+        "image": "registry.drycc.cc/drycc/imagebuilder:canary"
     }
 
 ]`
