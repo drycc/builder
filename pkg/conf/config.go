@@ -10,8 +10,7 @@ import (
 
 const (
 	storageCredLocation = "/var/run/secrets/drycc/objectstore/creds/"
-	minioHostEnvVar     = "DRYCC_MINIO_SERVICE_HOST"
-	minioPortEnvVar     = "DRYCC_MINIO_SERVICE_PORT"
+	minioHostEnvVar     = "DRYCC_MINIO_ENDPOINT"
 	gcsKey              = "key.json"
 )
 

@@ -16,6 +16,6 @@ if [ -f $SECRET_KEY_FILE ]; then
   export MINIO_SECRET_KEY
 fi
 
-export MINIO_ENDPOINT=http://"${DRYCC_MINIO_SERVICE_HOST}:${DRYCC_MINIO_SERVICE_PORT}"
+export MINIO_ENDPOINT=http://"${DRYCC_MINIO_ENDPOINT}"
 
 mc config host add minio "${MINIO_ENDPOINT}" "${MINIO_ACCESS_KEY}" "${MINIO_SECRET_KEY}"
