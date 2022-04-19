@@ -3,6 +3,9 @@ package conf
 import (
 	"fmt"
 	"io/ioutil"
+	"net"
+	"net/url"
+	"os"
 	"strings"
 
 	"github.com/drycc/builder/pkg/sys"
@@ -50,9 +53,15 @@ func GetStorageParams(env sys.Env) (Parameters, error) {
 		params[file.Name()] = string(data)
 	}
 	params["bucket"] = params["builder-bucket"]
-	mEndpointVar := env.Get(minioEndpointVar)
-	params["region"] = "us-east-1"
-	params["regionendpoint"] = fmt.Sprintf("http://%s", mEndpointVar)
-	params["secure"] = false
+	mEndpoint := env.Get(minioEndpointVar)
+	params["regionendpoint"] = mEndpoint
+	region := "us-east-1" //region is required in distribution
+	if endpointURL, err := url.Parse(mEndpoint); err == nil {
+		if endpointURL.Hostname() != "" && net.ParseIP(endpointURL.Hostname()) == nil {
+			region = strings.Split(endpointURL.Hostname(), ".")[0]
+		}
+	}
+	os.Setenv("REGISTRY_STORAGE_S3_REGION", region)
+
 	return params, nil
 }

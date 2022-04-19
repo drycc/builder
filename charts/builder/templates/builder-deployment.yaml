@@ -30,7 +30,7 @@ spec:
         args:
           - netcat
           - -v
-          - -a
+          - -u
           - $(DRYCC_MINIO_ENDPOINT)
         {{- include "builder.envs" . | indent 8 }}
       containers:

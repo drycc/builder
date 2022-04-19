@@ -16,6 +16,7 @@ if [ -f $SECRET_KEY_FILE ]; then
   export MINIO_SECRET_KEY
 fi
 
-export MINIO_ENDPOINT=http://"${DRYCC_MINIO_ENDPOINT}"
+export MINIO_ENDPOINT="${DRYCC_MINIO_ENDPOINT}"
 
-mc config host add minio "${MINIO_ENDPOINT}" "${MINIO_ACCESS_KEY}" "${MINIO_SECRET_KEY}"
+# force aws signv4 to avoid probe
+mc config host add minio "${MINIO_ENDPOINT}" "${MINIO_ACCESS_KEY}" "${MINIO_SECRET_KEY}" --api s3v4

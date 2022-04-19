@@ -69,7 +69,7 @@ func TestGetStorageParams(t *testing.T) {
 	env := sys.NewFakeEnv()
 	env.Envs = map[string]string{
 		"BUILDER_STORAGE":      "minio",
-		"DRYCC_MINIO_ENDPOINT": "localhost:8088",
+		"DRYCC_MINIO_ENDPOINT": "http://localhost:8088",
 	}
 	params, err = GetStorageParams(env)
 	if err != nil {

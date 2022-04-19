@@ -21,7 +21,7 @@ The builder is primarily a git server that responds to `git push`es by executing
 1. Calls `git archive` to produce a tarball (i.e. a `.tar.gz` file) on the local file system
 2. Saves the tarball to centralized object storage according to the following rules:
 	- If the `BUILDER_STORAGE` environment variable is other than `minio`, attempts to create the appropriate storage driver and saves using this driver.
-  - Otherwise, if `BUILDER_STORAGE` is `minio` and the `DRYCC_MINIO_ENDPOINT` environment variables exist (these are standard [Kubernetes service discovery environment variables](http://kubernetes.io/docs/user-guide/services/#environment-variables)), saves to the [S3 API][s3-api-ref] compatible server at `http://$DRYCC_MINIO_ENDPOINT`
+  - Otherwise, if `BUILDER_STORAGE` is `minio` and the `DRYCC_MINIO_ENDPOINT` environment variables exist (these are standard [Kubernetes service discovery environment variables](http://kubernetes.io/docs/user-guide/services/#environment-variables)), saves to the [S3 API][s3-api-ref] compatible server at `$DRYCC_MINIO_ENDPOINT`
 3. Starts a new [Kubernetes Pod](http://kubernetes.io/docs/user-guide/pods/) to build the code, according to the following rules:
   - If there is a `Dockerfile`, build the container with imagebuilder
   - Otherwise, use imagebuilder to build CNCF native buildpack

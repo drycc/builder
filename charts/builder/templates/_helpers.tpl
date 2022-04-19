@@ -39,7 +39,7 @@ env:
   value: {{.Values.builder_pod_node_selector}}
 {{- if eq .Values.global.minioLocation "on-cluster" }}
 - name: "DRYCC_MINIO_ENDPOINT"
-  value: ${DRYCC_MINIO_SERVICE_HOST}:${DRYCC_MINIO_SERVICE_PORT}
+  value: http://${DRYCC_MINIO_SERVICE_HOST}:${DRYCC_MINIO_SERVICE_PORT}
 {{- else }}
 - name: "DRYCC_MINIO_ENDPOINT"
   value: "{{ .Values.minio.endpoint }}"
