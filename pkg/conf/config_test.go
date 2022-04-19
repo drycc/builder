@@ -78,7 +78,7 @@ func TestGetStorageParams(t *testing.T) {
 	assert.Equal(t, params["regionendpoint"], "http://localhost:8088", "region endpoint")
 	assert.Equal(t, params["secure"], false, "secure")
 	assert.Equal(t, params["region"], "us-east-1", "region")
-	assert.Equal(t, params["bucket"], nil, "bucket")
+	assert.Equal(t, params["bucket"], "builder", "bucket")
 }
 
 func TestGetControllerClient(t *testing.T) {

@@ -23,9 +23,9 @@ const (
 	tarPath                = "TAR_PATH"
 	debugKey               = "DRYCC_DEBUG"
 	sourceVersion          = "SOURCE_VERSION"
-	objectStore            = "objectstorage-keyfile"
+	minioCreds             = "minio-creds"
 	builderStorage         = "BUILDER_STORAGE"
-	objectStorePath        = "/var/run/secrets/drycc/objectstore/creds"
+	minioCredsPath         = "/var/run/secrets/drycc/minio/creds"
 	imagebuilderConfig     = "imagebuilder-config"
 	imagebuilderConfigPath = "/etc/imagebuilder"
 )
@@ -144,18 +144,18 @@ func buildJob(
 	job.Spec.Template.Spec.Containers[0].ImagePullPolicy = pullPolicy
 	job.Spec.Template.Spec.Containers[0].SecurityContext = &securityContext
 	job.Spec.Template.Spec.Volumes = append(job.Spec.Template.Spec.Volumes, corev1.Volume{
-		Name: objectStore,
+		Name: minioCreds,
 		VolumeSource: corev1.VolumeSource{
 			Secret: &corev1.SecretVolumeSource{
-				SecretName: objectStore,
+				SecretName: minioCreds,
 			},
 		},
 	})
 
 	job.Spec.Template.Spec.Containers[0].VolumeMounts = []corev1.VolumeMount{
 		{
-			Name:      objectStore,
-			MountPath: objectStorePath,
+			Name:      minioCreds,
+			MountPath: minioCredsPath,
 			ReadOnly:  true,
 		},
 	}

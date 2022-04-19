@@ -88,7 +88,7 @@ func dirHasGitSuffix(dir string) bool {
 	return strings.HasSuffix(dir, dotGitSuffix)
 }
 
-func deleteFromObjectStore(app string, storageDriver storagedriver.StorageDriver) error {
+func deleteFromMinio(app string, storageDriver storagedriver.StorageDriver) error {
 
 	// delete all files matching app
 	objs, err := storageDriver.List(context.Background(), "home")
@@ -138,7 +138,7 @@ func Run(gitHome string, nsLister k8s.NamespaceLister, fs sys.FS, pollSleepDurat
 			if err := fs.RemoveAll(dirToDelete); err != nil {
 				log.Err("Cleaner error removing local files for deleted app %s (%s)", dirToDelete, err)
 			}
-			if err := deleteFromObjectStore(appToDelete, storageDriver); err != nil {
+			if err := deleteFromMinio(appToDelete, storageDriver); err != nil {
 				log.Err("Cleaner error removing object store files for deleted app %s (%s)", appToDelete, err)
 			}
 		}

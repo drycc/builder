@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-BUCKET_FILE="/var/run/secrets/drycc/objectstore/creds/builder-bucket"
-ACCESS_KEY_FILE="/var/run/secrets/drycc/objectstore/creds/accesskey"
-SECRET_KEY_FILE="/var/run/secrets/drycc/objectstore/creds/secretkey"
+BUCKET_FILE="/var/run/secrets/drycc/minio/creds/builderBucket"
+ACCESS_KEY_FILE="/var/run/secrets/drycc/minio/creds/accesskey"
+SECRET_KEY_FILE="/var/run/secrets/drycc/minio/creds/secretkey"
 
 if [ -f $BUCKET_FILE ]; then
   MINIO_BUCKET=$(cat "$BUCKET_FILE")

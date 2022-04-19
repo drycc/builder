@@ -9,9 +9,8 @@ import (
 )
 
 const (
-	storageCredLocation = "/var/run/secrets/drycc/objectstore/creds/"
-	minioHostEnvVar     = "DRYCC_MINIO_ENDPOINT"
-	gcsKey              = "key.json"
+	storageCredLocation = "/var/run/secrets/drycc/minio/creds/"
+	minioEndpointVar    = "DRYCC_MINIO_ENDPOINT"
 )
 
 // BuilderKeyLocation holds the path of the builder key secret.
@@ -33,6 +32,7 @@ func GetBuilderKey() (string, error) {
 // GetStorageParams returns the credentials required for connecting to object storage
 func GetStorageParams(env sys.Env) (Parameters, error) {
 	params := make(map[string]interface{})
+	params["builder-bucket"] = "builder" // default
 	files, err := ioutil.ReadDir(storageCredLocation)
 	if err != nil {
 		return nil, err
@@ -46,18 +46,13 @@ func GetStorageParams(env sys.Env) (Parameters, error) {
 		if err != nil {
 			return nil, err
 		}
-		//GCS expect the to have the location of the service account credential json file
-		if file.Name() == gcsKey {
-			params["keyfile"] = storageCredLocation + file.Name()
-		} else {
-			params[file.Name()] = string(data)
-		}
+
+		params[file.Name()] = string(data)
 	}
 	params["bucket"] = params["builder-bucket"]
-	mHost := env.Get(minioHostEnvVar)
-	mPort := env.Get(minioPortEnvVar)
+	mEndpointVar := env.Get(minioEndpointVar)
 	params["region"] = "us-east-1"
-	params["regionendpoint"] = fmt.Sprintf("http://%s:%s", mHost, mPort)
+	params["regionendpoint"] = fmt.Sprintf("http://%s", mEndpointVar)
 	params["secure"] = false
 	return params, nil
 }

@@ -35,6 +35,7 @@ Builder currently supports the following off-cluster storage backends:
 * AWS/S3
 * Azure
 * Swift
+* Alibaba OSS
 
 # Development
 
