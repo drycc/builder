@@ -23,9 +23,7 @@ const (
 	tarPath                = "TAR_PATH"
 	debugKey               = "DRYCC_DEBUG"
 	sourceVersion          = "SOURCE_VERSION"
-	minioCreds             = "minio-creds"
 	builderStorage         = "BUILDER_STORAGE"
-	minioCredsPath         = "/var/run/secrets/drycc/minio/creds"
 	imagebuilderConfig     = "imagebuilder-config"
 	imagebuilderConfigPath = "/etc/imagebuilder"
 )
@@ -50,9 +48,7 @@ func createBuilderJob(
 	imageName,
 	storageType,
 	builderName,
-	builderImage,
-	registryHost,
-	registryPort string,
+	builderImage string,
 	builderImageEnv map[string]string,
 	pullPolicy corev1.PullPolicy,
 	securityContext corev1.SecurityContext,
@@ -77,12 +73,8 @@ func createBuilderJob(
 
 	addEnvToJob(job, tarPath, tarKey)
 	addEnvToJob(job, sourceVersion, gitShortHash)
-	addEnvToJob(job, "IMG_NAME", imageName)
+	addEnvToJob(job, "IMAGE_NAME", imageName)
 	addEnvToJob(job, builderStorage, storageType)
-	// inject existing DRYCC_REGISTRY_PROXY_HOST and PORT info to imagebuilder
-	// see https://github.com/drycc/imagebuilder/issues/83
-	addEnvToJob(job, "DRYCC_REGISTRY_PROXY_HOST", registryHost)
-	addEnvToJob(job, "DRYCC_REGISTRY_PROXY_PORT", registryPort)
 
 	for key, value := range builderImageEnv {
 		addEnvToJob(job, key, value)
@@ -143,22 +135,7 @@ func buildJob(
 	job.Spec.Template.Spec.RestartPolicy = corev1.RestartPolicyNever
 	job.Spec.Template.Spec.Containers[0].ImagePullPolicy = pullPolicy
 	job.Spec.Template.Spec.Containers[0].SecurityContext = &securityContext
-	job.Spec.Template.Spec.Volumes = append(job.Spec.Template.Spec.Volumes, corev1.Volume{
-		Name: minioCreds,
-		VolumeSource: corev1.VolumeSource{
-			Secret: &corev1.SecretVolumeSource{
-				SecretName: minioCreds,
-			},
-		},
-	})
 
-	job.Spec.Template.Spec.Containers[0].VolumeMounts = []corev1.VolumeMount{
-		{
-			Name:      minioCreds,
-			MountPath: minioCredsPath,
-			ReadOnly:  true,
-		},
-	}
 	job.Spec.Template.Spec.Volumes = append(job.Spec.Template.Spec.Volumes, corev1.Volume{
 		Name: imagebuilderConfig,
 		VolumeSource: corev1.VolumeSource{

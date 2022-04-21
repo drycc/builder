@@ -27,7 +27,7 @@ RUN install-packages git openssh-server coreutils xz-utils tar \
   && install-stack jq $JQ_VERSION \
   && mkdir -p /var/run/sshd \
   && rm -rf /etc/ssh/ssh_host* \
-  && chmod +x /bin/create_bucket /bin/normalize_storage /docker-entrypoint.sh
+  && chmod +x /bin/create_bucket /docker-entrypoint.sh
 
 USER ${DRYCC_UID}
 WORKDIR ${DRYCC_HOME_DIR}

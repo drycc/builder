@@ -1,0 +1,91 @@
+package gitreceive
+
+import (
+	"errors"
+	"testing"
+
+	"github.com/arschles/assert"
+	"github.com/drycc/builder/pkg/sys"
+)
+
+func TestGetImagebuilderEnvOffclusterErr(t *testing.T) {
+	image := "test-image"
+	config := &Config{
+		Repository: "python-getting-started.git",
+	}
+	env := sys.NewFakeEnv()
+	env.Envs = map[string]string{
+		"DRYCC_MINIO_LOOKUP":      "path",
+		"DRYCC_MINIO_BUCKET":      "builder",
+		"DRYCC_MINIO_ENDPOINT":    "drycc-minio.drycc.svc.cluster.local",
+		"DRYCC_REGISTRY_LOCATION": "off-cluster",
+	}
+	_, err := getImagebuilderEnv(&image, config, env)
+	assert.Err(t, err, errors.New("the environment variable DRYCC_REGISTRY_HOST is required"))
+	env.Envs["DRYCC_REGISTRY_HOST"] = "drycc-registry.drycc.svc.cluster.local"
+	_, err = getImagebuilderEnv(&image, config, env)
+	assert.Err(t, err, errors.New("the environment variable DRYCC_REGISTRY_ORGANIZATION is required"))
+}
+
+func TestGetImagebuilderEnvOffclusterSuccess(t *testing.T) {
+	env := sys.NewFakeEnv()
+	env.Envs = map[string]string{
+		"DRYCC_MINIO_LOOKUP":          "path",
+		"DRYCC_MINIO_BUCKET":          "builder",
+		"DRYCC_MINIO_ENDPOINT":        "drycc-minio.drycc.svc.cluster.local",
+		"DRYCC_REGISTRY_HOST":         "quay.io",
+		"DRYCC_REGISTRY_ORGANIZATION": "kmala",
+		"DRYCC_REGISTRY_LOCATION":     "off-cluster",
+	}
+	expectedData := map[string]string{
+		"DRYCC_MINIO_LOOKUP":          "path",
+		"DRYCC_MINIO_BUCKET":          "builder",
+		"DRYCC_MINIO_ENDPOINT":        "drycc-minio.drycc.svc.cluster.local",
+		"DRYCC_REGISTRY_LOCATION":     "off-cluster",
+		"DRYCC_REGISTRY_HOST":         "quay.io",
+		"DRYCC_REGISTRY_ORGANIZATION": "kmala",
+	}
+	config := &Config{
+		Repository: "python-getting-started.git",
+	}
+	expectedImage := "quay.io/kmala/test-image"
+
+	image := "test-image"
+	imagebuilderEnv, err := getImagebuilderEnv(&image, config, env)
+	assert.NoErr(t, err)
+	assert.Equal(t, expectedData, imagebuilderEnv, "registry details")
+
+	assert.Equal(t, expectedImage, image, "image")
+}
+
+func TestGetImagebuilderEnvOnclusterSuccess(t *testing.T) {
+	env := sys.NewFakeEnv()
+	env.Envs = map[string]string{
+		"DRYCC_MINIO_LOOKUP":        "path",
+		"DRYCC_MINIO_BUCKET":        "builder",
+		"DRYCC_MINIO_ENDPOINT":      "drycc-minio.drycc.svc.cluster.local",
+		"DRYCC_REGISTRY_HOST":       "drycc-registry.drycc.svc.cluster.local",
+		"DRYCC_REGISTRY_PROXY_HOST": "127.0.0.1:8000",
+		"DRYCC_REGISTRY_LOCATION":   "on-cluster",
+	}
+	expectedData := map[string]string{
+		"DRYCC_MINIO_LOOKUP":          "path",
+		"DRYCC_MINIO_BUCKET":          "builder",
+		"DRYCC_MINIO_ENDPOINT":        "drycc-minio.drycc.svc.cluster.local",
+		"DRYCC_REGISTRY_HOST":         "drycc-registry.drycc.svc.cluster.local",
+		"DRYCC_REGISTRY_LOCATION":     "on-cluster",
+		"DRYCC_REGISTRY_PROXY_HOST":   "127.0.0.1:8000",
+		"DRYCC_REGISTRY_ORGANIZATION": "python-getting-started",
+	}
+	config := &Config{
+		Repository: "python-getting-started.git",
+	}
+	expectedImage := "127.0.0.1:8000/python-getting-started/python-getting-started-web:v1.2.1"
+
+	image := "python-getting-started-web:v1.2.1"
+	imagebuilderEnv, err := getImagebuilderEnv(&image, config, env)
+	assert.NoErr(t, err)
+	assert.Equal(t, expectedData, imagebuilderEnv, "registry details")
+
+	assert.Equal(t, expectedImage, image, "image")
+}

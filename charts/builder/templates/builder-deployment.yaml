@@ -63,9 +63,6 @@ spec:
             - name: builder-ssh-private-keys
               mountPath: /var/run/secrets/drycc/builder/ssh
               readOnly: true
-            - name: minio-creds
-              mountPath: /var/run/secrets/drycc/minio/creds
-              readOnly: true
             - name: imagebuilder-config
               mountPath: /etc/imagebuilder
               readOnly: true
@@ -76,9 +73,6 @@ spec:
         - name: builder-ssh-private-keys
           secret:
             secretName: builder-ssh-private-keys
-        - name: minio-creds
-          secret:
-            secretName: minio-creds
         - name: imagebuilder-config
           configMap:
             name: imagebuilder-config

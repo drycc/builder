@@ -72,7 +72,7 @@ func TestBuildJob(t *testing.T) {
 		{true, "test", "default", env, "tar", "deadbeef", "img", "imagebuilder", "customimage", corev1.PullNever, "", nil},
 		{true, "test", "default", buildArgsEnv, "tar", "deadbeef", "img", "imagebuilder", "customimage", corev1.PullIfNotPresent, "", emptyNodeSelector},
 	}
-	buildImageEnv := map[string]string{"REG_LOC": "on-cluster"}
+	buildImageEnv := map[string]string{"DRYCC_REGISTRY_LOCATION": "on-cluster"}
 	for _, build := range imageBuilds {
 		job = createBuilderJob(
 			build.debug,
@@ -85,8 +85,6 @@ func TestBuildJob(t *testing.T) {
 			build.storageType,
 			build.imagebuilderName,
 			build.imagebuilderImage,
-			"localhost",
-			"5555",
 			buildImageEnv,
 			build.imagebuilderImagePullPolicy,
 			k8s.SecurityContextFromPrivileged(false),
@@ -102,8 +100,8 @@ func TestBuildJob(t *testing.T) {
 
 		checkForEnv(t, job, "SOURCE_VERSION", build.gitShortHash)
 		checkForEnv(t, job, "TAR_PATH", build.tarKey)
-		checkForEnv(t, job, "IMG_NAME", build.imgName)
-		checkForEnv(t, job, "REG_LOC", "on-cluster")
+		checkForEnv(t, job, "IMAGE_NAME", build.imgName)
+		checkForEnv(t, job, "DRYCC_REGISTRY_LOCATION", "on-cluster")
 		if _, ok := build.env["DRYCC_DOCKER_BUILD_ARGS_ENABLED"]; ok {
 			checkForEnv(t, job, "DOCKER_BUILD_ARGS", `{"DRYCC_DOCKER_BUILD_ARGS_ENABLED":"1","KEY":"VALUE"}`)
 		}

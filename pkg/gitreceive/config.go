@@ -14,11 +14,8 @@ const (
 // builder's git-receive hook.
 type Config struct {
 	// k8s service discovery env vars
-	ControllerHost   string `envconfig:"DRYCC_CONTROLLER_SERVICE_HOST" required:"true"`
-	ControllerPort   string `envconfig:"DRYCC_CONTROLLER_SERVICE_PORT" required:"true"`
-	RegistryHost     string `envconfig:"DRYCC_REGISTRY_PROXY_HOST" required:"true"`
-	RegistryPort     string `envconfig:"DRYCC_REGISTRY_PROXY_PORT" required:"true"`
-	RegistryLocation string `envconfig:"DRYCC_REGISTRY_LOCATION" default:"on-cluster"`
+	ControllerHost string `envconfig:"DRYCC_CONTROLLER_SERVICE_HOST" required:"true"`
+	ControllerPort string `envconfig:"DRYCC_CONTROLLER_SERVICE_PORT" required:"true"`
 
 	GitHome                       string `envconfig:"GIT_HOME" required:"true"`
 	SSHConnection                 string `envconfig:"SSH_CONNECTION" required:"true"`

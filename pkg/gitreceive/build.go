@@ -149,16 +149,12 @@ func build(
 
 	imageName := fmt.Sprintf("%s:git-%s", appName, gitSha.Short())
 	buildJobName := imagebuilderJobName(appName, gitSha.Short())
-	registryLocation := conf.RegistryLocation
-	builderImageEnv := make(map[string]string)
-	if registryLocation != "on-cluster" {
-		builderImageEnv, err = getRegistryDetails(kubeClient.CoreV1(), &imageName, registryLocation, conf.PodNamespace)
-		if err != nil {
-			return fmt.Errorf("error getting private registry details %s", err)
-		}
+
+	builderImageEnv, err := getImagebuilderEnv(&imageName, conf, env)
+	if err != nil {
+		return fmt.Errorf("error getting private registry details %s", err)
 	}
 	builderImageEnv["DRYCC_STACK"] = stack["name"]
-	builderImageEnv["DRYCC_REGISTRY_LOCATION"] = registryLocation
 
 	job := createBuilderJob(
 		conf.Debug,
@@ -171,8 +167,6 @@ func build(
 		conf.StorageType,
 		builderName,
 		stack["image"],
-		conf.RegistryHost,
-		conf.RegistryPort,
 		builderImageEnv,
 		imagePullPolicy,
 		securityContext,
@@ -290,7 +284,7 @@ func buildBuilderPodNodeSelector(config string) (map[string]string, error) {
 		for _, line := range strings.Split(config, ",") {
 			param := strings.Split(line, ":")
 			if len(param) != 2 {
-				return nil, fmt.Errorf("Invalid BuilderPodNodeSelector value format: %s", config)
+				return nil, fmt.Errorf("invalid BuilderPodNodeSelector value format: %s", config)
 			}
 			selector[strings.TrimSpace(param[0])] = strings.TrimSpace(param[1])
 		}

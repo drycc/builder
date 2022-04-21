@@ -5,15 +5,17 @@ import (
 	"io/ioutil"
 	"net"
 	"net/url"
-	"os"
 	"strings"
 
 	"github.com/drycc/builder/pkg/sys"
 )
 
 const (
-	storageCredLocation = "/var/run/secrets/drycc/minio/creds/"
-	minioEndpointVar    = "DRYCC_MINIO_ENDPOINT"
+	minioLookupEnvVar    = "DRYCC_MINIO_LOOKUP"
+	minioBucketEnvVar    = "DRYCC_MINIO_BUCKET"
+	minioEndpointEnvVar  = "DRYCC_MINIO_ENDPOINT"
+	minioAccesskeyEnvVar = "DRYCC_MINIO_ACCESSKEY"
+	minioSecretkeyEnvVar = "DRYCC_MINIO_SECRETKEY"
 )
 
 // BuilderKeyLocation holds the path of the builder key secret.
@@ -35,25 +37,8 @@ func GetBuilderKey() (string, error) {
 // GetStorageParams returns the credentials required for connecting to object storage
 func GetStorageParams(env sys.Env) (Parameters, error) {
 	params := make(map[string]interface{})
-	params["builder-bucket"] = "builder" // default
-	files, err := ioutil.ReadDir(storageCredLocation)
-	if err != nil {
-		return nil, err
-	}
 
-	for _, file := range files {
-		if file.IsDir() || file.Name() == "..data" {
-			continue
-		}
-		data, err := ioutil.ReadFile(storageCredLocation + file.Name())
-		if err != nil {
-			return nil, err
-		}
-
-		params[file.Name()] = string(data)
-	}
-	params["bucket"] = params["builder-bucket"]
-	mEndpoint := env.Get(minioEndpointVar)
+	mEndpoint := env.Get(minioEndpointEnvVar)
 	params["regionendpoint"] = mEndpoint
 	region := "us-east-1" //region is required in distribution
 	if endpointURL, err := url.Parse(mEndpoint); err == nil {
@@ -61,7 +46,14 @@ func GetStorageParams(env sys.Env) (Parameters, error) {
 			region = strings.Split(endpointURL.Hostname(), ".")[0]
 		}
 	}
-	os.Setenv("REGISTRY_STORAGE_S3_REGION", region)
+	params["region"] = region
+
+	params["accesskey"] = env.Get(minioAccesskeyEnvVar)
+	params["secretkey"] = env.Get(minioSecretkeyEnvVar)
+	params["bucket"] = env.Get(minioBucketEnvVar)
+	if env.Get(minioLookupEnvVar) == "path" {
+		params["forcepathstyle"] = "true"
+	}
 
 	return params, nil
 }
