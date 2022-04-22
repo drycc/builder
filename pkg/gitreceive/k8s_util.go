@@ -23,7 +23,6 @@ const (
 	tarPath                = "TAR_PATH"
 	debugKey               = "DRYCC_DEBUG"
 	sourceVersion          = "SOURCE_VERSION"
-	builderStorage         = "BUILDER_STORAGE"
 	imagebuilderConfig     = "imagebuilder-config"
 	imagebuilderConfigPath = "/etc/imagebuilder"
 )
@@ -46,7 +45,6 @@ func createBuilderJob(
 	tarKey,
 	gitShortHash string,
 	imageName,
-	storageType,
 	builderName,
 	builderImage string,
 	builderImageEnv map[string]string,
@@ -74,7 +72,6 @@ func createBuilderJob(
 	addEnvToJob(job, tarPath, tarKey)
 	addEnvToJob(job, sourceVersion, gitShortHash)
 	addEnvToJob(job, "IMAGE_NAME", imageName)
-	addEnvToJob(job, builderStorage, storageType)
 
 	for key, value := range builderImageEnv {
 		addEnvToJob(job, key, value)

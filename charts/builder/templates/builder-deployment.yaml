@@ -42,8 +42,8 @@ spec:
             name: ssh
           - containerPort: 8092
             name: healthsrv
-        {{- include "builder.limits" . | indent 8 }}
         {{- include "builder.envs" . | indent 8 }}
+        {{- include "builder.limits" . | indent 8 }}
         livenessProbe:
           httpGet:
             path: /healthz

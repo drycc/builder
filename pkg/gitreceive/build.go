@@ -22,7 +22,7 @@ import (
 	dryccAPI "github.com/drycc/controller-sdk-go/api"
 	"github.com/drycc/controller-sdk-go/hooks"
 	"github.com/drycc/pkg/log"
-	"gopkg.in/yaml.v2"
+	"gopkg.in/yaml.v3"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
@@ -164,7 +164,6 @@ func build(
 		tarKey,
 		gitSha.Short(),
 		imageName,
-		conf.StorageType,
 		builderName,
 		stack["image"],
 		builderImageEnv,

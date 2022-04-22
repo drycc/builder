@@ -18,7 +18,7 @@ import (
 	"github.com/drycc/builder/pkg/sys"
 	"github.com/drycc/controller-sdk-go/api"
 	"github.com/drycc/pkg/log"
-	"gopkg.in/yaml.v2"
+	"gopkg.in/yaml.v3"
 )
 
 type testJSONStruct struct {

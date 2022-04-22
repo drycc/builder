@@ -39,7 +39,6 @@ type imageBuildCase struct {
 	imagebuilderName            string
 	imagebuilderImage           string
 	imagebuilderImagePullPolicy corev1.PullPolicy
-	storageType                 string
 	builderPodNodeSelector      map[string]string
 }
 
@@ -63,14 +62,14 @@ func TestBuildJob(t *testing.T) {
 	nodeSelector2["network"] = "fast"
 
 	imageBuilds := []imageBuildCase{
-		{true, "test", "default", emptyEnv, "tar", "deadbeef", "imagebuilder", "", "", corev1.PullAlways, "", nodeSelector1},
-		{true, "test", "default", env, "tar", "deadbeef", "", "imagebuilder", "", corev1.PullAlways, "", nodeSelector2},
-		{true, "test", "default", emptyEnv, "tar", "deadbeef", "img", "imagebuilder", "", corev1.PullAlways, "", emptyNodeSelector},
-		{true, "test", "default", env, "tar", "deadbeef", "img", "imagebuilder", "", corev1.PullAlways, "", emptyNodeSelector},
-		{true, "test", "default", env, "tar", "deadbeef", "img", "imagebuilder", "customimage", corev1.PullAlways, "", emptyNodeSelector},
-		{true, "test", "default", env, "tar", "deadbeef", "img", "imagebuilder", "customimage", corev1.PullIfNotPresent, "", emptyNodeSelector},
-		{true, "test", "default", env, "tar", "deadbeef", "img", "imagebuilder", "customimage", corev1.PullNever, "", nil},
-		{true, "test", "default", buildArgsEnv, "tar", "deadbeef", "img", "imagebuilder", "customimage", corev1.PullIfNotPresent, "", emptyNodeSelector},
+		{true, "test", "default", emptyEnv, "tar", "deadbeef", "imagebuilder", "", "", corev1.PullAlways, nodeSelector1},
+		{true, "test", "default", env, "tar", "deadbeef", "", "imagebuilder", "", corev1.PullAlways, nodeSelector2},
+		{true, "test", "default", emptyEnv, "tar", "deadbeef", "img", "imagebuilder", "", corev1.PullAlways, emptyNodeSelector},
+		{true, "test", "default", env, "tar", "deadbeef", "img", "imagebuilder", "", corev1.PullAlways, emptyNodeSelector},
+		{true, "test", "default", env, "tar", "deadbeef", "img", "imagebuilder", "customimage", corev1.PullAlways, emptyNodeSelector},
+		{true, "test", "default", env, "tar", "deadbeef", "img", "imagebuilder", "customimage", corev1.PullIfNotPresent, emptyNodeSelector},
+		{true, "test", "default", env, "tar", "deadbeef", "img", "imagebuilder", "customimage", corev1.PullNever, nil},
+		{true, "test", "default", buildArgsEnv, "tar", "deadbeef", "img", "imagebuilder", "customimage", corev1.PullIfNotPresent, emptyNodeSelector},
 	}
 	buildImageEnv := map[string]string{"DRYCC_REGISTRY_LOCATION": "on-cluster"}
 	for _, build := range imageBuilds {
@@ -82,7 +81,6 @@ func TestBuildJob(t *testing.T) {
 			build.tarKey,
 			build.gitShortHash,
 			build.imgName,
-			build.storageType,
 			build.imagebuilderName,
 			build.imagebuilderImage,
 			buildImageEnv,

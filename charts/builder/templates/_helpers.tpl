@@ -1,11 +1,9 @@
-{{- define "builder.envs" -}}
+{{- define "builder.envs" }}
 env:
 - name: "HEALTH_SERVER_PORT"
   value: "8092"
 - name: "EXTERNAL_PORT"
   value: "2223"
-- name: BUILDER_STORAGE
-  value: "{{ .Values.global.storage }}"
 - name: "TTL_SECONDS_AFTER_FINISHED"
   value: "{{ .Values.global.ttlSecondsAfterFinished }}"
 # Set GIT_LOCK_TIMEOUT to number of minutes you want to wait to git push again to the same repository
@@ -21,7 +19,7 @@ env:
 - name: "POD_NAMESPACE"
   valueFrom:
     fieldRef:
-    fieldPath: metadata.namespace
+      fieldPath: metadata.namespace
 - name: DRYCC_BUILDER_KEY
   valueFrom:
     secretKeyRef:
@@ -59,7 +57,7 @@ env:
     secretKeyRef:
       name: registry-secret
       key: host
-{{- if ne .Values.global.registryLocation "on-cluster" }}
+{{- if eq .Values.global.registryLocation "on-cluster" }}
 # NOTE(bacongobbler): use drycc/registry_proxy to work around Docker --insecure-registry requirements
 - name: "DRYCC_REGISTRY_PROXY_HOST"
   value: {{ print "127.0.0.1"  ":" .Values.global.registryProxyPort }}

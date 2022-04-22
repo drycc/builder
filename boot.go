@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"runtime"
@@ -18,7 +19,7 @@ import (
 	"github.com/drycc/builder/pkg/sys"
 	pkglog "github.com/drycc/pkg/log"
 	"github.com/kelseyhightower/envconfig"
-	"github.com/urfave/cli"
+	"github.com/urfave/cli/v2"
 )
 
 const (
@@ -39,16 +40,15 @@ func main() {
 
 	app := cli.NewApp()
 
-	app.Commands = []cli.Command{
+	app.Commands = []*cli.Command{
 		{
 			Name:    "server",
 			Aliases: []string{"srv"},
 			Usage:   "Run the git server",
-			Action: func(c *cli.Context) {
+			Action: func(c *cli.Context) error {
 				cnf := new(sshd.Config)
 				if err := envconfig.Process(serverConfAppName, cnf); err != nil {
-					pkglog.Err("getting config for %s [%s]", serverConfAppName, err)
-					os.Exit(1)
+					return fmt.Errorf("getting config for %s [%s]", serverConfAppName, err)
 				}
 				fs := sys.RealFS()
 				env := sys.RealEnv()
@@ -57,21 +57,18 @@ func main() {
 
 				storageParams, err := conf.GetStorageParams(env)
 				if err != nil {
-					log.Printf("Error getting storage parameters (%s)", err)
-					os.Exit(1)
+					return fmt.Errorf("error getting storage parameters (%s)", err)
 				}
 				var storageDriver storagedriver.StorageDriver
 				storageDriver, err = factory.Create("s3", storageParams)
 
 				if err != nil {
-					log.Printf("Error creating storage driver (%s)", err)
-					os.Exit(1)
+					return fmt.Errorf("error creating storage driver (%s)", err)
 				}
 
 				kubeClient, err := k8s.NewInCluster()
 				if err != nil {
-					log.Printf("Error getting kubernetes client [%s]", err)
-					os.Exit(1)
+					return fmt.Errorf("error getting kubernetes client [%s]", err)
 				}
 				log.Printf("Starting health check server on port %d", cnf.HealthSrvPort)
 				healthSrvCh := make(chan error)
@@ -96,14 +93,11 @@ func main() {
 
 				select {
 				case err := <-healthSrvCh:
-					log.Printf("Error running health server (%s)", err)
-					os.Exit(1)
+					return fmt.Errorf("error running health server (%s)", err)
 				case i := <-sshCh:
-					log.Printf("Unexpected SSH server stop with code %d", i)
-					os.Exit(i)
+					return fmt.Errorf("unexpected SSH server stop with code %d", i)
 				case err := <-cleanerErrCh:
-					log.Printf("Error running the deleted app cleaner (%s)", err)
-					os.Exit(1)
+					return fmt.Errorf("error running the deleted app cleaner (%s)", err)
 				}
 			},
 		},
@@ -111,32 +105,29 @@ func main() {
 			Name:    "git-receive",
 			Aliases: []string{"gr"},
 			Usage:   "Run the git-receive hook",
-			Action: func(c *cli.Context) {
+			Action: func(c *cli.Context) error {
 				cnf := new(gitreceive.Config)
 				if err := envconfig.Process(gitReceiveConfAppName, cnf); err != nil {
-					log.Printf("Error getting config for %s [%s]", gitReceiveConfAppName, err)
-					os.Exit(1)
+					return fmt.Errorf("error getting config for %s [%s]", gitReceiveConfAppName, err)
 				}
 				cnf.CheckDurations()
 				fs := sys.RealFS()
 				env := sys.RealEnv()
 				storageParams, err := conf.GetStorageParams(env)
 				if err != nil {
-					log.Printf("Error getting storage parameters (%s)", err)
-					os.Exit(1)
+					return fmt.Errorf("error getting storage parameters (%s)", err)
 				}
 				var storageDriver storagedriver.StorageDriver
 				storageDriver, err = factory.Create("s3", storageParams)
 
 				if err != nil {
-					log.Printf("Error creating storage driver (%s)", err)
-					os.Exit(1)
+					return fmt.Errorf("error creating storage driver (%s)", err)
 				}
 
 				if err := gitreceive.Run(cnf, fs, env, storageDriver); err != nil {
-					log.Printf("Error running git receive hook [%s]", err)
-					os.Exit(1)
+					return fmt.Errorf("error running git receive hook [%s]", err)
 				}
+				return nil
 			},
 		},
 	}

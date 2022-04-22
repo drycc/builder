@@ -13,7 +13,6 @@ type Config struct {
 	HealthSrvPort               int    `envconfig:"HEALTH_SERVER_PORT" default:"8092"`
 	HealthSrvTestStorageRegion  string `envconfig:"STORAGE_REGION" default:"us-east-1"`
 	CleanerPollSleepDurationSec int    `envconfig:"CLEANER_POLL_SLEEP_DURATION_SEC" default:"5"`
-	StorageType                 string `envconfig:"BUILDER_STORAGE" default:"minio"`
 	ImagebuilderImagePullPolicy string `envconfig:"IMAGEBUILDER_IMAGE_PULL_POLICY" default:"Always"`
 	LockTimeout                 int    `envconfig:"GIT_LOCK_TIMEOUT" default:"10"`
 }
