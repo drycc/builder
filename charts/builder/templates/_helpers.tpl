@@ -78,9 +78,9 @@ env:
     secretKeyRef:
       name: registry-secret
       key: password
-{{- if (.Values.builder_pod_node_selector) }}
+{{- if (.Values.builderPodNodeSelector) }}
 - name: BUILDER_POD_NODE_SELECTOR
-  value: {{.Values.builder_pod_node_selector}}
+  value: {{.Values.builderPodNodeSelector}}
 {{- end }}
 {{- end }}
 

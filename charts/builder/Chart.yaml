@@ -9,4 +9,4 @@ description: Git server and application builder for Drycc Workflow.
 maintainers:
   - name: Drycc Team
     email: engineering@drycc.com
-version: v1.0.0
+version: v1.1.0

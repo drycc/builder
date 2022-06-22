@@ -11,7 +11,26 @@ service:
   nodePort: ""
 # limitsCpu: "100m"
 # limitsMemory: "50Mi"
-# builder_pod_node_selector: "disk:ssd"
+
+nodeAffinityPreset:
+  key: "drycc.cc/node"
+  type: "soft"
+  values:
+  - "true"
+
+podAffinityPreset:
+  key: "security"
+  type: ""
+  values:
+  - "drycc-security"
+
+podAntiAffinityPreset:
+  key: "app"
+  type: "soft"
+  values:
+  - "drycc-builder"
+
+# builderPodNodeSelector: "drycc.cc/node:true"
 
 # When the TTL controller cleans up the Job. default: 6h
 # see: https://kubernetes.io/docs/concepts/workloads/controllers/job/#ttl-mechanism-for-finished-jobs

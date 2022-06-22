@@ -21,7 +21,10 @@ spec:
       labels:
         app: drycc-builder
     spec:
-      {{- include "common.affinities.pods.soft" (dict "key" "app" "values" (list "drycc-builder")) | indent 6 }}
+      affinity:
+        podAffinity: {{- include "common.affinities.pods" (dict "type" .Values.podAffinityPreset.type "key" .Values.podAffinityPreset.key "values" .Values.podAffinityPreset.values ) | nindent 10 }}
+        podAntiAffinity: {{- include "common.affinities.pods" (dict "type" .Values.podAntiAffinityPreset.type "key" .Values.podAntiAffinityPreset.key "values" .Values.podAntiAffinityPreset.values ) | nindent 10 }}
+        nodeAffinity: {{- include "common.affinities.nodes" (dict "type" .Values.nodeAffinityPreset.type "key" .Values.nodeAffinityPreset.key "values" .Values.nodeAffinityPreset.values ) | nindent 10 }}
       serviceAccount: drycc-builder
       initContainers:
       - name: drycc-builder-init
