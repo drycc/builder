@@ -14,12 +14,11 @@ func TestGetStorageParams(t *testing.T) {
 
 	env := sys.NewFakeEnv()
 	env.Envs = map[string]string{
-		"BUILDER_STORAGE":       "minio",
-		"DRYCC_MINIO_LOOKUP":    "path",
-		"DRYCC_MINIO_BUCKET":    "builder",
-		"DRYCC_MINIO_ENDPOINT":  "http://localhost:8088",
-		"DRYCC_MINIO_ACCESSKEY": "admin",
-		"DRYCC_MINIO_SECRETKEY": "adminpass",
+		"DRYCC_STORAGE_LOOKUP":    "path",
+		"DRYCC_STORAGE_BUCKET":    "builder",
+		"DRYCC_STORAGE_ENDPOINT":  "http://localhost:8088",
+		"DRYCC_STORAGE_ACCESSKEY": "admin",
+		"DRYCC_STORAGE_SECRETKEY": "adminpass",
 	}
 	params, err := GetStorageParams(env)
 	if err != nil {

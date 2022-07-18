@@ -5,4 +5,4 @@ rootfs/usr/bin/
 coverage.txt
 testdata/hooks/pre-receive
 .idea/
-
+.vscode/

@@ -34,7 +34,7 @@ spec:
           - netcat
           - -v
           - -u
-          - $(DRYCC_MINIO_ENDPOINT)
+          - $(DRYCC_STORAGE_ENDPOINT)
         {{- include "builder.envs" . | indent 8 }}
       containers:
       - name: drycc-builder

@@ -25,30 +25,30 @@ env:
     secretKeyRef:
       name: builder-key-auth
       key: builder-key
-- name: "DRYCC_MINIO_LOOKUP"
+- name: "DRYCC_STORAGE_LOOKUP"
   valueFrom:
     secretKeyRef:
-      name: minio-creds
+      name: storage-creds
       key: lookup
-- name: "DRYCC_MINIO_BUCKET"
+- name: "DRYCC_STORAGE_BUCKET"
   valueFrom:
     secretKeyRef:
-      name: minio-creds
+      name: storage-creds
       key: builder-bucket
-- name: "DRYCC_MINIO_ENDPOINT"
+- name: "DRYCC_STORAGE_ENDPOINT"
   valueFrom:
     secretKeyRef:
-      name: minio-creds
+      name: storage-creds
       key: endpoint
-- name: "DRYCC_MINIO_ACCESSKEY"
+- name: "DRYCC_STORAGE_ACCESSKEY"
   valueFrom:
     secretKeyRef:
-      name: minio-creds
+      name: storage-creds
       key: accesskey
-- name: "DRYCC_MINIO_SECRETKEY"
+- name: "DRYCC_STORAGE_SECRETKEY"
   valueFrom:
     secretKeyRef:
-      name: minio-creds
+      name: storage-creds
       key: secretkey
 - name: "DRYCC_REGISTRY_LOCATION"
   value: "{{ .Values.global.registryLocation }}"

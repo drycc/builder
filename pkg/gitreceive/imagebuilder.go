@@ -9,9 +9,9 @@ import (
 
 var (
 	requiredEnvNames = []string{
-		"DRYCC_MINIO_LOOKUP",
-		"DRYCC_MINIO_BUCKET",
-		"DRYCC_MINIO_ENDPOINT",
+		"DRYCC_STORAGE_LOOKUP",
+		"DRYCC_STORAGE_BUCKET",
+		"DRYCC_STORAGE_ENDPOINT",
 		"DRYCC_REGISTRY_HOST",
 	}
 )
@@ -37,7 +37,7 @@ func checkImagebuilderRequiredEnv(imagebuilderEnv map[string]string) error {
 }
 
 func getImagebuilderEnv(image *string, config *Config, env sys.Env) (map[string]string, error) {
-	imagebuilderEnv := env.Environ([]string{"DRYCC_REGISTRY_", "DRYCC_MINIO_"})
+	imagebuilderEnv := env.Environ([]string{"DRYCC_REGISTRY_", "DRYCC_STORAGE_"})
 	if err := checkImagebuilderRequiredEnv(imagebuilderEnv); err != nil {
 		return nil, err
 	}

@@ -11,11 +11,11 @@ import (
 )
 
 const (
-	minioLookupEnvVar    = "DRYCC_MINIO_LOOKUP"
-	minioBucketEnvVar    = "DRYCC_MINIO_BUCKET"
-	minioEndpointEnvVar  = "DRYCC_MINIO_ENDPOINT"
-	minioAccesskeyEnvVar = "DRYCC_MINIO_ACCESSKEY"
-	minioSecretkeyEnvVar = "DRYCC_MINIO_SECRETKEY"
+	storageLookupEnvVar    = "DRYCC_STORAGE_LOOKUP"
+	storageBucketEnvVar    = "DRYCC_STORAGE_BUCKET"
+	storageEndpointEnvVar  = "DRYCC_STORAGE_ENDPOINT"
+	storageAccesskeyEnvVar = "DRYCC_STORAGE_ACCESSKEY"
+	storageSecretkeyEnvVar = "DRYCC_STORAGE_SECRETKEY"
 )
 
 // BuilderKeyLocation holds the path of the builder key secret.
@@ -38,7 +38,7 @@ func GetBuilderKey() (string, error) {
 func GetStorageParams(env sys.Env) (Parameters, error) {
 	params := make(map[string]interface{})
 
-	mEndpoint := env.Get(minioEndpointEnvVar)
+	mEndpoint := env.Get(storageEndpointEnvVar)
 	params["regionendpoint"] = mEndpoint
 	region := "us-east-1" //region is required in distribution
 	if endpointURL, err := url.Parse(mEndpoint); err == nil {
@@ -48,10 +48,10 @@ func GetStorageParams(env sys.Env) (Parameters, error) {
 	}
 	params["region"] = region
 
-	params["accesskey"] = env.Get(minioAccesskeyEnvVar)
-	params["secretkey"] = env.Get(minioSecretkeyEnvVar)
-	params["bucket"] = env.Get(minioBucketEnvVar)
-	if env.Get(minioLookupEnvVar) == "path" {
+	params["accesskey"] = env.Get(storageAccesskeyEnvVar)
+	params["secretkey"] = env.Get(storageSecretkeyEnvVar)
+	params["bucket"] = env.Get(storageBucketEnvVar)
+	if env.Get(storageLookupEnvVar) == "path" {
 		params["forcepathstyle"] = "true"
 	}
 

@@ -2,22 +2,22 @@
 
 set -e
 
-mc config host add minio \
-  "${DRYCC_MINIO_ENDPOINT}" \
-  "${DRYCC_MINIO_ACCESSKEY}" \
-  "${DRYCC_MINIO_SECRETKEY}" \
-  --lookup "${DRYCC_MINIO_LOOKUP}" \
+mc config host add storage \
+  "${DRYCC_STORAGE_ENDPOINT}" \
+  "${DRYCC_STORAGE_ACCESSKEY}" \
+  "${DRYCC_STORAGE_SECRETKEY}" \
+  --lookup "${DRYCC_STORAGE_LOOKUP}" \
   --api s3v4
 
 has_bucket(){
-    mc ls minio -json|jq -r '.key'|grep -w "${DRYCC_MINIO_BUCKET}"
+    mc ls storage -json|jq -r '.key'|grep -w "${DRYCC_STORAGE_BUCKET}"
 }
 
 if  [ -z "$(has_bucket)" ] ;then
-    mc mb minio/"${DRYCC_MINIO_BUCKET}"
+    mc mb storage/"${DRYCC_STORAGE_BUCKET}"
     if  [ -z "$(has_bucket)" ] ;then
-        echo "create bucket ${DRYCC_MINIO_BUCKET} error"
+        echo "create bucket ${DRYCC_STORAGE_BUCKET} error"
         exit 1
     fi
 fi
-echo "create bucket ${DRYCC_MINIO_BUCKET} success"
+echo "create bucket ${DRYCC_STORAGE_BUCKET} success"
