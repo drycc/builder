@@ -9,8 +9,6 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/arschles/assert"
-
 	//"github.com/distribution/distribution/v3/context"
 	"github.com/distribution/distribution/v3/registry/storage/driver/factory"
 	_ "github.com/distribution/distribution/v3/registry/storage/driver/inmemory"
@@ -18,6 +16,7 @@ import (
 	"github.com/drycc/builder/pkg/sys"
 	"github.com/drycc/controller-sdk-go/api"
 	"github.com/drycc/pkg/log"
+	"github.com/stretchr/testify/assert"
 	"gopkg.in/yaml.v3"
 )
 
@@ -120,7 +119,7 @@ func TestGetProcfileFromRepoSuccess(t *testing.T) {
 	procType, err := getProcfile(tmpDir, getStack(tmpDir, config))
 	actualData := api.ProcessType{}
 	yaml.Unmarshal(data, &actualData)
-	assert.NoErr(t, err)
+	assert.Equal(t, err, nil)
 	assert.Equal(t, procType, actualData, "data")
 }
 
@@ -158,7 +157,7 @@ func TestGetProcfileFromServerSuccess(t *testing.T) {
 	_, err := getProcfile("", getStack(tmpDir, config))
 	actualData := api.ProcessType{}
 	yaml.Unmarshal(data, &actualData)
-	assert.Err(t, err, fmt.Errorf("no Procfile can be matched in (%s)", ""))
+	assert.Error(t, err, fmt.Errorf("no Procfile can be matched in (%s)", ""))
 }
 
 func TestGetProcfileFromServerFailure(t *testing.T) {
@@ -168,7 +167,7 @@ func TestGetProcfileFromServerFailure(t *testing.T) {
 		"DRYCC_STACK": "buildpack",
 	}
 	_, err := getProcfile("", getStack(tmpDir, config))
-	assert.Err(t, err, fmt.Errorf("no Procfile can be matched in (%s)", ""))
+	assert.Error(t, err, fmt.Errorf("no Procfile can be matched in (%s)", ""))
 	assert.True(t, err != nil, "no error received when there should have been")
 }
 
@@ -244,5 +243,5 @@ func TestBuildBuilderPodNodeSelector(t *testing.T) {
 	}
 
 	_, err := buildBuilderPodNodeSelector("invalidformat")
-	assert.ExistsErr(t, err, "invalid format")
+	assert.NotEqual(t, err, nil, "invalid format")
 }

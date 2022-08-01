@@ -4,8 +4,8 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/arschles/assert"
 	"github.com/drycc/builder/pkg/sys"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestGetImagebuilderEnvOffclusterErr(t *testing.T) {
@@ -21,10 +21,10 @@ func TestGetImagebuilderEnvOffclusterErr(t *testing.T) {
 		"DRYCC_REGISTRY_LOCATION": "off-cluster",
 	}
 	_, err := getImagebuilderEnv(&image, config, env)
-	assert.Err(t, err, errors.New("the environment variable DRYCC_REGISTRY_HOST is required"))
+	assert.Error(t, err, errors.New("the environment variable DRYCC_REGISTRY_HOST is required"))
 	env.Envs["DRYCC_REGISTRY_HOST"] = "drycc-registry.drycc.svc.cluster.local"
 	_, err = getImagebuilderEnv(&image, config, env)
-	assert.Err(t, err, errors.New("the environment variable DRYCC_REGISTRY_ORGANIZATION is required"))
+	assert.Error(t, err, errors.New("the environment variable DRYCC_REGISTRY_ORGANIZATION is required"))
 }
 
 func TestGetImagebuilderEnvOffclusterSuccess(t *testing.T) {
@@ -52,7 +52,7 @@ func TestGetImagebuilderEnvOffclusterSuccess(t *testing.T) {
 
 	image := "test-image"
 	imagebuilderEnv, err := getImagebuilderEnv(&image, config, env)
-	assert.NoErr(t, err)
+	assert.Equal(t, err, nil)
 	assert.Equal(t, expectedData, imagebuilderEnv, "registry details")
 
 	assert.Equal(t, expectedImage, image, "image")
@@ -84,7 +84,7 @@ func TestGetImagebuilderEnvOnclusterSuccess(t *testing.T) {
 
 	image := "python-getting-started-web:v1.2.1"
 	imagebuilderEnv, err := getImagebuilderEnv(&image, config, env)
-	assert.NoErr(t, err)
+	assert.Equal(t, err, nil)
 	assert.Equal(t, expectedData, imagebuilderEnv, "registry details")
 
 	assert.Equal(t, expectedImage, image, "image")

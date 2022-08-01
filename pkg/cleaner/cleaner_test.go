@@ -6,8 +6,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/arschles/assert"
-	"k8s.io/api/core/v1"
+	"github.com/stretchr/testify/assert"
+	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -28,14 +28,14 @@ func TestDirHasGitSuffix(t *testing.T) {
 
 func TestLocalDirs(t *testing.T) {
 	wd, err := os.Getwd()
-	assert.NoErr(t, err)
+	assert.Equal(t, err, nil)
 	pkgDir, err := filepath.Abs(wd + "/..")
-	assert.NoErr(t, err)
+	assert.Equal(t, err, nil)
 	lDirs, err := localDirs(pkgDir, func(dir string) bool {
 		// no directories with any dots in them
 		return len(strings.Split(dir, ".")) == 1
 	})
-	assert.NoErr(t, err)
+	assert.Equal(t, err, nil)
 
 	expectedPackages := map[string]int{
 		"cleaner":    1,

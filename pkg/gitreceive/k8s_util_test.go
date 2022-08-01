@@ -6,8 +6,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/arschles/assert"
 	"github.com/drycc/builder/pkg/k8s"
+	"github.com/stretchr/testify/assert"
 	batchv1 "k8s.io/api/batch/v1"
 	corev1 "k8s.io/api/core/v1"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
@@ -150,7 +150,7 @@ func TestCreateAppEnvConfigSecretErr(t *testing.T) {
 		},
 	}
 	err := createAppEnvConfigSecret(secretsClient, "test", nil)
-	assert.Err(t, err, expectedErr)
+	assert.Error(t, err, expectedErr)
 }
 
 func TestCreateAppEnvConfigSecretSuccess(t *testing.T) {
@@ -160,7 +160,7 @@ func TestCreateAppEnvConfigSecretSuccess(t *testing.T) {
 		},
 	}
 	err := createAppEnvConfigSecret(secretsClient, "test", nil)
-	assert.NoErr(t, err)
+	assert.Equal(t, err, nil)
 }
 
 func TestCreateAppEnvConfigSecretAlreadyExists(t *testing.T) {
@@ -174,5 +174,5 @@ func TestCreateAppEnvConfigSecretAlreadyExists(t *testing.T) {
 		},
 	}
 	err := createAppEnvConfigSecret(secretsClient, "test", nil)
-	assert.NoErr(t, err)
+	assert.Equal(t, err, nil)
 }

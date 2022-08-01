@@ -6,8 +6,8 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/arschles/assert"
 	"github.com/drycc/builder/pkg/sys"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestGetStorageParams(t *testing.T) {
@@ -51,7 +51,7 @@ func TestGetControllerClient(t *testing.T) {
 	}
 
 	key, err := GetBuilderKey()
-	assert.NoErr(t, err)
+	assert.Equal(t, err, nil)
 	assert.Equal(t, key, string(data), "data")
 }
 

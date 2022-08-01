@@ -13,9 +13,9 @@ import (
 
 	//"github.com/distribution/distribution/v3/context"
 
-	"github.com/arschles/assert"
 	"github.com/drycc/builder/pkg/sshd"
 	drycc "github.com/drycc/controller-sdk-go"
+	"github.com/stretchr/testify/assert"
 )
 
 var (
@@ -90,7 +90,7 @@ func TestHealthZCircuitOpen(t *testing.T) {
 	h := healthZHandler(bLister, c)
 	w := httptest.NewRecorder()
 	r, err := http.NewRequest("GET", "/healthz", bytes.NewBuffer(nil))
-	assert.NoErr(t, err)
+	assert.Equal(t, err, nil)
 	h.ServeHTTP(w, r)
 	assert.Equal(t, w.Code, http.StatusServiceUnavailable, "response code")
 	assert.Equal(t, w.Body.Len(), 0, "response body length")
@@ -105,7 +105,7 @@ func TestHealthZBucketListErr(t *testing.T) {
 
 	w := httptest.NewRecorder()
 	r, err := http.NewRequest("GET", "/healthz", bytes.NewBuffer(nil))
-	assert.NoErr(t, err)
+	assert.Equal(t, err, nil)
 	h.ServeHTTP(w, r)
 	assert.Equal(t, w.Code, http.StatusServiceUnavailable, "response code")
 	assert.Equal(t, w.Body.Len(), 0, "response body length")
@@ -125,7 +125,7 @@ func TestReadinessNamespaceListErr(t *testing.T) {
 	h := readinessHandler(client, nsLister)
 	w := httptest.NewRecorder()
 	r, err := http.NewRequest("GET", "/readiness", bytes.NewBuffer(nil))
-	assert.NoErr(t, err)
+	assert.Equal(t, err, nil)
 	h.ServeHTTP(w, r)
 	assert.Equal(t, w.Code, http.StatusServiceUnavailable, "response code")
 	assert.Equal(t, w.Body.Len(), 0, "response body length")
@@ -145,7 +145,7 @@ func TestReadinessControllerErr(t *testing.T) {
 	h := readinessHandler(client, nsLister)
 	w := httptest.NewRecorder()
 	r, err := http.NewRequest("GET", "/readiness", bytes.NewBuffer(nil))
-	assert.NoErr(t, err)
+	assert.Equal(t, err, nil)
 	h.ServeHTTP(w, r)
 	assert.Equal(t, w.Code, http.StatusServiceUnavailable, "response code")
 }
@@ -158,7 +158,7 @@ func TestHealthZSuccess(t *testing.T) {
 	h := healthZHandler(bLister, c)
 	w := httptest.NewRecorder()
 	r, err := http.NewRequest("GET", "/healthz", bytes.NewBuffer(nil))
-	assert.NoErr(t, err)
+	assert.Equal(t, err, nil)
 	h.ServeHTTP(w, r)
 	assert.Equal(t, w.Code, http.StatusOK, "response code")
 	assert.Equal(t, w.Body.Len(), 0, "response body length")
@@ -178,7 +178,7 @@ func TestReadinessSuccess(t *testing.T) {
 	h := readinessHandler(client, nsLister)
 	w := httptest.NewRecorder()
 	r, err := http.NewRequest("GET", "/readiness", bytes.NewBuffer(nil))
-	assert.NoErr(t, err)
+	assert.Equal(t, err, nil)
 	h.ServeHTTP(w, r)
 	assert.Equal(t, w.Code, http.StatusOK, "response code")
 	assert.Equal(t, w.Body.Len(), 0, "response body length")

@@ -8,7 +8,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/arschles/assert"
+	"github.com/stretchr/testify/assert"
 	"golang.org/x/crypto/ssh"
 )
 
@@ -20,7 +20,7 @@ func TestGitPktLine(t *testing.T) {
 	b := new(bytes.Buffer)
 	str := "hello world"
 	err := gitPktLine(b, str)
-	assert.NoErr(t, err)
+	assert.Equal(t, err, nil)
 
 	outStr := b.String()
 	assert.True(t, len(outStr) > 4, "output string <= 4 chars")
@@ -59,10 +59,10 @@ func clientConfig() *ssh.ClientConfig {
 func TestReceive(t *testing.T) {
 	const testingServerAddr = "127.0.0.1:2244"
 	key, err := sshTestingHostKey()
-	assert.NoErr(t, err)
+	assert.Equal(t, err, nil)
 
 	cfg, err := serverConfigure()
-	assert.NoErr(t, err)
+	assert.Equal(t, err, nil)
 	cfg.AddHostKey(key)
 
 	c := NewCircuit()
@@ -113,10 +113,10 @@ func TestReceive(t *testing.T) {
 func TestPushInvalidArgsLength(t *testing.T) {
 	const testingServerAddr = "127.0.0.1:2252"
 	key, err := sshTestingHostKey()
-	assert.NoErr(t, err)
+	assert.Equal(t, err, nil)
 
 	cfg, err := serverConfigure()
-	assert.NoErr(t, err)
+	assert.Equal(t, err, nil)
 	cfg.AddHostKey(key)
 
 	c := NewCircuit()
@@ -130,11 +130,11 @@ func TestPushInvalidArgsLength(t *testing.T) {
 
 	// Connect to the server and issue env var set. This should return true.
 	client, err := ssh.Dial("tcp", testingServerAddr, clientConfig())
-	assert.NoErr(t, err)
+	assert.Equal(t, err, nil)
 
 	// check for invalid length of arguments
 	sess, err := client.NewSession()
-	assert.NoErr(t, err)
+	assert.Equal(t, err, nil)
 	defer sess.Close()
 	if out, err := sess.Output("git-upload-pack"); err == nil {
 		t.Errorf("Expected an error but '%s' was received", out)
@@ -147,10 +147,10 @@ func TestPushInvalidArgsLength(t *testing.T) {
 func TestConcurrentPushSameRepo(t *testing.T) {
 	const testingServerAddr = "127.0.0.1:2245"
 	key, err := sshTestingHostKey()
-	assert.NoErr(t, err)
+	assert.Equal(t, err, nil)
 
 	cfg, err := serverConfigure()
-	assert.NoErr(t, err)
+	assert.Equal(t, err, nil)
 	cfg.AddHostKey(key)
 
 	c := NewCircuit()
@@ -164,14 +164,14 @@ func TestConcurrentPushSameRepo(t *testing.T) {
 
 	// Connect to the server and issue env var set. This should return true.
 	client, err := ssh.Dial("tcp", testingServerAddr, clientConfig())
-	assert.NoErr(t, err)
+	assert.Equal(t, err, nil)
 
 	const numPushers = 4
 	outCh := make(chan *sshSessionOutput, numPushers)
 	for i := 0; i < numPushers; i++ {
 		go func() {
 			sess, newSessErr := client.NewSession()
-			assert.NoErr(t, newSessErr)
+			assert.Equal(t, newSessErr, nil)
 			defer sess.Close()
 			out, outErr := sess.Output("git-upload-pack /demo.git")
 			outCh <- &sshSessionOutput{outStr: string(out), err: outErr}
@@ -202,7 +202,7 @@ func TestConcurrentPushDifferentRepo(t *testing.T) {
 		t.Fatal(err)
 	}
 	cfg, err := serverConfigure()
-	assert.NoErr(t, err)
+	assert.Equal(t, err, nil)
 	cfg.AddHostKey(key)
 	c := NewCircuit()
 	pushLock := NewInMemoryRepositoryLock(time.Duration(1 * time.Minute))
@@ -212,7 +212,7 @@ func TestConcurrentPushDifferentRepo(t *testing.T) {
 
 	// Connect to the server and issue env var set. This should return true.
 	client, err := ssh.Dial("tcp", testingServerAddr, clientConfig())
-	assert.NoErr(t, err)
+	assert.Equal(t, err, nil)
 
 	const numRepos = 3
 	repoNames := make([]string, numRepos)
@@ -225,14 +225,14 @@ func TestConcurrentPushDifferentRepo(t *testing.T) {
 		go func(repoName string) {
 			defer wg.Done()
 			sess, err := client.NewSession()
-			assert.NoErr(t, err)
+			assert.Equal(t, err, nil)
 			out, err := sess.Output("git-upload-pack /" + repoName + ".git")
-			assert.NoErr(t, err)
+			assert.Equal(t, err, nil)
 			assert.Equal(t, string(out), "OK", "output")
 		}(repoName)
 	}
 	wg.Wait()
-	assert.NoErr(t, waitWithTimeout(&wg, 1*time.Second))
+	assert.Equal(t, waitWithTimeout(&wg, 1*time.Second), nil)
 }
 
 // sshTestingHostKey loads the testing key.

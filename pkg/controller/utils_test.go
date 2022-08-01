@@ -9,8 +9,8 @@ import (
 	"testing"
 
 	builderconf "github.com/drycc/builder/pkg/conf"
+	"github.com/stretchr/testify/assert"
 
-	"github.com/arschles/assert"
 	drycc "github.com/drycc/controller-sdk-go"
 )
 
@@ -35,7 +35,7 @@ func TestNew(t *testing.T) {
 	host := "127.0.0.1"
 	port := "80"
 	cli, err := New(host, port)
-	assert.NoErr(t, err)
+	assert.Equal(t, err, nil)
 	assert.Equal(t, cli.ControllerURL.String(), fmt.Sprintf("http://%s:%s/", host, port), "data")
 	assert.Equal(t, cli.HooksToken, string(data), "data")
 	assert.Equal(t, cli.UserAgent, "drycc-builder", "user-agent")

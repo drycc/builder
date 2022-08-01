@@ -6,10 +6,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/arschles/assert"
-
 	//"github.com/distribution/distribution/v3/context"
 	storagedriver "github.com/distribution/distribution/v3/registry/storage/driver"
+	"github.com/stretchr/testify/assert"
 )
 
 const (
@@ -24,7 +23,7 @@ func TestObjectExistsSuccess(t *testing.T) {
 		},
 	}
 	exists, err := ObjectExists(statter, objPath)
-	assert.NoErr(t, err)
+	assert.Equal(t, err, nil)
 	assert.True(t, exists, "object not found when it should be present")
 	assert.Equal(t, len(statter.Calls), 1, "number of StatObject calls")
 	assert.Equal(t, statter.Calls[0].Path, objPath, "object key")
@@ -37,7 +36,7 @@ func TestObjectExistsNoObject(t *testing.T) {
 		},
 	}
 	exists, err := ObjectExists(statter, objPath)
-	assert.NoErr(t, err)
+	assert.Equal(t, err, nil)
 	assert.False(t, exists, "object found when it should be missing")
 	assert.Equal(t, len(statter.Calls), 1, "number of StatObject calls")
 }
@@ -50,7 +49,7 @@ func TestObjectExistsOtherErr(t *testing.T) {
 		},
 	}
 	exists, err := ObjectExists(statter, objPath)
-	assert.Err(t, err, expectedErr)
+	assert.Error(t, err, expectedErr)
 	assert.False(t, exists, "object found when the statter errored")
 }
 
@@ -76,7 +75,7 @@ func TestWaitForObjectExists(t *testing.T) {
 			return storagedriver.FileInfoInternal{FileInfoFields: storagedriver.FileInfoFields{}}, nil
 		},
 	}
-	assert.NoErr(t, WaitForObject(statter, objPath, 1*time.Millisecond, 2*time.Millisecond))
+	assert.Equal(t, WaitForObject(statter, objPath, 1*time.Millisecond, 2*time.Millisecond), nil)
 	// it should make 1 call immediately, then immediateley succeed
 	assert.Equal(t, len(statter.Calls), 1, "number of calls to the statter")
 }

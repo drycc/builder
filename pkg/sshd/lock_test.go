@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/arschles/assert"
+	"github.com/stretchr/testify/assert"
 )
 
 const (
@@ -22,7 +22,7 @@ func TestMultipleSameRepoLocks(t *testing.T) {
 	const repo = "repo1"
 	const numTries = 0
 	lck := NewInMemoryRepositoryLock(0)
-	assert.NoErr(t, lck.Lock(repo))
+	assert.Equal(t, lck.Lock(repo), nil)
 	for i := 0; i < numTries; i++ {
 		wg.Add(1)
 		go func() {
@@ -30,8 +30,8 @@ func TestMultipleSameRepoLocks(t *testing.T) {
 			assert.True(t, lck.Lock(repo) != nil, "lock of already locked repo should return error")
 		}()
 	}
-	assert.NoErr(t, waitWithTimeout(&wg, 1*time.Second))
-	assert.NoErr(t, lck.Unlock(repo))
+	assert.Equal(t, waitWithTimeout(&wg, 1*time.Second), nil)
+	assert.Equal(t, lck.Unlock(repo), nil)
 	for i := 0; i < numTries; i++ {
 		wg.Add(1)
 		go func() {
@@ -39,7 +39,7 @@ func TestMultipleSameRepoLocks(t *testing.T) {
 			assert.True(t, lck.Unlock(repo) != nil, "unlock of already unlocked repo should return error")
 		}()
 	}
-	assert.NoErr(t, waitWithTimeout(&wg, 1*time.Second))
+	assert.Equal(t, waitWithTimeout(&wg, 1*time.Second), nil)
 }
 
 func TestSingleLock(t *testing.T) {
@@ -94,20 +94,20 @@ func TestDoubleLockUnlock(t *testing.T) {
 func TestWrapInLock(t *testing.T) {
 	const repoName = "repo"
 	lck := NewInMemoryRepositoryLock(100 * time.Second)
-	assert.NoErr(t, wrapInLock(lck, repoName, func() error {
+	assert.Equal(t, wrapInLock(lck, repoName, func() error {
 		return nil
-	}))
-	assert.NoErr(t, lck.Lock(repoName))
-	assert.Err(t, errAlreadyLocked, wrapInLock(lck, repoName, func() error {
+	}), nil)
+	assert.Equal(t, lck.Lock(repoName), nil)
+	assert.Error(t, errAlreadyLocked, wrapInLock(lck, repoName, func() error {
 		return errGitReceive
 	}))
-	assert.Err(t, errAlreadyLocked, wrapInLock(lck, repoName, func() error {
+	assert.Error(t, errAlreadyLocked, wrapInLock(lck, repoName, func() error {
 		return nil
 	}))
-	assert.NoErr(t, lck.Unlock(repoName))
-	assert.NoErr(t, wrapInLock(lck, repoName, func() error {
+	assert.Equal(t, lck.Unlock(repoName), nil)
+	assert.Equal(t, wrapInLock(lck, repoName, func() error {
 		return nil
-	}))
+	}), nil)
 }
 
 func lockAndCallback(rl RepositoryLock, id string, callbackCh chan<- interface{}) {
