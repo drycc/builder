@@ -33,8 +33,8 @@ spec:
         args:
           - netcat
           - -v
-          - -u
-          - $(DRYCC_STORAGE_ENDPOINT)
+          - -g
+          - $(DRYCC_STORAGE_HEALTH)
         {{- include "builder.envs" . | indent 8 }}
       containers:
       - name: drycc-builder
