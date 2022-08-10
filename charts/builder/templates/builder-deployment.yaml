@@ -35,6 +35,8 @@ spec:
           - -v
           - -g
           - $(DRYCC_STORAGE_HEALTH)
+          - -a
+          - $(DRYCC_CONTROLLER_API_SERVICE_HOST):$(DRYCC_CONTROLLER_API_SERVICE_PORT)
         {{- include "builder.envs" . | indent 8 }}
       containers:
       - name: drycc-builder
