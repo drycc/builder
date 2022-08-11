@@ -2,6 +2,9 @@ imageOrg: "drycc"
 imagePullPolicy: "Always"
 imageTag: "canary"
 imageRegistry: "registry.drycc.cc"
+
+replicas: 1
+
 service:
   # Provide any additional service annotations
   annotations: {}
