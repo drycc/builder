@@ -84,8 +84,8 @@ github.com/distribution/distribution/v3 v3.0.0-20220729163034-26163d82560f/go.mo
 github.com/docker/go-metrics v0.0.1 h1:AgB/0SvBxihN0X8OR4SjsblXkbMvalQ8cjmtKQ2rQV8=
 github.com/docker/go-metrics v0.0.1/go.mod h1:cG1hvH2utMXtqgqqYE9plW6lDxS3/5ayHzueweSI3Vw=
 github.com/docopt/docopt-go v0.0.0-20180111231733-ee0de3bc6815/go.mod h1:WwZ+bS3ebgob9U8Nd0kOddGdZWjyMGR8Wziv+TBNwSE=
-github.com/drycc/controller-sdk-go v0.0.0-20220801120356-de65d8cb5598 h1:SfwHwhoe7QpNzEmN96G6egIbZKWkfiyLCFk7SlhpQ8U=
-github.com/drycc/controller-sdk-go v0.0.0-20220801120356-de65d8cb5598/go.mod h1:aGxL2AkmmG7d5afWiUGy93/+UPDnIxgsWSwxuznjteE=
+github.com/drycc/controller-sdk-go v0.0.0-20220826093601-e0d4869ec634 h1:6z8bZe6Qp++Ly7cu9VrkT6u7dOlN6G5UNVV8tGrldOg=
+github.com/drycc/controller-sdk-go v0.0.0-20220826093601-e0d4869ec634/go.mod h1:AWyrmGt7lPQ5Dd2HwO4zyOM/sfuBXVPlpw1Mr5kUZNg=
 github.com/drycc/pkg v0.0.0-20220801143647-f56f4c2f5ad1 h1:MXsFH/7dxRcpZhwLNy7v6zh5hFUFpzeQKOL2f/IzJv8=
 github.com/drycc/pkg v0.0.0-20220801143647-f56f4c2f5ad1/go.mod h1:f/Gea/FlsEOMyPgy+XAaJOQap8H3alzebLLYToETgT0=
 github.com/elazarl/goproxy v0.0.0-20180725130230-947c36da3153/go.mod h1:/Zj4wYkgs4iZTTu3o/KG3Itv/qCCa8VVMlb3i9OVuzc=

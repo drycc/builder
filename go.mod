@@ -5,7 +5,7 @@ go 1.18
 require (
 	github.com/aws/aws-sdk-go v1.44.66
 	github.com/distribution/distribution/v3 v3.0.0-20220729163034-26163d82560f
-	github.com/drycc/controller-sdk-go v0.0.0-20220801120356-de65d8cb5598
+	github.com/drycc/controller-sdk-go v0.0.0-20220826093601-e0d4869ec634
 	github.com/drycc/pkg v0.0.0-20220801143647-f56f4c2f5ad1
 	github.com/kelseyhightower/envconfig v1.4.0
 	github.com/pborman/uuid v1.2.1
