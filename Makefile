@@ -35,7 +35,7 @@ build:
 test: test-style test-unit
 
 test-style:
-	${DEV_ENV_CMD} lint --deadline
+	${DEV_ENV_CMD} lint
 
 test-unit:
 	${DEV_ENV_CMD} sh -c 'go test --race ./...'

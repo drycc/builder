@@ -5,10 +5,8 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
-	"strings"
 	"testing"
 
 	//"github.com/distribution/distribution/v3/context"
@@ -35,30 +33,6 @@ type errBucketLister struct {
 func (e errBucketLister) List(ctx context.Context, opath string) ([]string, error) {
 	return nil, e.err
 }
-
-type failureGetClient struct{}
-
-func (e failureGetClient) Get(url string) (*http.Response, error) {
-	resp := &http.Response{
-		Body:       ioutil.NopCloser(strings.NewReader("")),
-		StatusCode: http.StatusServiceUnavailable,
-	}
-	return resp, nil
-}
-
-//type emptyNamespaceLister struct{}
-//
-//func (n emptyNamespaceLister) List(ctx context.Context, opts metav1.ListOptions) (*corev1.NamespaceList, error) {
-//	return &corev1.NamespaceList{}, nil
-//}
-//
-//type errNamespaceLister struct {
-//	err error
-//}
-//
-//func (e errNamespaceLister) List(ctx context.Context, opts metav1.ListOptions) (*corev1.NamespaceList, error) {
-//	return nil, e.err
-//}
 
 type fakeHTTPServer struct {
 	// determines wether to return success or failure.

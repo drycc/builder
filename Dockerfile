@@ -11,7 +11,7 @@ FROM registry.drycc.cc/drycc/base:bullseye
 ENV DRYCC_UID=1001 \
   DRYCC_GID=1001 \
   DRYCC_HOME_DIR=/workspace \
-  MC_VERSION="2022.04.01.23.44.48" \
+  MC_VERSION="2022.08.28.20.08.11" \
   JQ_VERSION="1.6"
 
 RUN groupadd drycc --gid ${DRYCC_GID} \

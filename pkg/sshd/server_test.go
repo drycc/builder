@@ -266,23 +266,6 @@ func mockAuthKey() (*ssh.Permissions, error) {
 	return perm, nil
 }
 
-// connMetadata mocks ssh.ConnMetadata for authentication.
-type connMetadata struct{}
-
-func (cm *connMetadata) User() string          { return "drycc" }
-func (cm *connMetadata) SessionID() []byte     { return []byte("1") }
-func (cm *connMetadata) ClientVersion() []byte { return []byte("2.3.4") }
-func (cm *connMetadata) ServerVersion() []byte { return []byte("2.3.4") }
-func (cm *connMetadata) RemoteAddr() net.Addr  { return cm.localhost() }
-func (cm *connMetadata) LocalAddr() net.Addr   { return cm.localhost() }
-func (cm *connMetadata) localhost() net.Addr {
-	addrs, err := net.InterfaceAddrs()
-	if err != nil {
-		panic(err)
-	}
-	return addrs[0]
-}
-
 var (
 	testingHostKey = `-----BEGIN RSA PRIVATE KEY-----
 MIIEpAIBAAKCAQEA0xOK/wubqj+e4HNp+yAdK4WJnLZCvcjS2DwaxwF+E968kSeU
