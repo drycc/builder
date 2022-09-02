@@ -270,7 +270,7 @@ func build(
 
 	log.Info("Done, %s:v%d deployed to Workflow\n", appName, release)
 	log.Info("Use 'drycc open' to view this application in your browser\n")
-	log.Info("To learn more, use 'drycc help' or visit https://drycc.cc/\n")
+	log.Info("To learn more, use 'drycc help' or visit https://www.drycc.cc/\n")
 
 	run(repoCmd(repoDir, "git", "gc"))
 
