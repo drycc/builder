@@ -1,10 +1,10 @@
-
 # Drycc Builder v2
 
 [![Build Status](https://drone.drycc.cc/api/badges/drycc/builder/status.svg)](https://drone.drycc.cc/drycc/builder)
 [![codecov](https://codecov.io/gh/drycc/builder/branch/main/graph/badge.svg)](https://codecov.io/gh/drycc/builder)
 [![Go Report Card](https://goreportcard.com/badge/github.com/drycc/builder)](https://goreportcard.com/report/github.com/drycc/builder)
 [![codebeat badge](https://codebeat.co/badges/0507e5d5-163b-4280-84ea-83bd2e0c8e41)](https://codebeat.co/projects/github-com-drycc-builder-main)
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fdrycc%2Fbuilder.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fdrycc%2Fbuilder?ref=badge_shield)
 
 Drycc - A Fork of Drycc Workflow
 
@@ -83,3 +83,7 @@ Please follow the instructions on the [official Drycc docs](http://docs-v2.readt
 [issues]: https://github.com/drycc/builder/issues
 [prs]: https://github.com/drycc/builder/pulls
 [v2.18]: https://github.com/drycc/workflow/releases/tag/v2.18.0
+
+
+## License
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fdrycc%2Fbuilder.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Fdrycc%2Fbuilder?ref=badge_large)
