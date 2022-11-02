@@ -4,8 +4,8 @@ go 1.19
 
 require (
 	github.com/aws/aws-sdk-go v1.44.87
-	github.com/distribution/distribution/v3 v3.0.0-20220822034424-3413bf8e14fd
-	github.com/drycc/controller-sdk-go v0.0.0-20220830032209-a334918d2242
+	github.com/distribution/distribution/v3 v3.0.0-20221028072015-7f9f86c4116f
+	github.com/drycc/controller-sdk-go v0.0.0-20221102064813-4fdd84374948
 	github.com/drycc/pkg v0.0.0-20220830031116-26c11ff8667c
 	github.com/kelseyhightower/envconfig v1.4.0
 	github.com/pborman/uuid v1.2.1
@@ -55,9 +55,9 @@ require (
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/sirupsen/logrus v1.8.1 // indirect
 	github.com/xrash/smetrics v0.0.0-20201216005158-039620a65673 // indirect
-	golang.org/x/net v0.0.0-20220722155237-a158d28d115b // indirect
+	golang.org/x/net v0.0.0-20220906165146-f3363e06e74c // indirect
 	golang.org/x/oauth2 v0.0.0-20211104180415-d3ed0bb246c8 // indirect
-	golang.org/x/sys v0.0.0-20220722155257-8c9f86f7a55f // indirect
+	golang.org/x/sys v0.0.0-20220728004956-3c1f35247d10 // indirect
 	golang.org/x/term v0.0.0-20210927222741-03fcf44c2211 // indirect
 	golang.org/x/text v0.3.7 // indirect
 	golang.org/x/time v0.0.0-20220210224613-90d013bbcef8 // indirect
