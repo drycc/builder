@@ -3,19 +3,19 @@ module github.com/drycc/builder
 go 1.19
 
 require (
-	github.com/aws/aws-sdk-go v1.44.87
-	github.com/distribution/distribution/v3 v3.0.0-20221028072015-7f9f86c4116f
+	github.com/aws/aws-sdk-go v1.44.140
+	github.com/distribution/distribution/v3 v3.0.0-20221111170714-3b8fbf975279
 	github.com/drycc/controller-sdk-go v0.0.0-20221102064813-4fdd84374948
 	github.com/drycc/pkg v0.0.0-20220830031116-26c11ff8667c
 	github.com/kelseyhightower/envconfig v1.4.0
 	github.com/pborman/uuid v1.2.1
-	github.com/stretchr/testify v1.8.0
-	github.com/urfave/cli/v2 v2.11.2
-	golang.org/x/crypto v0.0.0-20220829220503-c86fa9a7ed90
+	github.com/stretchr/testify v1.8.1
+	github.com/urfave/cli/v2 v2.23.5
+	golang.org/x/crypto v0.3.0
 	gopkg.in/yaml.v3 v3.0.1
-	k8s.io/api v0.25.0
-	k8s.io/apimachinery v0.25.0
-	k8s.io/client-go v0.25.0
+	k8s.io/api v0.25.4
+	k8s.io/apimachinery v0.25.4
+	k8s.io/client-go v0.25.4
 )
 
 require (
@@ -34,7 +34,7 @@ require (
 	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/google/gnostic v0.5.7-v3refs // indirect
-	github.com/google/go-cmp v0.5.6 // indirect
+	github.com/google/go-cmp v0.5.8 // indirect
 	github.com/google/gofuzz v1.1.0 // indirect
 	github.com/google/uuid v1.1.2 // indirect
 	github.com/gorilla/mux v1.8.0 // indirect
@@ -55,11 +55,11 @@ require (
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/sirupsen/logrus v1.8.1 // indirect
 	github.com/xrash/smetrics v0.0.0-20201216005158-039620a65673 // indirect
-	golang.org/x/net v0.0.0-20220906165146-f3363e06e74c // indirect
+	golang.org/x/net v0.2.0 // indirect
 	golang.org/x/oauth2 v0.0.0-20211104180415-d3ed0bb246c8 // indirect
-	golang.org/x/sys v0.0.0-20220728004956-3c1f35247d10 // indirect
-	golang.org/x/term v0.0.0-20210927222741-03fcf44c2211 // indirect
-	golang.org/x/text v0.3.7 // indirect
+	golang.org/x/sys v0.2.0 // indirect
+	golang.org/x/term v0.2.0 // indirect
+	golang.org/x/text v0.4.0 // indirect
 	golang.org/x/time v0.0.0-20220210224613-90d013bbcef8 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
 	google.golang.org/protobuf v1.28.0 // indirect
@@ -72,5 +72,3 @@ require (
 	sigs.k8s.io/structured-merge-diff/v4 v4.2.3 // indirect
 	sigs.k8s.io/yaml v1.2.0 // indirect
 )
-
-replace github.com/docker/distribution v2.7.1+incompatible => github.com/distribution/distribution v2.7.1+incompatible
