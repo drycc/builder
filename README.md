@@ -1,6 +1,6 @@
 # Drycc Builder v2
 
-[![Build Status](https://drone.drycc.cc/api/badges/drycc/builder/status.svg)](https://drone.drycc.cc/drycc/builder)
+[![Build Status](https://woodpecker.drycc.cc/api/badges/drycc/builder/status.svg)](https://woodpecker.drycc.cc/drycc/builder)
 [![codecov](https://codecov.io/gh/drycc/builder/branch/main/graph/badge.svg)](https://codecov.io/gh/drycc/builder)
 [![Go Report Card](https://goreportcard.com/badge/github.com/drycc/builder)](https://goreportcard.com/report/github.com/drycc/builder)
 [![codebeat badge](https://codebeat.co/badges/0507e5d5-163b-4280-84ea-83bd2e0c8e41)](https://codebeat.co/projects/github-com-drycc-builder-main)
