@@ -1,0 +1,20 @@
+apiVersion: gateway.networking.k8s.io/v1alpha2
+kind: TCPRoute
+metadata:
+  name: drycc-builder
+  labels:
+    app: "drycc-builder"
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
+spec:
+  parentRefs:
+  - group: gateway.networking.k8s.io
+    kind: Gateway
+    name: drycc-gateway
+    sectionName: drycc-gateway-listener-builder-tcp
+  rules:
+  - backendRefs:
+    - name: drycc-builder
+      port: 2222
+
