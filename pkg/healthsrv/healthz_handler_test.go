@@ -22,7 +22,7 @@ var (
 
 type emptyBucketLister struct{}
 
-func (e emptyBucketLister) List(ctx context.Context, opath string) ([]string, error) {
+func (e emptyBucketLister) List(context.Context, string) ([]string, error) {
 	return nil, nil
 }
 
@@ -30,7 +30,7 @@ type errBucketLister struct {
 	err error
 }
 
-func (e errBucketLister) List(ctx context.Context, opath string) ([]string, error) {
+func (e errBucketLister) List(context.Context, string) ([]string, error) {
 	return nil, e.err
 }
 

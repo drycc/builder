@@ -32,7 +32,6 @@ type podSelectorBuildCase struct {
 func TestBuild(t *testing.T) {
 	config := &Config{}
 	env := sys.NewFakeEnv()
-	fs := sys.NewFakeFS()
 	// NOTE(bacongobbler): there's a little easter egg here... ;)
 	sha := "0462cef5812ce31fe12f25596ff68dc614c708af"
 
@@ -54,29 +53,29 @@ func TestBuild(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if err := build(config, storageDriver, nil, fs, env, "foo", sha); err == nil {
+	if err := build(config, storageDriver, nil, env, sha); err == nil {
 		t.Error("expected running build() without setting config.ImagebuilderImagePullPolicy to fail")
 	}
 
 	config.ImagebuilderImagePullPolicy = "Always"
-	if err := build(config, storageDriver, nil, fs, env, "foo", sha); err == nil {
+	if err := build(config, storageDriver, nil, env, sha); err == nil {
 		t.Error("expected running build() without setting config.ImagebuilderImagePullPolicy to fail")
 	}
 
-	err = build(config, storageDriver, nil, fs, env, "foo", "abc123")
+	err = build(config, storageDriver, nil, env, "abc123")
 	expected := "git sha abc123 was invalid"
 	if err.Error() != expected {
 		t.Errorf("expected '%s', got '%v'", expected, err.Error())
 	}
 
-	if err := build(config, storageDriver, nil, fs, env, "foo", sha); err == nil {
+	if err := build(config, storageDriver, nil, env, sha); err == nil {
 		t.Error("expected running build() without valid controller client info to fail")
 	}
 
 	config.ControllerHost = "localhost"
 	config.ControllerPort = "1234"
 
-	if err := build(config, storageDriver, nil, fs, env, "foo", sha); err == nil {
+	if err := build(config, storageDriver, nil, env, sha); err == nil {
 		t.Error("expected running build() without a valid builder key to fail")
 	}
 
@@ -86,7 +85,7 @@ func TestBuild(t *testing.T) {
 		t.Fatalf("error creating %s (%s)", builderconf.BuilderKeyLocation, err)
 	}
 
-	if err := build(config, storageDriver, nil, fs, env, "foo", sha); err == nil {
+	if err := build(config, storageDriver, nil, env, sha); err == nil {
 		t.Error("expected running build() without a valid controller connection to fail")
 	}
 }
@@ -116,7 +115,7 @@ func TestGetProcfileFromRepoSuccess(t *testing.T) {
 	config.Values = map[string]interface{}{
 		"DRYCC_STACK": "buildpack",
 	}
-	procType, err := getProcfile(tmpDir, getStack(tmpDir, config))
+	procType, err := getProcfile(tmpDir)
 	actualData := api.ProcessType{}
 	yaml.Unmarshal(data, &actualData)
 	assert.Equal(t, err, nil)
@@ -141,32 +140,30 @@ func TestGetProcfileFromRepoFailure(t *testing.T) {
 	config.Values = map[string]interface{}{
 		"DRYCC_STACK": "buildpack",
 	}
-	_, err = getProcfile(tmpDir, getStack(tmpDir, config))
+	_, err = getProcfile(tmpDir)
 
 	assert.True(t, err != nil, "no error received when there should have been")
 }
 
 func TestGetProcfileFromServerSuccess(t *testing.T) {
 	data := []byte("web: example-go")
-	tmpDir := os.TempDir()
 	config := api.Config{}
 	config.Values = map[string]interface{}{
 		"DRYCC_STACK": "buildpack",
 	}
 
-	_, err := getProcfile("", getStack(tmpDir, config))
+	_, err := getProcfile("")
 	actualData := api.ProcessType{}
 	yaml.Unmarshal(data, &actualData)
 	assert.Error(t, err, fmt.Errorf("no Procfile can be matched in (%s)", ""))
 }
 
 func TestGetProcfileFromServerFailure(t *testing.T) {
-	tmpDir := os.TempDir()
 	config := api.Config{}
 	config.Values = map[string]interface{}{
 		"DRYCC_STACK": "buildpack",
 	}
-	_, err := getProcfile("", getStack(tmpDir, config))
+	_, err := getProcfile("")
 	assert.Error(t, err, fmt.Errorf("no Procfile can be matched in (%s)", ""))
 	assert.True(t, err != nil, "no error received when there should have been")
 }

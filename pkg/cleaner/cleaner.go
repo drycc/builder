@@ -11,7 +11,6 @@ import (
 	"strings"
 	"time"
 
-	//"github.com/distribution/distribution/v3/context"
 	storagedriver "github.com/distribution/distribution/v3/registry/storage/driver"
 	"github.com/drycc/builder/pkg/gitreceive"
 	"github.com/drycc/builder/pkg/k8s"
@@ -19,9 +18,6 @@ import (
 	"github.com/drycc/pkg/log"
 	corev1 "k8s.io/api/core/v1"
 
-	//"k8s.io/apimachinery/pkg/labels"
-	//"k8s.io/apimachinery/pkg/fields"
-	//"k8s.io/apimachinery/pkg/apis/meta/internalversion"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 

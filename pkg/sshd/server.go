@@ -71,7 +71,8 @@ func AuthKey(key ssh.PublicKey, cnf *Config) (*ssh.Permissions, error) {
 // ConfigureServerSshConfig
 //
 // Returns:
-//  An *ssh.ServerConfig
+//
+//	An *ssh.ServerConfig
 func Configure(cnf *Config) (*ssh.ServerConfig, error) {
 	cfg := &ssh.ServerConfig{
 		PublicKeyCallback: func(m ssh.ConnMetadata, k ssh.PublicKey) (*ssh.Permissions, error) {
@@ -199,7 +200,7 @@ func sshConnection(conn net.Conn) string {
 }
 
 func sendExitStatus(status uint32, channel ssh.Channel) error {
-	exit := struct{ Status uint32 }{uint32(0)}
+	exit := struct{ Status uint32 }{uint32(status)}
 	_, err := channel.SendRequest("exit-status", false, ssh.Marshal(exit))
 	return err
 }
@@ -347,9 +348,8 @@ func cleanExec(pay []byte) string {
 // Returns the string PONG and exit status 0.
 //
 // Params:
-// 	- channel (ssh.Channel): The channel to respond on.
-// 	- request (*ssh.Request): The request.
-//
+//   - channel (ssh.Channel): The channel to respond on.
+//   - request (*ssh.Request): The request.
 func Ping(channel ssh.Channel, req *ssh.Request) error {
 	log.Info("PING")
 	if _, err := channel.Write([]byte("pong")); err != nil {

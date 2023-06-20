@@ -20,7 +20,7 @@ type StoreToPodLister struct {
 	cache.Store
 }
 
-//PodWatcher is a struct which holds the return values of (k8s.io/kubernetes/pkg/controller/framework).NewIndexerInformer together.
+// PodWatcher is a struct which holds the return values of (k8s.io/kubernetes/pkg/controller/framework).NewIndexerInformer together.
 type PodWatcher struct {
 	Store      StoreToPodLister
 	Controller cache.Controller
@@ -40,7 +40,7 @@ func (s *StoreToPodLister) List(selector labels.Selector) (pods []*v1.Pod, err e
 	return pods, nil
 }
 
-//NewPodWatcher creates a new BuildPodWatcher useful to list the pods using a cache which gets updated based on the watch func.
+// NewPodWatcher creates a new BuildPodWatcher useful to list the pods using a cache which gets updated based on the watch func.
 func NewPodWatcher(c kubernetes.Clientset, ns string) *PodWatcher {
 	pw := &PodWatcher{}
 

@@ -180,7 +180,7 @@ func addEnvToJob(job batchv1.Job, key, value string) {
 }
 
 // waitForPod waits for a pod in state running, succeeded or failed
-func waitForPod(pw *k8s.PodWatcher, ns, podName string, ticker, interval, timeout time.Duration) error {
+func waitForPod(pw *k8s.PodWatcher, podName string, ticker, interval, timeout time.Duration) error {
 	condition := func(pod *corev1.Pod) (bool, error) {
 		if pod.Status.Phase == corev1.PodRunning {
 			return true, nil
@@ -195,14 +195,14 @@ func waitForPod(pw *k8s.PodWatcher, ns, podName string, ticker, interval, timeou
 	}
 
 	quit := progress("...", ticker)
-	err := waitForPodCondition(pw, ns, podName, condition, interval, timeout)
+	err := waitForPodCondition(pw, podName, condition, interval, timeout)
 	quit <- true
 	<-quit
 	return err
 }
 
 // waitForPodEnd waits for a pod in state succeeded or failed
-func waitForPodEnd(pw *k8s.PodWatcher, ns, podName string, interval, timeout time.Duration) error {
+func waitForPodEnd(pw *k8s.PodWatcher, podName string, interval, timeout time.Duration) error {
 	condition := func(pod *corev1.Pod) (bool, error) {
 		if pod.Status.Phase == corev1.PodSucceeded {
 			return true, nil
@@ -213,11 +213,11 @@ func waitForPodEnd(pw *k8s.PodWatcher, ns, podName string, interval, timeout tim
 		return false, nil
 	}
 
-	return waitForPodCondition(pw, ns, podName, condition, interval, timeout)
+	return waitForPodCondition(pw, podName, condition, interval, timeout)
 }
 
 // waitForPodCondition waits for a pod in state defined by a condition (func)
-func waitForPodCondition(pw *k8s.PodWatcher, ns, podName string, condition func(pod *corev1.Pod) (bool, error),
+func waitForPodCondition(pw *k8s.PodWatcher, podName string, condition func(pod *corev1.Pod) (bool, error),
 	interval, timeout time.Duration) error {
 	return wait.PollImmediate(interval, timeout, func() (bool, error) {
 		pods, err := pw.Store.List(labels.Set{"heritage": podName}.AsSelector())

@@ -6,12 +6,12 @@ RUN export GO111MODULE=on \
   && CGO_ENABLED=0 init-stack go build -ldflags "${LDFLAGS}" -o /usr/local/bin/boot boot.go
 
 
-FROM registry.drycc.cc/drycc/base:bullseye
+FROM registry.drycc.cc/drycc/base:bookworm
 
 ENV DRYCC_UID=1001 \
   DRYCC_GID=1001 \
   DRYCC_HOME_DIR=/workspace \
-  MC_VERSION="2022.08.28.20.08.11" \
+  MC_VERSION="2023.06.15.15.08.26" \
   JQ_VERSION="1.6"
 
 RUN groupadd drycc --gid ${DRYCC_GID} \

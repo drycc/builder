@@ -60,9 +60,7 @@ func build(
 	storageDriver storagedriver.StorageDriver,
 	//kubeClient *client.Client,
 	kubeClient *kubernetes.Clientset,
-	fs sys.FS,
 	env sys.Env,
-	builderKey,
 	rawGitSha string) error {
 
 	// Rewrite regular expression, compatible with slug type
@@ -193,7 +191,7 @@ func build(
 	defer close(stopCh)
 	go pw.Controller.Run(stopCh)
 
-	if err := waitForPod(pw, newJob.Namespace, newJob.Name, conf.SessionIdleInterval(), conf.BuilderPodTickDuration(), conf.BuilderPodWaitDuration()); err != nil {
+	if err := waitForPod(pw, newJob.Name, conf.SessionIdleInterval(), conf.BuilderPodTickDuration(), conf.BuilderPodWaitDuration()); err != nil {
 		return fmt.Errorf("watching events for builder pod startup (%s)", err)
 	}
 
@@ -231,7 +229,7 @@ func build(
 	)
 	// check the state and exit code of the build pod.
 	// if the code is not 0 return error
-	if err := waitForPodEnd(pw, newJob.Namespace, newJob.Name, conf.BuilderPodTickDuration(), conf.BuilderPodWaitDuration()); err != nil {
+	if err := waitForPodEnd(pw, newJob.Name, conf.BuilderPodTickDuration(), conf.BuilderPodWaitDuration()); err != nil {
 		return fmt.Errorf("error getting builder pod status (%s)", err)
 	}
 	log.Debug("Done")
@@ -249,7 +247,7 @@ func build(
 	}
 	log.Debug("Done")
 
-	procfile, err := getProcfile(tmpDir, stack)
+	procfile, err := getProcfile(tmpDir)
 	if err != nil {
 		return err
 	}
@@ -303,7 +301,7 @@ func prettyPrintJSON(data interface{}) (string, error) {
 	return formatted.String(), nil
 }
 
-func getProcfile(dirName string, stack map[string]string) (dryccAPI.ProcessType, error) {
+func getProcfile(dirName string) (dryccAPI.ProcessType, error) {
 	procfile := dryccAPI.ProcessType{}
 	if _, err := os.Stat(fmt.Sprintf("%s/Procfile", dirName)); err == nil {
 		rawProcFile, err := ioutil.ReadFile(fmt.Sprintf("%s/Procfile", dirName))

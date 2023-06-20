@@ -7,7 +7,6 @@ import (
 	"strings"
 
 	storagedriver "github.com/distribution/distribution/v3/registry/storage/driver"
-	builderconf "github.com/drycc/builder/pkg/conf"
 	"github.com/drycc/builder/pkg/sys"
 	"github.com/drycc/pkg/log"
 
@@ -24,14 +23,8 @@ func readLine(line string) (string, string, string, error) {
 
 // Run runs the git-receive hook. This func is effectively the main for the git-receive hook,
 // although it is called from the main in boot.go.
-func Run(conf *Config, fs sys.FS, env sys.Env, storageDriver storagedriver.StorageDriver) error {
+func Run(conf *Config, env sys.Env, storageDriver storagedriver.StorageDriver) error {
 	log.Debug("Running git hook")
-
-	builderKey, err := builderconf.GetBuilderKey()
-	if err != nil {
-		return err
-	}
-
 	//kubeClient, err := client.NewInCluster()
 	kubeClient, err := k8s.NewInCluster()
 	if err != nil {
@@ -51,11 +44,10 @@ func Run(conf *Config, fs sys.FS, env sys.Env, storageDriver storagedriver.Stora
 
 		// if we're processing a receive-pack on an existing repo, run a build
 		if strings.HasPrefix(conf.SSHOriginalCommand, "git-receive-pack") {
-			if err := build(conf, storageDriver, kubeClient, fs, env, builderKey, newRev); err != nil {
+			if err := build(conf, storageDriver, kubeClient, env, newRev); err != nil {
 				return err
 			}
 		}
 	}
-
 	return scanner.Err()
 }

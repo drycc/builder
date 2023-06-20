@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+#
+# This script is designed to be run inside the container
+#
+
+# fail hard and fast even on pipelines
+set -eou pipefail
+
+function fake_k8s_env() {
+    export KUBERNETES_SERVICE_HOST=10.43.0.1
+    export KUBERNETES_SERVICE_PORT=443
+    mkdir -p /var/run/secrets/kubernetes.io/serviceaccount
+    cat << EOF > "/var/run/secrets/kubernetes.io/serviceaccount/token"
+eyJhbGciOiJSUzI1NiIsImtpZCI6IlBrb1V6eGNRUWFfSEU3NG1lLWxZaUlnMUhEYnhnYWc1RXo2ZC1wOW4yMncifQ.eyJhdWQiOlsiaHR0cHM6Ly9rdWJlcm5ldGVzLmRlZmF1bHQuc3ZjLmNsdXN0ZXIubG9jYWwiLCJrM3MiXSwiZXhwIjoxNzE4NzU1OTY2LCJpYXQiOjE2ODcyMTk5NjYsImlzcyI6Imh0dHBzOi8va3ViZXJuZXRlcy5kZWZhdWx0LnN2Yy5jbHVzdGVyLmxvY2FsIiwia3ViZXJuZXRlcy5pbyI6eyJuYW1lc3BhY2UiOiJkcnljYyIsInBvZCI6eyJuYW1lIjoiZHJ5Y2MtZGF0YWJhc2UtMiIsInVpZCI6IjljMDEzYjcwLTgzNmUtNDI2NC05OTMyLWM1NWY3ZTg2ODQyOSJ9LCJzZXJ2aWNlYWNjb3VudCI6eyJuYW1lIjoiZHJ5Y2MtZGF0YWJhc2UiLCJ1aWQiOiI4MWVhNjM4ZC1jYjZhLTQ3YzYtYWRjMi1iODgzM2Q3NjMwNzYifSwid2FybmFmdGVyIjoxNjg3MjIzNTczfSwibmJmIjoxNjg3MjE5OTY2LCJzdWIiOiJzeXN0ZW06c2VydmljZWFjY291bnQ6ZHJ5Y2M6ZHJ5Y2MtZGF0YWJhc2UifQ.fmSqpvSPHB9KUD1preXfp5MPE4WQrxDppFVD5EPyH_RskYRtrP8z4-ys0kaRcqf4tlsMovnBFgv9dvHWJGBxlowzXWWaaXwxEMCwwIjlLDEyTn2hazdmYINfB61xjvOq0EAUeZP3GKd_nPFqmCM21bs9mzvWQRAPCsis60o_DISbPaipxea-An1WPLysJH_saByx1qOCaAfwSROp8lUKX5db_-mpr2lAj-130UelVxa0umJ0BY0HA6jfeBLo_vRH4Y7-enKeY0Zce93zjYmZHgL7Lep3K4w0ja9uECiuIhcOyxYz-SYe1Hym4OSCuqJEP9kiyZ9B3irIDcyRCcRpKw
+EOF
+    cat << EOF > "/var/run/secrets/kubernetes.io/serviceaccount/ca.crt"
+-----BEGIN CERTIFICATE-----
+MIIBdzCCAR2gAwIBAgIBADAKBggqhkjOPQQDAjAjMSEwHwYDVQQDDBhrM3Mtc2Vy
+dmVyLWNhQDE2ODU5MzE2NzcwHhcNMjMwNjA1MDIyMTE3WhcNMzMwNjAyMDIyMTE3
+WjAjMSEwHwYDVQQDDBhrM3Mtc2VydmVyLWNhQDE2ODU5MzE2NzcwWTATBgcqhkjO
+PQIBBggqhkjOPQMBBwNCAAR4ULHC4BX7Ss8BVBrrdcT7o57tc323jlLczUOxVQVo
+Q4LkoXY1EAKrjEaFu1HGo3Gr8GQ6d/ZJNzrTAWTGIo0ro0IwQDAOBgNVHQ8BAf8E
+BAMCAqQwDwYDVR0TAQH/BAUwAwEB/zAdBgNVHQ4EFgQUnPRP/O6bnrUeVknNFFUe
+Iw4ruF8wCgYIKoZIzj0EAwIDSAAwRQIgHjUAelTQCKoehiZM8c+RYyeJGKvjTB44
+W5RbH+np4T0CIQDCgnhCCPAWtS04DRR7nFog3ilH9bFoIj0g5tOTEVNfLg==
+-----END CERTIFICATE-----
+EOF
+}
+
+. init-stack
+fake_k8s_env
+
+"$@"

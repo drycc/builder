@@ -22,7 +22,7 @@ func (c Config) CleanerPollSleepDuration() time.Duration {
 	return time.Duration(c.CleanerPollSleepDurationSec) * time.Second
 }
 
-//GitLockTimeout return LockTimeout in minutes
+// GitLockTimeout return LockTimeout in minutes
 func (c Config) GitLockTimeout() time.Duration {
 	return time.Duration(c.LockTimeout) * time.Minute
 }

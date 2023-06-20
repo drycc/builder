@@ -2,7 +2,9 @@ package healthsrv
 
 import (
 	"context"
+
 	corev1 "k8s.io/api/core/v1"
+
 	//"k8s.io/apimachinery/pkg/labels"
 	//"k8s.io/apimachinery/pkg/fields"
 	//"k8s.io/apimachinery/pkg/apis/meta/internalversion"
@@ -19,7 +21,7 @@ type NamespaceLister interface {
 
 type emptyNamespaceLister struct{}
 
-func (n emptyNamespaceLister) List(ctx context.Context, opts metav1.ListOptions) (*corev1.NamespaceList, error) {
+func (n emptyNamespaceLister) List(context.Context, metav1.ListOptions) (*corev1.NamespaceList, error) {
 	return &corev1.NamespaceList{}, nil
 }
 
@@ -27,7 +29,7 @@ type errNamespaceLister struct {
 	err error
 }
 
-func (e errNamespaceLister) List(ctx context.Context, opts metav1.ListOptions) (*corev1.NamespaceList, error) {
+func (e errNamespaceLister) List(context.Context, metav1.ListOptions) (*corev1.NamespaceList, error) {
 	return nil, e.err
 }
 

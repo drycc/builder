@@ -245,7 +245,7 @@ func runServer(
 	c *Circuit,
 	pushLock RepositoryLock,
 	testAddr string,
-	handlerSleepDur time.Duration,
+	_ time.Duration,
 	t *testing.T) {
 
 	go func() {

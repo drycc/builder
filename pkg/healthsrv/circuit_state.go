@@ -7,7 +7,9 @@ import (
 )
 
 // circuitState determines whether circ.State() == sshd.ClosedState, and sends the results back on
-//  the various given channels. This func is intended to be run in a goroutine and communicates
+//
+//	the various given channels. This func is intended to be run in a goroutine and communicates
+//
 // via the channels it's passed.
 //
 // If the circuit is closed, it passes an empty struct back on succCh. On failure, it sends an

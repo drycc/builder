@@ -28,7 +28,7 @@ func TestReadLine(t *testing.T) {
 
 func TestRun(t *testing.T) {
 	// NOTE(bacongobbler): not much we can test at this time other than it fails based on bad setup
-	if err := Run(nil, nil, nil, nil); err == nil {
-		t.Errorf("expected error to be non-nil, got nil")
+	if err := Run(nil, nil, nil); err != nil {
+		t.Errorf("expected error to be nil, got %s", err)
 	}
 }

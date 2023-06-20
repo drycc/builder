@@ -111,7 +111,6 @@ func main() {
 					return fmt.Errorf("error getting config for %s [%s]", gitReceiveConfAppName, err)
 				}
 				cnf.CheckDurations()
-				fs := sys.RealFS()
 				env := sys.RealEnv()
 				storageParams, err := conf.GetStorageParams(env)
 				if err != nil {
@@ -124,7 +123,7 @@ func main() {
 					return fmt.Errorf("error creating storage driver (%s)", err)
 				}
 
-				if err := gitreceive.Run(cnf, fs, env, storageDriver); err != nil {
+				if err := gitreceive.Run(cnf, env, storageDriver); err != nil {
 					return fmt.Errorf("error running git receive hook [%s]", err)
 				}
 				return nil

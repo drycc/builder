@@ -22,46 +22,46 @@ type FakeSecret struct {
 }
 
 // Get is the interface definition.
-func (f *FakeSecret) Get(ctx context.Context, name string, opts metav1.GetOptions) (*v1.Secret, error) {
+func (f *FakeSecret) Get(_ context.Context, name string, _ metav1.GetOptions) (*v1.Secret, error) {
 	return f.FnGet(name)
 }
 
 // Delete is the interface definition.
-func (f *FakeSecret) Delete(ctx context.Context, name string, opts metav1.DeleteOptions) error {
+func (f *FakeSecret) Delete(context.Context, string, metav1.DeleteOptions) error {
 	return nil
 }
 
 // Create is the interface definition.
-func (f *FakeSecret) Create(ctx context.Context, secret *v1.Secret, opts metav1.CreateOptions) (*v1.Secret, error) {
+func (f *FakeSecret) Create(_ context.Context, secret *v1.Secret, _ metav1.CreateOptions) (*v1.Secret, error) {
 	return f.FnCreate(secret)
 }
 
 // Update is the interface definition.
-func (f *FakeSecret) Update(ctx context.Context, secret *v1.Secret, opts metav1.UpdateOptions) (*v1.Secret, error) {
+func (f *FakeSecret) Update(_ context.Context, secret *v1.Secret, _ metav1.UpdateOptions) (*v1.Secret, error) {
 	return f.FnUpdate(secret)
 }
 
 // List is the interface definition.
-func (f *FakeSecret) List(ctx context.Context, opts metav1.ListOptions) (*v1.SecretList, error) {
+func (f *FakeSecret) List(context.Context, metav1.ListOptions) (*v1.SecretList, error) {
 	return &v1.SecretList{}, nil
 }
 
 // Watch is the interface definition.
-func (f *FakeSecret) Watch(ctx context.Context, opts metav1.ListOptions) (watch.Interface, error) {
+func (f *FakeSecret) Watch(context.Context, metav1.ListOptions) (watch.Interface, error) {
 	return nil, nil
 }
 
 // DeleteCollection is the interface definition.
-func (f *FakeSecret) DeleteCollection(ctx context.Context, opts metav1.DeleteOptions, listOpts metav1.ListOptions) error {
+func (f *FakeSecret) DeleteCollection(context.Context, metav1.DeleteOptions, metav1.ListOptions) error {
 	return nil
 }
 
 // Patch is the interface definition.
-func (f *FakeSecret) Patch(ctx context.Context, name string, pt types.PatchType, data []byte, opts metav1.PatchOptions, subresources ...string) (*v1.Secret, error) {
+func (f *FakeSecret) Patch(context.Context, string, types.PatchType, []byte, metav1.PatchOptions, ...string) (*v1.Secret, error) {
 	return &v1.Secret{}, nil
 }
 
-func (f *FakeSecret) Apply(ctx context.Context, secret *applyconfigurationscorev1.SecretApplyConfiguration, opts metav1.ApplyOptions) (result *v1.Secret, err error) {
+func (f *FakeSecret) Apply(context.Context, *applyconfigurationscorev1.SecretApplyConfiguration, metav1.ApplyOptions) (result *v1.Secret, err error) {
 	return &v1.Secret{}, nil
 }
 
