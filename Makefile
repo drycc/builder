@@ -1,6 +1,7 @@
 SHORT_NAME ?= builder
 
 include versioning.mk
+DRYCC_REGISTRY ?= ${DEV_REGISTRY}
 
 # dockerized development environment variables
 REPO_PATH := github.com/drycc/${SHORT_NAME}
@@ -17,8 +18,6 @@ BINARY_DEST_DIR := rootfs/usr/bin
 LDFLAGS := "-s -w -X main.version=${VERSION}"
 # Docker Root FS
 BINDIR := ./rootfs
-
-DRYCC_REGISTRY ?= ${DEV_REGISTRY}
 
 bootstrap:
 	${DEV_ENV_CMD} go mod vendor
@@ -44,11 +43,11 @@ test-cover:
 	${DEV_ENV_CMD} test-cover.sh
 
 docker-build:
-	docker build ${DOCKER_BUILD_FLAGS} -t ${IMAGE} --build-arg LDFLAGS=${LDFLAGS} .
+	docker build ${DOCKER_BUILD_FLAGS} -t ${IMAGE} --build-arg LDFLAGS=${LDFLAGS} --build-arg CODENAME=${CODENAME} .
 	docker tag ${IMAGE} ${MUTABLE_IMAGE}
 
 docker-buildx:
-	docker buildx build --platform ${PLATFORM} -t ${IMAGE} --build-arg LDFLAGS=${LDFLAGS} . --push
+	docker buildx build --platform ${PLATFORM} -t ${IMAGE} --build-arg LDFLAGS=${LDFLAGS} --build-arg CODENAME=${CODENAME} --push .
 
 check-kubectl:
 	@if [ -z $$(which kubectl) ]; then \

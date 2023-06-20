@@ -1,12 +1,12 @@
+ARG LDFLAGS CODENAME
+
 FROM registry.drycc.cc/drycc/go-dev:latest AS build
-ARG LDFLAGS
 ADD . /workspace
 RUN export GO111MODULE=on \
   && cd /workspace \
   && CGO_ENABLED=0 init-stack go build -ldflags "${LDFLAGS}" -o /usr/local/bin/boot boot.go
 
-
-FROM registry.drycc.cc/drycc/base:bookworm
+FROM registry.drycc.cc/drycc/base:${CODENAME}
 
 ENV DRYCC_UID=1001 \
   DRYCC_GID=1001 \
