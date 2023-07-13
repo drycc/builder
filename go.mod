@@ -3,15 +3,15 @@ module github.com/drycc/builder
 go 1.20
 
 require (
-	github.com/aws/aws-sdk-go v1.44.284
-	github.com/distribution/distribution/v3 v3.0.0-20230611135314-6a57630cf401
-	github.com/drycc/controller-sdk-go v0.0.0-20230602065836-df0a0b2ab4b0
+	github.com/aws/aws-sdk-go v1.44.299
+	github.com/distribution/distribution/v3 v3.0.0-20230711080520-40ef2353fa4f
+	github.com/drycc/controller-sdk-go v0.0.0-20230711045631-016fac5b12ba
 	github.com/drycc/pkg v0.0.0-20230619083908-711ad2e9f1b8
 	github.com/kelseyhightower/envconfig v1.4.0
 	github.com/pborman/uuid v1.2.1
 	github.com/stretchr/testify v1.8.4
 	github.com/urfave/cli/v2 v2.25.7
-	golang.org/x/crypto v0.10.0
+	golang.org/x/crypto v0.11.0
 	gopkg.in/yaml.v3 v3.0.1
 	k8s.io/api v0.27.3
 	k8s.io/apimachinery v0.27.3
@@ -19,8 +19,6 @@ require (
 )
 
 require (
-	github.com/PuerkitoBio/purell v1.1.1 // indirect
-	github.com/PuerkitoBio/urlesc v0.0.0-20170810143723-de5bf2ad4578 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/cespare/xxhash/v2 v2.2.0 // indirect
 	github.com/cpuguy83/go-md2man/v2 v2.0.2 // indirect
@@ -38,7 +36,6 @@ require (
 	github.com/google/gofuzz v1.1.0 // indirect
 	github.com/google/uuid v1.3.0 // indirect
 	github.com/gorilla/mux v1.8.0 // indirect
-	github.com/goware/urlx v0.3.2 // indirect
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
@@ -55,11 +52,11 @@ require (
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/sirupsen/logrus v1.8.1 // indirect
 	github.com/xrash/smetrics v0.0.0-20201216005158-039620a65673 // indirect
-	golang.org/x/net v0.10.0 // indirect
+	golang.org/x/net v0.12.0 // indirect
 	golang.org/x/oauth2 v0.6.0 // indirect
-	golang.org/x/sys v0.9.0 // indirect
-	golang.org/x/term v0.9.0 // indirect
-	golang.org/x/text v0.10.0 // indirect
+	golang.org/x/sys v0.10.0 // indirect
+	golang.org/x/term v0.10.0 // indirect
+	golang.org/x/text v0.11.0 // indirect
 	golang.org/x/time v0.0.0-20220210224613-90d013bbcef8 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
 	google.golang.org/protobuf v1.29.1 // indirect
