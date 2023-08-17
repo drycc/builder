@@ -12,7 +12,7 @@ spec:
   - group: gateway.networking.k8s.io
     kind: Gateway
     name: drycc-gateway
-    sectionName: drycc-gateway-listener-builder-tcp
+    sectionName: builder
   rules:
   - backendRefs:
     - name: drycc-builder

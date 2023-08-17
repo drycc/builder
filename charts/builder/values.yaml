@@ -37,7 +37,7 @@ ttlSecondsAfterFinished: 21600
 # gateway customListeners
 gateway:
   customListeners:
-  - name: drycc-gateway-listener-builder-tcp
+  - name: builder
     port: 2222
     protocol: TCP
     allowedRoutes:
