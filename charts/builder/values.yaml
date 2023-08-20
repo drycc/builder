@@ -34,15 +34,6 @@ podAntiAffinityPreset:
 # When the TTL controller cleans up the Job. default: 6h
 # see: https://kubernetes.io/docs/concepts/workloads/controllers/job/#ttl-mechanism-for-finished-jobs
 ttlSecondsAfterFinished: 21600
-# gateway customListeners
-gateway:
-  customListeners:
-  - name: builder
-    port: 2222
-    protocol: TCP
-    allowedRoutes:
-      namespaces:
-        from: All
 
 global:
   # Role-Based Access Control for Kubernetes >= 1.5
