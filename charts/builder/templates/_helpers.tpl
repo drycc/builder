@@ -63,7 +63,7 @@ env:
       name: registry-secret
       key: host
 {{- if eq .Values.global.registryLocation "on-cluster" }}
-# NOTE(bacongobbler): use drycc/registry_proxy to work around Docker --insecure-registry requirements
+# NOTE(bacongobbler): use drycc/registry_proxy to work around --insecure-registry requirements
 - name: "DRYCC_REGISTRY_PROXY_HOST"
   value: {{ print "127.0.0.1"  ":" .Values.global.registryProxyPort }}
 {{- else }}

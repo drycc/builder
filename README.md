@@ -44,23 +44,15 @@ The Drycc project welcomes contributions from all developers. The high level pro
 	* If your PR fixes any [issues][issues], make sure you write `Fixes #1234` in your PR description (where `#1234` is the number of the issue you're closing)
 * The Drycc core contributors will review your code. After each of them sign off on your code, they'll label your PR with `LGTM1` and `LGTM2` (respectively). Once that happens, a contributor will merge it
 
-## Docker Based Development Environment
+## Container Based Development Environment
 
-The preferred environment for development uses [the `go-dev` Docker image](https://github.com/drycc/docker-go-dev). The tools described in this section are used to build, test, package and release each version of Drycc.
+The preferred environment for development uses [the `go-dev` Container image](https://github.com/drycc/go-dev). The tools described in this section are used to build, test, package and release each version of Drycc.
 
-To use it yourself, you must have [make](https://www.gnu.org/software/make/) installed and Docker installed and running on your local development machine.
+To use it yourself, you must have [make](https://www.gnu.org/software/make/) installed and Container installed and running on your local development machine.
 
-If you don't have Docker installed, please go to https://www.docker.com/ to install it.
+If you don't have Podman installed, please go to https://podman.io/ to install it.
 
 After you have those dependencies, grab Go dependencies with `make bootstrap`, build your code with `make build` and execute unit tests with `make test`.
-
-## Native Go Development Environment
-
-You can also use the standard `go` toolchain to build and test if you prefer. To do so, you'll need [glide](https://github.com/Masterminds/glide) 0.9 or above and [Go 1.6](http://golang.org) or above installed.
-
-After you have those dependencies, you can build and unit-test your code with `go build` and `go test $(glide nv)`, respectively.
-
-Note that you will not be able to build or push Docker images using this method of development.
 
 # Testing
 

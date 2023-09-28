@@ -47,9 +47,6 @@ func TestBuildJob(t *testing.T) {
 
 	env := make(map[string]interface{})
 	env["KEY"] = "VALUE"
-	buildArgsEnv := make(map[string]interface{})
-	buildArgsEnv["DRYCC_DOCKER_BUILD_ARGS_ENABLED"] = "1"
-	buildArgsEnv["KEY"] = "VALUE"
 	var job *batchv1.Job
 
 	emptyNodeSelector := make(map[string]string)
@@ -69,7 +66,6 @@ func TestBuildJob(t *testing.T) {
 		{true, "test", "default", env, "tar", "deadbeef", "img", "imagebuilder", "customimage", corev1.PullAlways, emptyNodeSelector},
 		{true, "test", "default", env, "tar", "deadbeef", "img", "imagebuilder", "customimage", corev1.PullIfNotPresent, emptyNodeSelector},
 		{true, "test", "default", env, "tar", "deadbeef", "img", "imagebuilder", "customimage", corev1.PullNever, nil},
-		{true, "test", "default", buildArgsEnv, "tar", "deadbeef", "img", "imagebuilder", "customimage", corev1.PullIfNotPresent, emptyNodeSelector},
 	}
 	buildImageEnv := map[string]string{"DRYCC_REGISTRY_LOCATION": "on-cluster"}
 	for _, build := range imageBuilds {
@@ -100,9 +96,6 @@ func TestBuildJob(t *testing.T) {
 		checkForEnv(t, job, "TAR_PATH", build.tarKey)
 		checkForEnv(t, job, "IMAGE_NAME", build.imgName)
 		checkForEnv(t, job, "DRYCC_REGISTRY_LOCATION", "on-cluster")
-		if _, ok := build.env["DRYCC_DOCKER_BUILD_ARGS_ENABLED"]; ok {
-			checkForEnv(t, job, "DOCKER_BUILD_ARGS", `{"DRYCC_DOCKER_BUILD_ARGS_ENABLED":"1","KEY":"VALUE"}`)
-		}
 		if build.imagebuilderImage != "" {
 			if job.Spec.Template.Spec.Containers[0].Image != build.imagebuilderImage {
 				t.Errorf("expected %v but returned %v", build.imagebuilderImage, job.Spec.Template.Spec.Containers[0].Image)

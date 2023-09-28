@@ -2,7 +2,6 @@ package gitreceive
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"os"
 	"strconv"
@@ -54,18 +53,6 @@ func createBuilderJob(
 ) *batchv1.Job {
 
 	job := buildJob(debug, name, namespace, pullPolicy, securityContext, nodeSelector, env)
-
-	// inject application envvars as a special envvar which will be handled by imagebuilder to
-	// inject them as build-time variables.
-	// NOTE(bacongobbler): image-py takes buildargs as a json string in the form of
-	//
-	// {"KEY": "value"}
-	//
-	// So we need to translate the map into json.
-	if _, ok := env["DRYCC_DOCKER_BUILD_ARGS_ENABLED"]; ok {
-		imageBuildArgs, _ := json.Marshal(env)
-		addEnvToJob(job, "DOCKER_BUILD_ARGS", string(imageBuildArgs))
-	}
 	job.Spec.Template.Spec.Containers[0].Name = builderName
 	job.Spec.Template.Spec.Containers[0].Image = builderImage
 
