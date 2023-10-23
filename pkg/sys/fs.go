@@ -2,7 +2,6 @@ package sys
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 )
 
@@ -26,7 +25,7 @@ type realFS struct{}
 
 // ReadFile is the interface implementation for FS.
 func (r *realFS) ReadFile(name string) ([]byte, error) {
-	return ioutil.ReadFile(name)
+	return os.ReadFile(name)
 }
 
 // RemoveAll is the interface implementation for FS.

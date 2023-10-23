@@ -5,7 +5,7 @@ package cleaner
 import (
 	"context"
 	"fmt"
-	"io/ioutil"
+	"os"
 	"path/filepath"
 	"regexp"
 	"strings"
@@ -28,7 +28,7 @@ const (
 // localDirs returns all of the local directories immediately under gitHome that filter returns true for.
 // filter will receive only the names of each of the top level directories (not their fully qualified paths), and should return true if it should be included in the output
 func localDirs(gitHome string, filter func(string) bool) ([]string, error) {
-	fileInfos, err := ioutil.ReadDir(gitHome)
+	fileInfos, err := os.ReadDir(gitHome)
 	if err != nil {
 		return nil, err
 	}

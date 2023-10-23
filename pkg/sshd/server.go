@@ -7,8 +7,8 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net"
+	"os"
 	"strings"
 
 	"github.com/drycc/builder/pkg/controller"
@@ -84,7 +84,7 @@ func Configure(cnf *Config) (*ssh.ServerConfig, error) {
 	for _, t := range hostKeyTypes {
 		path := fmt.Sprintf(pathTpl, t)
 
-		key, err := ioutil.ReadFile(path)
+		key, err := os.ReadFile(path)
 		if err != nil {
 			log.Debug("Failed to read key %s (skipping): %s", path, err)
 			return nil, err

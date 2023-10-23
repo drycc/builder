@@ -52,7 +52,7 @@ func createBuilderJob(
 	nodeSelector map[string]string,
 ) *batchv1.Job {
 
-	job := buildJob(debug, name, namespace, pullPolicy, securityContext, nodeSelector, env)
+	job := buildJob(debug, name, namespace, builderName, pullPolicy, securityContext, nodeSelector, env)
 	job.Spec.Template.Spec.Containers[0].Name = builderName
 	job.Spec.Template.Spec.Containers[0].Image = builderImage
 
@@ -74,8 +74,8 @@ func newInt32(i int32) *int32 {
 func buildJob(
 	debug bool,
 	name,
-	namespace string,
-	//pullPolicy api.PullPolicy,
+	namespace,
+	builderName string,
 	pullPolicy corev1.PullPolicy,
 	securityContext corev1.SecurityContext,
 	nodeSelector map[string]string,
@@ -95,7 +95,8 @@ func buildJob(
 			Template: corev1.PodTemplateSpec{
 				ObjectMeta: metav1.ObjectMeta{
 					Labels: map[string]string{
-						"heritage": name,
+						"app":      builderName,
+						"heritage": "drycc",
 					},
 				},
 				Spec: corev1.PodSpec{
@@ -112,7 +113,8 @@ func buildJob(
 			Name:      name,
 			Namespace: namespace,
 			Labels: map[string]string{
-				"heritage": name,
+				"app":      builderName,
+				"heritage": "drycc",
 			},
 		},
 	}

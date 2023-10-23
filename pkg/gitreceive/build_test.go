@@ -3,7 +3,6 @@ package gitreceive
 import (
 	"bytes"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -35,7 +34,7 @@ func TestBuild(t *testing.T) {
 	// NOTE(bacongobbler): there's a little easter egg here... ;)
 	sha := "0462cef5812ce31fe12f25596ff68dc614c708af"
 
-	tmpDir, err := ioutil.TempDir("", "tmpdir")
+	tmpDir, err := os.MkdirTemp("", "tmpdir")
 	if err != nil {
 		t.Fatalf("error creating temp directory (%s)", err)
 	}
@@ -81,7 +80,7 @@ func TestBuild(t *testing.T) {
 
 	builderconf.BuilderKeyLocation = filepath.Join(tmpDir, "builder-key")
 	data := []byte("testbuilderkey")
-	if err := ioutil.WriteFile(builderconf.BuilderKeyLocation, data, 0644); err != nil {
+	if err := os.WriteFile(builderconf.BuilderKeyLocation, data, 0644); err != nil {
 		t.Fatalf("error creating %s (%s)", builderconf.BuilderKeyLocation, err)
 	}
 
@@ -98,12 +97,12 @@ func TestRepoCmd(t *testing.T) {
 }
 
 func TestGetProcfileFromRepoSuccess(t *testing.T) {
-	tmpDir, err := ioutil.TempDir("", "tmpdir")
+	tmpDir, err := os.MkdirTemp("", "tmpdir")
 	if err != nil {
 		t.Fatalf("error creating temp directory (%s)", err)
 	}
 	data := []byte("web: example-go")
-	if err := ioutil.WriteFile(tmpDir+"/Procfile", data, 0644); err != nil {
+	if err := os.WriteFile(tmpDir+"/Procfile", data, 0644); err != nil {
 		t.Fatalf("error creating %s/Procfile (%s)", tmpDir, err)
 	}
 	defer func() {
@@ -123,12 +122,12 @@ func TestGetProcfileFromRepoSuccess(t *testing.T) {
 }
 
 func TestGetProcfileFromRepoFailure(t *testing.T) {
-	tmpDir, err := ioutil.TempDir("", "tmpdir")
+	tmpDir, err := os.MkdirTemp("", "tmpdir")
 	if err != nil {
 		t.Fatalf("error creating temp directory (%s)", err)
 	}
 	data := []byte("web= example-go")
-	if err := ioutil.WriteFile(tmpDir+"/Procfile", data, 0644); err != nil {
+	if err := os.WriteFile(tmpDir+"/Procfile", data, 0644); err != nil {
 		t.Fatalf("error creating %s/Procfile (%s)", tmpDir, err)
 	}
 	defer func() {

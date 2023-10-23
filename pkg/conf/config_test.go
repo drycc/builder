@@ -1,7 +1,6 @@
 package conf
 
 import (
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"testing"
@@ -33,7 +32,7 @@ func TestGetStorageParams(t *testing.T) {
 }
 
 func TestGetControllerClient(t *testing.T) {
-	tmpDir, err := ioutil.TempDir("", "tmpdir")
+	tmpDir, err := os.MkdirTemp("", "tmpdir")
 	if err != nil {
 		t.Fatalf("error creating temp directory (%s)", err)
 	}
@@ -46,7 +45,7 @@ func TestGetControllerClient(t *testing.T) {
 
 	BuilderKeyLocation = filepath.Join(tmpDir, "builder-key")
 	data := []byte("testbuilderkey")
-	if err := ioutil.WriteFile(BuilderKeyLocation, data, 0644); err != nil {
+	if err := os.WriteFile(BuilderKeyLocation, data, 0644); err != nil {
 		t.Fatalf("error creating %s (%s)", BuilderKeyLocation, err)
 	}
 

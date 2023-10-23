@@ -2,9 +2,9 @@ package conf
 
 import (
 	"fmt"
-	"io/ioutil"
 	"net"
 	"net/url"
+	"os"
 	"strings"
 
 	"github.com/drycc/builder/pkg/sys"
@@ -26,7 +26,7 @@ type Parameters map[string]interface{}
 
 // GetBuilderKey returns the key to be used as token to interact with drycc-controller
 func GetBuilderKey() (string, error) {
-	builderKeyBytes, err := ioutil.ReadFile(BuilderKeyLocation)
+	builderKeyBytes, err := os.ReadFile(BuilderKeyLocation)
 	if err != nil {
 		return "", fmt.Errorf("couldn't get builder key from %s (%s)", BuilderKeyLocation, err)
 	}

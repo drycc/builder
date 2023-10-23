@@ -3,7 +3,6 @@ package gitreceive
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"os"
 
 	"github.com/drycc/controller-sdk-go/api"
@@ -28,7 +27,7 @@ var Stacks []map[string]string
 
 // initStack load stack by config
 func initStack() error {
-	data, err := ioutil.ReadFile("/etc/imagebuilder/images.json")
+	data, err := os.ReadFile("/etc/imagebuilder/images.json")
 	if err == nil {
 		return json.Unmarshal(data, &Stacks)
 	}

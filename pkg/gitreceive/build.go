@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -81,7 +80,7 @@ func build(
 		return fmt.Errorf("making the build directory %s (%s)", buildDir, err)
 	}
 
-	tmpDir, err := ioutil.TempDir(buildDir, "tmp")
+	tmpDir, err := os.MkdirTemp(buildDir, "tmp")
 	if err != nil {
 		return fmt.Errorf("unable to create tmpdir %s (%s)", buildDir, err)
 	}
@@ -122,7 +121,7 @@ func build(
 
 	stack := getStack(tmpDir, appConf)
 
-	appTgzdata, err := ioutil.ReadFile(absAppTgz)
+	appTgzdata, err := os.ReadFile(absAppTgz)
 	if err != nil {
 		return fmt.Errorf("error while reading file %s: (%s)", appTgz, err)
 	}
@@ -304,7 +303,7 @@ func prettyPrintJSON(data interface{}) (string, error) {
 func getProcfile(dirName string) (dryccAPI.ProcessType, error) {
 	procfile := dryccAPI.ProcessType{}
 	if _, err := os.Stat(fmt.Sprintf("%s/Procfile", dirName)); err == nil {
-		rawProcFile, err := ioutil.ReadFile(fmt.Sprintf("%s/Procfile", dirName))
+		rawProcFile, err := os.ReadFile(fmt.Sprintf("%s/Procfile", dirName))
 		if err != nil {
 			return nil, fmt.Errorf("error in reading %s/Procfile (%s)", dirName, err)
 		}
@@ -319,7 +318,7 @@ func getProcfile(dirName string) (dryccAPI.ProcessType, error) {
 func getDockerfile(dirName string, stack map[string]string) (string, error) {
 	if stack["name"] == "container" {
 		if _, err := os.Stat(fmt.Sprintf("%s/Dockerfile", dirName)); err == nil {
-			rawDockerfile, err := ioutil.ReadFile(fmt.Sprintf("%s/Dockerfile", dirName))
+			rawDockerfile, err := os.ReadFile(fmt.Sprintf("%s/Dockerfile", dirName))
 			if err != nil {
 				return "", fmt.Errorf("error in reading %s/Dockerfile (%s)", dirName, err)
 			}

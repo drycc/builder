@@ -2,7 +2,6 @@ package sys
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 	"testing"
 )
@@ -18,7 +17,7 @@ func TestRealFS(t *testing.T) {
 		t.Error("expected to receive error when real file does not exist")
 	}
 
-	tmpfile, err := ioutil.TempFile("", testFilename)
+	tmpfile, err := os.CreateTemp("", testFilename)
 	if err != nil {
 		t.Fatal(err)
 	}
