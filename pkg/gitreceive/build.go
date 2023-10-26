@@ -195,7 +195,7 @@ func build(
 	}
 
 	options := metav1.ListOptions{
-		LabelSelector: fmt.Sprintf("heritage=%s", newJob.Name),
+		LabelSelector: fmt.Sprintf("job-name=%s", newJob.Name),
 	}
 	podList, err := kubeClient.CoreV1().Pods(newJob.Namespace).List(context.Background(), options)
 	if err != nil {
@@ -262,7 +262,7 @@ func build(
 	quit <- true
 	<-quit
 	if controller.CheckAPICompat(client, err) != nil {
-		return fmt.Errorf("The controller returned an error when publishing the release: %s", err)
+		return fmt.Errorf("the controller returned an error when publishing the release: %s", err)
 	}
 
 	log.Info("Done, %s:v%d deployed to Workflow\n", appName, release)
