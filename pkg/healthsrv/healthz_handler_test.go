@@ -9,8 +9,6 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	//"github.com/distribution/distribution/v3/context"
-
 	"github.com/drycc/builder/pkg/sshd"
 	drycc "github.com/drycc/controller-sdk-go"
 	"github.com/stretchr/testify/assert"

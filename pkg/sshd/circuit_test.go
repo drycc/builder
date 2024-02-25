@@ -41,7 +41,7 @@ func TestOpenCloseConcurrent(t *testing.T) {
 	state := uint32(0)
 	for i := 0; i < numConcurrents; i++ {
 		wg.Add(1)
-		go func(i int) {
+		go func(int) {
 			defer wg.Done()
 			r := rand.Int() % 2
 			if r == 0 {

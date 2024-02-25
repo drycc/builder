@@ -13,7 +13,7 @@ const (
 )
 
 func healthZHandler(bLister BucketLister, serverCircuit *sshd.Circuit) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	return http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		stopCh := make(chan struct{})
 
 		numChecks := 0

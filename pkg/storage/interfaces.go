@@ -2,7 +2,6 @@ package storage
 
 import (
 	"context"
-	//"github.com/distribution/distribution/v3/context"
 	storagedriver "github.com/distribution/distribution/v3/registry/storage/driver"
 )
 

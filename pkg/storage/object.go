@@ -5,7 +5,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/distribution/distribution/v3/context"
+	"context"
+
 	storagedriver "github.com/distribution/distribution/v3/registry/storage/driver"
 )
 
@@ -39,9 +40,8 @@ func WaitForObject(statter ObjectStatter, objKey string, tick, timeout time.Dura
 			return err
 		} else if exists {
 			return nil
-		} else {
-			return noExist
 		}
+		return noExist
 	}
 	if err := checker(); err == nil {
 		return nil

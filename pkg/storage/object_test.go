@@ -6,7 +6,6 @@ import (
 	"testing"
 	"time"
 
-	//"github.com/distribution/distribution/v3/context"
 	storagedriver "github.com/distribution/distribution/v3/registry/storage/driver"
 	"github.com/stretchr/testify/assert"
 )

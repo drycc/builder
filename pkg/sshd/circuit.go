@@ -21,9 +21,8 @@ func (c CircuitState) String() string {
 		return "OPEN"
 	} else if c == ClosedState {
 		return "CLOSED"
-	} else {
-		return fmt.Sprintf("Unknown (%d)", c.toUint32())
 	}
+	return fmt.Sprintf("Unknown (%d)", c.toUint32())
 }
 
 func (c CircuitState) toUint32() uint32 {

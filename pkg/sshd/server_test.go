@@ -30,7 +30,7 @@ func TestGitPktLine(t *testing.T) {
 
 func serverConfigure() (*ssh.ServerConfig, error) {
 	cfg := &ssh.ServerConfig{
-		PasswordCallback: func(c ssh.ConnMetadata, pass []byte) (*ssh.Permissions, error) {
+		PasswordCallback: func(ssh.ConnMetadata, []byte) (*ssh.Permissions, error) {
 			return mockAuthKey()
 		},
 	}
@@ -43,7 +43,7 @@ func clientConfig() *ssh.ClientConfig {
 		Auth: []ssh.AuthMethod{
 			ssh.Password("password"),
 		},
-		HostKeyCallback: func(hostname string, remote net.Addr, key ssh.PublicKey) error {
+		HostKeyCallback: func(string, net.Addr, ssh.PublicKey) error {
 			return nil
 		},
 	}

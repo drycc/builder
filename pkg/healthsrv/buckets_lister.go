@@ -2,7 +2,6 @@ package healthsrv
 
 import (
 	"context"
-	//"github.com/distribution/distribution/v3/context"
 )
 
 // BucketLister is a *(github.com/distribution/distribution/v3/registry/storage/driver).StorageDriver compatible interface that provides just

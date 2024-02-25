@@ -6,11 +6,11 @@ import (
 	"time"
 
 	drycc "github.com/drycc/controller-sdk-go"
-	"k8s.io/api/core/v1"
+	v1 "k8s.io/api/core/v1"
 )
 
 func readinessHandler(client *drycc.Client, nsLister NamespaceLister) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	return http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		stopCh := make(chan struct{})
 
 		numChecks := 0

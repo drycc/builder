@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/drycc/builder/pkg/k8s"
-	"github.com/pborman/uuid"
+	"github.com/google/uuid"
 	batchv1 "k8s.io/api/batch/v1"
 	corev1 "k8s.io/api/core/v1"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
@@ -27,7 +27,7 @@ const (
 )
 
 func imagebuilderJobName(appName, shortSha string) string {
-	uid := uuid.New()[:8]
+	uid := uuid.New().String()[:8]
 	// NOTE(bacongobbler): pod names cannot exceed 63 characters in length, so we truncate
 	// the application name to stay under that limit when adding all the extra metadata to the name
 	if len(appName) > 33 {
@@ -210,7 +210,7 @@ func waitForPodEnd(pw *k8s.PodWatcher, jobName string, interval, timeout time.Du
 // waitForPodCondition waits for a pod in state defined by a condition (func)
 func waitForPodCondition(pw *k8s.PodWatcher, jobName string, condition func(pod *corev1.Pod) (bool, error),
 	interval, timeout time.Duration) error {
-	return wait.PollUntilContextTimeout(context.Background(), interval, timeout, true, func(ctx context.Context) (done bool, err error) {
+	return wait.PollUntilContextTimeout(context.Background(), interval, timeout, true, func(context.Context) (done bool, err error) {
 		selector := labels.Set{
 			"job-name": jobName,
 			"heritage": "drycc",

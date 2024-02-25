@@ -75,7 +75,7 @@ func AuthKey(key ssh.PublicKey, cnf *Config) (*ssh.Permissions, error) {
 //	An *ssh.ServerConfig
 func Configure(cnf *Config) (*ssh.ServerConfig, error) {
 	cfg := &ssh.ServerConfig{
-		PublicKeyCallback: func(m ssh.ConnMetadata, k ssh.PublicKey) (*ssh.Permissions, error) {
+		PublicKeyCallback: func(_ ssh.ConnMetadata, k ssh.PublicKey) (*ssh.Permissions, error) {
 			return AuthKey(k, cnf)
 		},
 	}

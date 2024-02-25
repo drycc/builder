@@ -6,7 +6,7 @@ DRYCC_REGISTRY ?= ${DEV_REGISTRY}
 # container development environment variables
 REPO_PATH := github.com/drycc/${SHORT_NAME}
 DEV_ENV_IMAGE := ${DEV_REGISTRY}/drycc/go-dev
-DEV_ENV_WORK_DIR := /opt/drycc/go/src/${REPO_PATH}
+DEV_ENV_WORK_DIR := /root/go/src/${REPO_PATH}
 DEV_ENV_PREFIX := podman run --rm -v ${CURDIR}:${DEV_ENV_WORK_DIR} -w ${DEV_ENV_WORK_DIR} --entrypoint testdata/bin/fake-k8s
 DEV_ENV_CMD := ${DEV_ENV_PREFIX} ${DEV_ENV_IMAGE}
 PLATFORM ?= linux/amd64,linux/arm64

@@ -2,7 +2,7 @@ package gitreceive
 
 import (
 	"bytes"
-	ctx "context"
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -12,7 +12,6 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/distribution/distribution/v3/context"
 	storagedriver "github.com/distribution/distribution/v3/registry/storage/driver"
 	"github.com/drycc/builder/pkg/controller"
 	"github.com/drycc/builder/pkg/git"
@@ -180,7 +179,7 @@ func build(
 	}
 	jobsInterface := kubeClient.BatchV1().Jobs(conf.PodNamespace)
 
-	newJob, err := jobsInterface.Create(ctx.TODO(), job, metav1.CreateOptions{})
+	newJob, err := jobsInterface.Create(context.TODO(), job, metav1.CreateOptions{})
 	if err != nil {
 		return fmt.Errorf("creating builder pod (%s)", err)
 	}
@@ -207,7 +206,7 @@ func build(
 			Follow: true,
 		}, scheme.ParameterCodec)
 
-	rc, err := req.Stream(ctx.TODO())
+	rc, err := req.Stream(context.TODO())
 	if err != nil {
 		return fmt.Errorf("attempting to stream logs (%s)", err)
 	}
@@ -233,7 +232,7 @@ func build(
 	}
 	log.Debug("Done")
 	log.Debug("Checking for builder pod exit code")
-	buildPod, err := kubeClient.CoreV1().Pods(newJob.Namespace).Get(ctx.TODO(), podList.Items[0].Name, metav1.GetOptions{})
+	buildPod, err := kubeClient.CoreV1().Pods(newJob.Namespace).Get(context.TODO(), podList.Items[0].Name, metav1.GetOptions{})
 	if err != nil {
 		return fmt.Errorf("error getting builder pod status (%s)", err)
 	}

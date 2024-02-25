@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"os"
@@ -45,7 +46,7 @@ func main() {
 			Name:    "server",
 			Aliases: []string{"srv"},
 			Usage:   "Run the git server",
-			Action: func(c *cli.Context) error {
+			Action: func(*cli.Context) error {
 				cnf := new(sshd.Config)
 				if err := envconfig.Process(serverConfAppName, cnf); err != nil {
 					return fmt.Errorf("getting config for %s [%s]", serverConfAppName, err)
@@ -60,7 +61,7 @@ func main() {
 					return fmt.Errorf("error getting storage parameters (%s)", err)
 				}
 				var storageDriver storagedriver.StorageDriver
-				storageDriver, err = factory.Create("s3", storageParams)
+				storageDriver, err = factory.Create(context.Background(), "s3", storageParams)
 
 				if err != nil {
 					return fmt.Errorf("error creating storage driver (%s)", err)
@@ -105,7 +106,7 @@ func main() {
 			Name:    "git-receive",
 			Aliases: []string{"gr"},
 			Usage:   "Run the git-receive hook",
-			Action: func(c *cli.Context) error {
+			Action: func(*cli.Context) error {
 				cnf := new(gitreceive.Config)
 				if err := envconfig.Process(gitReceiveConfAppName, cnf); err != nil {
 					return fmt.Errorf("error getting config for %s [%s]", gitReceiveConfAppName, err)
@@ -117,7 +118,7 @@ func main() {
 					return fmt.Errorf("error getting storage parameters (%s)", err)
 				}
 				var storageDriver storagedriver.StorageDriver
-				storageDriver, err = factory.Create("s3", storageParams)
+				storageDriver, err = factory.Create(context.Background(), "s3", storageParams)
 
 				if err != nil {
 					return fmt.Errorf("error creating storage driver (%s)", err)

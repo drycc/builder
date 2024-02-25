@@ -2,13 +2,13 @@ package gitreceive
 
 import (
 	"bytes"
+	"context"
 	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"testing"
 
-	//"github.com/distribution/distribution/v3/context"
 	"github.com/distribution/distribution/v3/registry/storage/driver/factory"
 	_ "github.com/distribution/distribution/v3/registry/storage/driver/inmemory"
 	builderconf "github.com/drycc/builder/pkg/conf"
@@ -47,7 +47,7 @@ func TestBuild(t *testing.T) {
 
 	config.GitHome = tmpDir
 
-	storageDriver, err := factory.Create("inmemory", nil)
+	storageDriver, err := factory.Create(context.Background(), "inmemory", nil)
 	if err != nil {
 		t.Fatal(err)
 	}

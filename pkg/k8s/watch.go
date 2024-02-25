@@ -2,14 +2,15 @@ package k8s
 
 import (
 	"context"
-	"k8s.io/api/core/v1"
+	"time"
+
+	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/watch"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/cache"
-	"time"
 )
 
 var (
@@ -58,13 +59,13 @@ func NewPodWatcher(c kubernetes.Clientset, ns string) *PodWatcher {
 }
 
 func podListFunc(c kubernetes.Clientset, ns string) func(options metav1.ListOptions) (runtime.Object, error) {
-	return func(opts metav1.ListOptions) (runtime.Object, error) {
+	return func(metav1.ListOptions) (runtime.Object, error) {
 		return c.CoreV1().Pods(ns).List(context.TODO(), metav1.ListOptions{})
 	}
 }
 
 func podWatchFunc(c kubernetes.Clientset, ns string) func(options metav1.ListOptions) (watch.Interface, error) {
-	return func(opts metav1.ListOptions) (watch.Interface, error) {
+	return func(metav1.ListOptions) (watch.Interface, error) {
 		return c.CoreV1().Pods(ns).Watch(context.TODO(), metav1.ListOptions{})
 	}
 }
