@@ -42,6 +42,10 @@ spec:
       - name: drycc-builder
         image: {{.Values.imageRegistry}}/{{.Values.imageOrg}}/builder:{{.Values.imageTag}}
         imagePullPolicy: {{.Values.imagePullPolicy}}
+        {{- if .Values.diagnosticMode.enabled }}
+        command: {{- include "common.tplvalues.render" (dict "value" .Values.diagnosticMode.command "context" $) | nindent 10 }}
+        args: {{- include "common.tplvalues.render" (dict "value" .Values.diagnosticMode.args "context" $) | nindent 10 }}
+        {{- end }}
         ports:
           - containerPort: 2223
             name: ssh
@@ -49,6 +53,7 @@ spec:
             name: healthsrv
         {{- include "builder.envs" . | indent 8 }}
         {{- include "builder.limits" . | indent 8 }}
+        {{- if not .Values.diagnosticMode.enabled }}
         livenessProbe:
           httpGet:
             path: /healthz
@@ -61,6 +66,7 @@ spec:
             port: 8092
           initialDelaySeconds: 30
           timeoutSeconds: 1
+        {{- end }}
         volumeMounts:
             - name: builder-key-auth
               mountPath: /var/run/secrets/api/auth
