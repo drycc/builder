@@ -249,6 +249,10 @@ func build(
 	if err != nil {
 		return err
 	}
+	dryccfile, err := getDryccfile(tmpDir)
+	if err != nil {
+		return err
+	}
 	dockerfile, err := getDockerfile(tmpDir, stack)
 	if err != nil {
 		return err
@@ -257,7 +261,7 @@ func build(
 
 	quit := progress("...", conf.SessionIdleInterval())
 	log.Info("Launching App...")
-	release, err := hooks.CreateBuild(client, conf.Username, conf.App(), imageName, stack["name"], gitSha.Short(), procfile, dockerfile)
+	release, err := hooks.CreateBuild(client, conf.Username, conf.App(), imageName, stack["name"], gitSha.Short(), procfile, dryccfile, dockerfile)
 	quit <- true
 	<-quit
 	if controller.CheckAPICompat(client, err) != nil {
@@ -301,25 +305,41 @@ func prettyPrintJSON(data interface{}) (string, error) {
 
 func getProcfile(dirName string) (dryccAPI.ProcessType, error) {
 	procfile := dryccAPI.ProcessType{}
-	if _, err := os.Stat(fmt.Sprintf("%s/Procfile", dirName)); err == nil {
-		rawProcFile, err := os.ReadFile(fmt.Sprintf("%s/Procfile", dirName))
+	file := fmt.Sprintf("%s/Procfile", dirName)
+	if _, err := os.Stat(file); err == nil {
+		rawProcFile, err := os.ReadFile(file)
 		if err != nil {
-			return nil, fmt.Errorf("error in reading %s/Procfile (%s)", dirName, err)
+			return nil, fmt.Errorf("error in reading %s (%s)", file, err)
 		}
 		if err := yaml.Unmarshal(rawProcFile, &procfile); err != nil {
-			return nil, fmt.Errorf("procfile %s/ProcFile is malformed (%s)", dirName, err)
+			return nil, fmt.Errorf("procfile %s is malformed (%s)", file, err)
 		}
-		return procfile, nil
 	}
-	return nil, fmt.Errorf("no Procfile can be matched in (%s)", dirName)
+	return procfile, nil
+}
+
+func getDryccfile(dirName string) (map[string]interface{}, error) {
+	dryccfile := map[string]interface{}{}
+	file := fmt.Sprintf("%s/drycc.yaml", dirName)
+	if _, err := os.Stat(file); err == nil {
+		rawDryccfile, err := os.ReadFile(file)
+		if err != nil {
+			return nil, fmt.Errorf("error in reading %s (%s)", file, err)
+		}
+		if err := yaml.Unmarshal(rawDryccfile, &dryccfile); err != nil {
+			return nil, fmt.Errorf("drycc.yaml %s is malformed (%s)", file, err)
+		}
+	}
+	return dryccfile, nil
 }
 
 func getDockerfile(dirName string, stack map[string]string) (string, error) {
 	if stack["name"] == "container" {
-		if _, err := os.Stat(fmt.Sprintf("%s/Dockerfile", dirName)); err == nil {
-			rawDockerfile, err := os.ReadFile(fmt.Sprintf("%s/Dockerfile", dirName))
+		file := fmt.Sprintf("%s/Dockerfile", dirName)
+		if _, err := os.Stat(file); err == nil {
+			rawDockerfile, err := os.ReadFile(file)
 			if err != nil {
-				return "", fmt.Errorf("error in reading %s/Dockerfile (%s)", dirName, err)
+				return "", fmt.Errorf("error in reading %s (%s)", file, err)
 			}
 			return string(rawDockerfile), nil
 		}

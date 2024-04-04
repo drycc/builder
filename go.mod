@@ -5,11 +5,11 @@ go 1.22
 require (
 	github.com/aws/aws-sdk-go v1.50.25
 	github.com/distribution/distribution/v3 v3.0.0-alpha.1.0.20240215070122-62aa44edfde0
-	github.com/drycc/controller-sdk-go v0.0.0-20240304053455-0352ebbb02dc
+	github.com/drycc/controller-sdk-go v0.0.0-20240403162730-10676f2b328d
 	github.com/drycc/pkg v0.0.0-20240225112316-78fc9239f51f
 	github.com/google/uuid v1.6.0
 	github.com/kelseyhightower/envconfig v1.4.0
-	github.com/stretchr/testify v1.8.4
+	github.com/stretchr/testify v1.9.0
 	github.com/urfave/cli/v2 v2.27.1
 	golang.org/x/crypto v0.19.0
 	gopkg.in/yaml.v3 v3.0.1

@@ -3,7 +3,6 @@ package gitreceive
 import (
 	"bytes"
 	"context"
-	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -96,6 +95,59 @@ func TestRepoCmd(t *testing.T) {
 	}
 }
 
+func TestGetDryccfileFromRepoSuccess(t *testing.T) {
+	tmpDir, err := os.MkdirTemp("", "tmpdir")
+	if err != nil {
+		t.Fatalf("error creating temp directory (%s)", err)
+	}
+
+	data := `
+build:
+  docker:
+    web: Dockerfile
+    worker: worker/Dockerfile
+  config:
+    RAILS_ENV: development
+    FOO: bar
+run:
+  command:
+  - ./deployment-tasks.sh
+  image: worker
+deploy:
+  web:
+    command:
+    - bash
+    - -c
+    args: bundle exec puma -C config/puma.rb
+  worker:
+    command:
+    - bash
+    - -c
+    args:
+    - python myworker.py
+  asset-syncer:
+    command:
+    - bash
+    - -c
+    args:
+    - python asset-syncer.py
+    image: worker
+`
+	if err := os.WriteFile(tmpDir+"/drycc.yaml", []byte(data), 0644); err != nil {
+		t.Fatalf("error creating %s/drycc.yaml (%s)", tmpDir, err)
+	}
+	defer func() {
+		if err := os.RemoveAll(tmpDir); err != nil {
+			t.Fatalf("failed to remove drycc.yaml from %s (%s)", tmpDir, err)
+		}
+	}()
+	dryccfile, err := getDryccfile(tmpDir)
+	actualData := map[string]interface{}{}
+	yaml.Unmarshal([]byte(data), &actualData)
+	assert.Equal(t, err, nil)
+	assert.Equal(t, dryccfile, actualData, "data")
+}
+
 func TestGetProcfileFromRepoSuccess(t *testing.T) {
 	tmpDir, err := os.MkdirTemp("", "tmpdir")
 	if err != nil {
@@ -110,10 +162,6 @@ func TestGetProcfileFromRepoSuccess(t *testing.T) {
 			t.Fatalf("failed to remove Procfile from %s (%s)", tmpDir, err)
 		}
 	}()
-	config := api.Config{}
-	config.Values = map[string]interface{}{
-		"DRYCC_STACK": "buildpack",
-	}
 	procType, err := getProcfile(tmpDir)
 	actualData := api.ProcessType{}
 	yaml.Unmarshal(data, &actualData)
@@ -135,36 +183,17 @@ func TestGetProcfileFromRepoFailure(t *testing.T) {
 			t.Fatalf("failed to remove Procfile from %s (%s)", tmpDir, err)
 		}
 	}()
-	config := api.Config{}
-	config.Values = map[string]interface{}{
-		"DRYCC_STACK": "buildpack",
-	}
 	_, err = getProcfile(tmpDir)
 
 	assert.True(t, err != nil, "no error received when there should have been")
 }
 
 func TestGetProcfileFromServerSuccess(t *testing.T) {
-	data := []byte("web: example-go")
-	config := api.Config{}
-	config.Values = map[string]interface{}{
-		"DRYCC_STACK": "buildpack",
-	}
-
-	_, err := getProcfile("")
+	data := []byte("")
+	expect, _ := getProcfile("")
 	actualData := api.ProcessType{}
 	yaml.Unmarshal(data, &actualData)
-	assert.Error(t, err, fmt.Errorf("no Procfile can be matched in (%s)", ""))
-}
-
-func TestGetProcfileFromServerFailure(t *testing.T) {
-	config := api.Config{}
-	config.Values = map[string]interface{}{
-		"DRYCC_STACK": "buildpack",
-	}
-	_, err := getProcfile("")
-	assert.Error(t, err, fmt.Errorf("no Procfile can be matched in (%s)", ""))
-	assert.True(t, err != nil, "no error received when there should have been")
+	assert.Equal(t, expect, actualData)
 }
 
 func TestPrettyPrintJSON(t *testing.T) {

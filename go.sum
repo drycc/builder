@@ -18,8 +18,8 @@ github.com/distribution/distribution/v3 v3.0.0-alpha.1.0.20240215070122-62aa44ed
 github.com/distribution/distribution/v3 v3.0.0-alpha.1.0.20240215070122-62aa44edfde0/go.mod h1:wEFrX2NpxlKzg7JIqU/xYPgbzTR35TAlT4KJSdqRKcI=
 github.com/docker/go-metrics v0.0.1 h1:AgB/0SvBxihN0X8OR4SjsblXkbMvalQ8cjmtKQ2rQV8=
 github.com/docker/go-metrics v0.0.1/go.mod h1:cG1hvH2utMXtqgqqYE9plW6lDxS3/5ayHzueweSI3Vw=
-github.com/drycc/controller-sdk-go v0.0.0-20240304053455-0352ebbb02dc h1:tRMSrNX3qFzQsfVhij1pO2pwHIWTdSvCbrAcsX+wwrQ=
-github.com/drycc/controller-sdk-go v0.0.0-20240304053455-0352ebbb02dc/go.mod h1:EAzlvB5kQq4pFP+h+zl0mx2q1GUlHgzdQ92tlYtDQfQ=
+github.com/drycc/controller-sdk-go v0.0.0-20240403162730-10676f2b328d h1:qffye+xHsNTpn9/kD0YY/fkov6IBJTJIVXWxoXtXCrw=
+github.com/drycc/controller-sdk-go v0.0.0-20240403162730-10676f2b328d/go.mod h1:RJ0QxVNWhximzfd08+FkZfKzrX7gOp2gsgXfpqVPJZQ=
 github.com/drycc/pkg v0.0.0-20240225112316-78fc9239f51f h1:kgjvUQJeAszDoU1Vo4vTTE92KI8Av3JPb6Qn890niXg=
 github.com/drycc/pkg v0.0.0-20240225112316-78fc9239f51f/go.mod h1:n+QxGif6ha9CEoxVnlipxb9IdmerybcUSzTEDFkvjiA=
 github.com/emicklei/go-restful/v3 v3.11.0 h1:rAQeMHw1c7zTmncogyy8VvRZwtkmkZ4FxERmMY4rD+g=
@@ -146,8 +146,8 @@ github.com/stretchr/testify v1.7.0/go.mod h1:6Fq8oRcR53rry900zMqJjRRixrwX3KX962/
 github.com/stretchr/testify v1.7.1/go.mod h1:6Fq8oRcR53rry900zMqJjRRixrwX3KX962/h/Wwjteg=
 github.com/stretchr/testify v1.8.0/go.mod h1:yNjHg4UonilssWZ8iaSj1OCr/vHnekPRkoO+kdMU+MU=
 github.com/stretchr/testify v1.8.1/go.mod h1:w2LPCIKwWwSfY2zedu0+kehJoqGctiVI29o6fzry7u4=
-github.com/stretchr/testify v1.8.4 h1:CcVxjf3Q8PM0mHUKJCdn+eZZtm5yQwehR5yeSVQQcUk=
-github.com/stretchr/testify v1.8.4/go.mod h1:sz/lmYIOXD/1dqDmKjjqLyZ2RngseejIcXlSw2iwfAo=
+github.com/stretchr/testify v1.9.0 h1:HtqpIVDClZ4nwg75+f6Lvsy/wHu+3BoSGCbBAcpTsTg=
+github.com/stretchr/testify v1.9.0/go.mod h1:r2ic/lqez/lEtzL7wO/rwa5dbSLXVDPFyf8C91i36aY=
 github.com/urfave/cli/v2 v2.27.1 h1:8xSQ6szndafKVRmfyeUMxkNUJQMjL1F2zmsZ+qHpfho=
 github.com/urfave/cli/v2 v2.27.1/go.mod h1:8qnjx1vcq5s2/wpsqoZFndg2CE5tNFyrTvS6SinrnYQ=
 github.com/xrash/smetrics v0.0.0-20201216005158-039620a65673 h1:bAn7/zixMGCfxrRTfdpNzjtPYqr8smhKouy9mxVdGPU=
