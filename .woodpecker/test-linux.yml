@@ -15,6 +15,7 @@ steps:
   secrets:
   - codename
   - dev_registry
+  - codecov_token
   when:
     event:
     - push
