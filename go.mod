@@ -5,7 +5,7 @@ go 1.22
 require (
 	github.com/aws/aws-sdk-go v1.50.25
 	github.com/distribution/distribution/v3 v3.0.0-alpha.1.0.20240611111940-e1ec19ae60b8
-	github.com/drycc/controller-sdk-go v0.0.0-20240719050058-ae15038505c0
+	github.com/drycc/controller-sdk-go v0.0.0-20240819081928-b589d0b69f71
 	github.com/drycc/pkg v0.0.0-20240225112316-78fc9239f51f
 	github.com/google/uuid v1.6.0
 	github.com/kelseyhightower/envconfig v1.4.0
