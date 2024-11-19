@@ -41,13 +41,16 @@ func getStack(dirName string, config api.Config) map[string]string {
 	}
 	log.Debug("Stacks: %s", Stacks)
 	log.Debug("Config values %s", config.Values)
-	if stackInterface, ok := config.Values["DRYCC_STACK"]; ok {
-		if strStack, ok := stackInterface.(string); ok {
-			for _, stack := range Stacks {
-				if stack["name"] == strStack {
-					return stack
-				}
-			}
+	strStack := ""
+	for _, v := range config.Values {
+		if v.Group == "global" && v.Name == "DRYCC_STACK" {
+			strStack = v.Value.(string)
+		}
+	}
+
+	for _, stack := range Stacks {
+		if stack["name"] == strStack {
+			return stack
 		}
 	}
 

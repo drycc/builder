@@ -21,8 +21,8 @@ github.com/distribution/distribution/v3 v3.0.0-beta.1.0.20241022144144-c427f8450
 github.com/distribution/distribution/v3 v3.0.0-beta.1.0.20241022144144-c427f845035d/go.mod h1:Unn8+BXBntRw4BZHI7UVY9wJ7yGW/xtOspXPxo6hFIs=
 github.com/docker/go-metrics v0.0.1 h1:AgB/0SvBxihN0X8OR4SjsblXkbMvalQ8cjmtKQ2rQV8=
 github.com/docker/go-metrics v0.0.1/go.mod h1:cG1hvH2utMXtqgqqYE9plW6lDxS3/5ayHzueweSI3Vw=
-github.com/drycc/controller-sdk-go v0.0.0-20241028091950-441681c47292 h1:CLpq3s2NxjJs2evDvDqbTwUCDuGyEEjk6bIjn+g5H+M=
-github.com/drycc/controller-sdk-go v0.0.0-20241028091950-441681c47292/go.mod h1:F9ViuoVcZ/OG1WnfZBYH6j4v6mb5B+RW9FLaCopADoo=
+github.com/drycc/controller-sdk-go v0.0.0-20241122013249-f1d6fea5bf81 h1:y809MASIviVNxzUxP1CDU2EaB5AruRNAiFKjOMCx+0s=
+github.com/drycc/controller-sdk-go v0.0.0-20241122013249-f1d6fea5bf81/go.mod h1:F9ViuoVcZ/OG1WnfZBYH6j4v6mb5B+RW9FLaCopADoo=
 github.com/drycc/pkg v0.0.0-20241028091700-8caca001c932 h1:tUfkfjmFmlm9n0dYp1NoHcFK6+APD/wHZ2We6CKXDSI=
 github.com/drycc/pkg v0.0.0-20241028091700-8caca001c932/go.mod h1:upGcZF/RCEqidGjSnWHh/txRC1I4GPsRGvF8/+bDfwU=
 github.com/emicklei/go-restful/v3 v3.11.0 h1:rAQeMHw1c7zTmncogyy8VvRZwtkmkZ4FxERmMY4rD+g=
