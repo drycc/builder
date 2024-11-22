@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/drycc/builder/pkg/k8s"
+	"github.com/drycc/controller-sdk-go/api"
 	"github.com/google/uuid"
 	batchv1 "k8s.io/api/batch/v1"
 	corev1 "k8s.io/api/core/v1"
@@ -40,7 +41,7 @@ func createBuilderJob(
 	debug bool,
 	name,
 	namespace string,
-	env map[string]interface{},
+	config []api.ConfigValue,
 	tarKey,
 	gitShortHash string,
 	imageName,
@@ -52,7 +53,7 @@ func createBuilderJob(
 	nodeSelector map[string]string,
 ) *batchv1.Job {
 
-	job := buildJob(debug, name, namespace, builderName, pullPolicy, securityContext, nodeSelector, env)
+	job := buildJob(debug, name, namespace, builderName, pullPolicy, securityContext, nodeSelector, config)
 	job.Spec.Template.Spec.Containers[0].Name = builderName
 	job.Spec.Template.Spec.Containers[0].Image = builderImage
 
@@ -79,7 +80,7 @@ func buildJob(
 	pullPolicy corev1.PullPolicy,
 	securityContext corev1.SecurityContext,
 	nodeSelector map[string]string,
-	env map[string]interface{}) batchv1.Job {
+	values []api.ConfigValue) batchv1.Job {
 	TTLSecondsAfterFinished := newInt32(21600)
 	if os.Getenv("TTL_SECONDS_AFTER_FINISHED") != "" {
 		ttl, err := strconv.ParseInt(os.Getenv("TTL_SECONDS_AFTER_FINISHED"), 10, 32)
@@ -142,10 +143,17 @@ func buildJob(
 	})
 
 	if len(job.Spec.Template.Spec.Containers) > 0 {
-		for k, v := range env {
+		kvs := []api.KV{}
+		// only take the value of the global group
+		for _, v := range values {
+			if v.Group == "global" {
+				kvs = append(kvs, v.KV)
+			}
+		}
+		for _, v := range kvs {
 			job.Spec.Template.Spec.Containers[0].Env = append(job.Spec.Template.Spec.Containers[0].Env, corev1.EnvVar{
-				Name:  k,
-				Value: fmt.Sprintf("%v", v),
+				Name:  v.Name,
+				Value: fmt.Sprintf("%v", v.Value),
 			})
 		}
 	}

@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"github.com/drycc/builder/pkg/k8s"
+	"github.com/drycc/controller-sdk-go/api"
 	"github.com/stretchr/testify/assert"
 	batchv1 "k8s.io/api/batch/v1"
 	corev1 "k8s.io/api/core/v1"
@@ -32,7 +33,7 @@ type imageBuildCase struct {
 	debug                       bool
 	name                        string
 	namespace                   string
-	env                         map[string]interface{}
+	env                         []api.ConfigValue
 	tarKey                      string
 	gitShortHash                string
 	imgName                     string
@@ -43,10 +44,17 @@ type imageBuildCase struct {
 }
 
 func TestBuildJob(t *testing.T) {
-	emptyEnv := make(map[string]interface{})
+	emptyValues := []api.ConfigValue{}
 
-	env := make(map[string]interface{})
-	env["KEY"] = "VALUE"
+	values := []api.ConfigValue{
+		{
+			Group: "global",
+			KV: api.KV{
+				Name:  "KEY",
+				Value: "VALUE",
+			},
+		},
+	}
 	var job *batchv1.Job
 
 	emptyNodeSelector := make(map[string]string)
@@ -59,13 +67,13 @@ func TestBuildJob(t *testing.T) {
 	nodeSelector2["network"] = "fast"
 
 	imageBuilds := []imageBuildCase{
-		{true, "test", "default", emptyEnv, "tar", "deadbeef", "imagebuilder", "", "", corev1.PullAlways, nodeSelector1},
-		{true, "test", "default", env, "tar", "deadbeef", "", "imagebuilder", "", corev1.PullAlways, nodeSelector2},
-		{true, "test", "default", emptyEnv, "tar", "deadbeef", "img", "imagebuilder", "", corev1.PullAlways, emptyNodeSelector},
-		{true, "test", "default", env, "tar", "deadbeef", "img", "imagebuilder", "", corev1.PullAlways, emptyNodeSelector},
-		{true, "test", "default", env, "tar", "deadbeef", "img", "imagebuilder", "customimage", corev1.PullAlways, emptyNodeSelector},
-		{true, "test", "default", env, "tar", "deadbeef", "img", "imagebuilder", "customimage", corev1.PullIfNotPresent, emptyNodeSelector},
-		{true, "test", "default", env, "tar", "deadbeef", "img", "imagebuilder", "customimage", corev1.PullNever, nil},
+		{true, "test", "default", emptyValues, "tar", "deadbeef", "imagebuilder", "", "", corev1.PullAlways, nodeSelector1},
+		{true, "test", "default", values, "tar", "deadbeef", "", "imagebuilder", "", corev1.PullAlways, nodeSelector2},
+		{true, "test", "default", emptyValues, "tar", "deadbeef", "img", "imagebuilder", "", corev1.PullAlways, emptyNodeSelector},
+		{true, "test", "default", values, "tar", "deadbeef", "img", "imagebuilder", "", corev1.PullAlways, emptyNodeSelector},
+		{true, "test", "default", values, "tar", "deadbeef", "img", "imagebuilder", "customimage", corev1.PullAlways, emptyNodeSelector},
+		{true, "test", "default", values, "tar", "deadbeef", "img", "imagebuilder", "customimage", corev1.PullIfNotPresent, emptyNodeSelector},
+		{true, "test", "default", values, "tar", "deadbeef", "img", "imagebuilder", "customimage", corev1.PullNever, nil},
 	}
 	buildImageEnv := map[string]string{"DRYCC_REGISTRY_LOCATION": "on-cluster"}
 	for _, build := range imageBuilds {

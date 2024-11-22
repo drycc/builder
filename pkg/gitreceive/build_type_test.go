@@ -35,16 +35,28 @@ func TestGetStack(t *testing.T) {
 			t.Fatalf("failed to remove Procfile from %s (%s)", tmpDir, err)
 		}
 	}()
-	config.Values = map[string]interface{}{
-		"DRYCC_STACK": "buildpack",
+	config.Values = []api.ConfigValue{
+		{
+			Group: "global",
+			KV: api.KV{
+				Name:  "DRYCC_STACK",
+				Value: "buildpack",
+			},
+		},
 	}
 	stack = getStack(tmpDir, config)
 	if stack["name"] != "buildpack" {
 		t.Fatalf("expected procfile build, got %s", stack)
 	}
 
-	config.Values = map[string]interface{}{
-		"DRYCC_STACK": "container",
+	config.Values = []api.ConfigValue{
+		{
+			Group: "global",
+			KV: api.KV{
+				Name:  "DRYCC_STACK",
+				Value: "container",
+			},
+		},
 	}
 	stack = getStack(tmpDir, config)
 	if stack["name"] != "container" {
