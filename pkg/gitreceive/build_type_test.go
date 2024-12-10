@@ -38,7 +38,7 @@ func TestGetStack(t *testing.T) {
 	config.Values = []api.ConfigValue{
 		{
 			Group: "global",
-			KV: api.KV{
+			ConfigVar: api.ConfigVar{
 				Name:  "DRYCC_STACK",
 				Value: "buildpack",
 			},
@@ -52,7 +52,7 @@ func TestGetStack(t *testing.T) {
 	config.Values = []api.ConfigValue{
 		{
 			Group: "global",
-			KV: api.KV{
+			ConfigVar: api.ConfigVar{
 				Name:  "DRYCC_STACK",
 				Value: "container",
 			},
