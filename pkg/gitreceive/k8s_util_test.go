@@ -49,7 +49,7 @@ func TestBuildJob(t *testing.T) {
 	values := []api.ConfigValue{
 		{
 			Group: "global",
-			KV: api.KV{
+			ConfigVar: api.ConfigVar{
 				Name:  "KEY",
 				Value: "VALUE",
 			},

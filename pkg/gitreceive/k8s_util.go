@@ -143,14 +143,14 @@ func buildJob(
 	})
 
 	if len(job.Spec.Template.Spec.Containers) > 0 {
-		kvs := []api.KV{}
+		cvs := []api.ConfigVar{}
 		// only take the value of the global group
 		for _, v := range values {
 			if v.Group == "global" {
-				kvs = append(kvs, v.KV)
+				cvs = append(cvs, v.ConfigVar)
 			}
 		}
-		for _, v := range kvs {
+		for _, v := range cvs {
 			job.Spec.Template.Spec.Containers[0].Env = append(job.Spec.Template.Spec.Containers[0].Env, corev1.EnvVar{
 				Name:  v.Name,
 				Value: fmt.Sprintf("%v", v.Value),
