@@ -95,59 +95,6 @@ func TestRepoCmd(t *testing.T) {
 	}
 }
 
-func TestGetDryccfileFromRepoSuccess(t *testing.T) {
-	tmpDir, err := os.MkdirTemp("", "tmpdir")
-	if err != nil {
-		t.Fatalf("error creating temp directory (%s)", err)
-	}
-
-	data := `
-build:
-  docker:
-    web: Dockerfile
-    worker: worker/Dockerfile
-  config:
-    RAILS_ENV: development
-    FOO: bar
-run:
-  command:
-  - ./deployment-tasks.sh
-  image: worker
-deploy:
-  web:
-    command:
-    - bash
-    - -c
-    args: bundle exec puma -C config/puma.rb
-  worker:
-    command:
-    - bash
-    - -c
-    args:
-    - python myworker.py
-  asset-syncer:
-    command:
-    - bash
-    - -c
-    args:
-    - python asset-syncer.py
-    image: worker
-`
-	if err := os.WriteFile(tmpDir+"/drycc.yaml", []byte(data), 0644); err != nil {
-		t.Fatalf("error creating %s/drycc.yaml (%s)", tmpDir, err)
-	}
-	defer func() {
-		if err := os.RemoveAll(tmpDir); err != nil {
-			t.Fatalf("failed to remove drycc.yaml from %s (%s)", tmpDir, err)
-		}
-	}()
-	dryccfile, err := getDryccfile(tmpDir)
-	actualData := map[string]interface{}{}
-	yaml.Unmarshal([]byte(data), &actualData)
-	assert.Equal(t, err, nil)
-	assert.Equal(t, dryccfile, actualData, "data")
-}
-
 func TestGetProcfileFromRepoSuccess(t *testing.T) {
 	tmpDir, err := os.MkdirTemp("", "tmpdir")
 	if err != nil {

@@ -5,11 +5,11 @@ go 1.23
 require (
 	github.com/aws/aws-sdk-go v1.55.5
 	github.com/distribution/distribution/v3 v3.0.0-beta.1.0.20241022144144-c427f845035d
-	github.com/drycc/controller-sdk-go v0.0.0-20241210030451-bd35b03af548
+	github.com/drycc/controller-sdk-go v0.0.0-20250114084605-55b2a28ae6ee
 	github.com/drycc/pkg v0.0.0-20241028091700-8caca001c932
 	github.com/google/uuid v1.6.0
 	github.com/kelseyhightower/envconfig v1.4.0
-	github.com/stretchr/testify v1.9.0
+	github.com/stretchr/testify v1.10.0
 	github.com/urfave/cli/v2 v2.27.5
 	golang.org/x/crypto v0.31.0
 	gopkg.in/yaml.v3 v3.0.1
@@ -71,7 +71,7 @@ require (
 	go.opentelemetry.io/otel/sdk/metric v1.21.0 // indirect
 	go.opentelemetry.io/otel/trace v1.21.0 // indirect
 	go.opentelemetry.io/proto/otlp v1.0.0 // indirect
-	golang.org/x/net v0.28.0 // indirect
+	golang.org/x/net v0.33.0 // indirect
 	golang.org/x/oauth2 v0.21.0 // indirect
 	golang.org/x/sys v0.28.0 // indirect
 	golang.org/x/term v0.27.0 // indirect

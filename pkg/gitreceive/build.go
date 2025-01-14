@@ -17,6 +17,7 @@ import (
 	"github.com/drycc/builder/pkg/git"
 	"github.com/drycc/builder/pkg/k8s"
 	"github.com/drycc/builder/pkg/sys"
+	drycc "github.com/drycc/controller-sdk-go"
 	dryccAPI "github.com/drycc/controller-sdk-go/api"
 	"github.com/drycc/controller-sdk-go/hooks"
 	"github.com/drycc/pkg/log"
@@ -249,11 +250,11 @@ func build(
 	if err != nil {
 		return err
 	}
-	dryccfile, err := getDryccfile(tmpDir)
+	dockerfile, err := getDockerfile(tmpDir, stack)
 	if err != nil {
 		return err
 	}
-	dockerfile, err := getDockerfile(tmpDir, stack)
+	dryccfile, err := drycc.ParseDryccfile(filepath.Join(tmpDir, ".drycc"))
 	if err != nil {
 		return err
 	}
@@ -316,21 +317,6 @@ func getProcfile(dirName string) (dryccAPI.ProcessType, error) {
 		}
 	}
 	return procfile, nil
-}
-
-func getDryccfile(dirName string) (map[string]interface{}, error) {
-	dryccfile := map[string]interface{}{}
-	file := fmt.Sprintf("%s/drycc.yaml", dirName)
-	if _, err := os.Stat(file); err == nil {
-		rawDryccfile, err := os.ReadFile(file)
-		if err != nil {
-			return nil, fmt.Errorf("error in reading %s (%s)", file, err)
-		}
-		if err := yaml.Unmarshal(rawDryccfile, &dryccfile); err != nil {
-			return nil, fmt.Errorf("drycc.yaml %s is malformed (%s)", file, err)
-		}
-	}
-	return dryccfile, nil
 }
 
 func getDockerfile(dirName string, stack map[string]string) (string, error) {
