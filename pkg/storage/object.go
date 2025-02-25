@@ -60,7 +60,7 @@ func WaitForObject(statter ObjectStatter, objKey string, tick, timeout time.Dura
 			if err := checker(); err == nil {
 				return nil
 			}
-			return fmt.Errorf("Object %s didn't exist after %s", objKey, timeout)
+			return fmt.Errorf("object %s didn't exist after %s", objKey, timeout)
 		}
 	}
 }

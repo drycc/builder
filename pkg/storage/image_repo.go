@@ -32,7 +32,7 @@ func CreateImageRepo(reponame string, params map[string]string) error {
 	}
 	regionName, ok = params["region"]
 	if !ok || fmt.Sprint(regionName) == "" {
-		return fmt.Errorf("No region parameter provided")
+		return fmt.Errorf("no region parameter provided: %s", regionName)
 	}
 	region := fmt.Sprint(regionName)
 	creds := credentials.NewChainCredentials([]credentials.Provider{
@@ -49,14 +49,15 @@ func CreateImageRepo(reponame string, params map[string]string) error {
 	awsConfig := aws.NewConfig()
 	awsConfig.WithCredentials(creds)
 	awsConfig.WithRegion(region)
-	svc := ecr.New(session.New(awsConfig))
 
+	session, err := session.NewSession(awsConfig)
+	if err != nil {
+		return err
+	}
 	repoInput := &ecr.CreateRepositoryInput{
 		RepositoryName: aws.String(reponame),
 	}
-
-	_, err := svc.CreateRepository(repoInput)
-	if err != nil {
+	if _, err := ecr.New(session).CreateRepository(repoInput); err != nil {
 		if s3Err, ok := err.(awserr.Error); ok && s3Err.Code() == "RepositoryAlreadyExistsException" {
 			return nil
 		}

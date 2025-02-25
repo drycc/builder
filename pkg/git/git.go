@@ -54,16 +54,17 @@ func Receive(
 		return nil
 	}
 	repoPath := filepath.Join(gitHome, repo)
+	defer os.RemoveAll(repoPath)
 	log.Info("creating repo directory %s", repoPath)
 	if _, err := createRepo(repoPath); err != nil {
-		err = fmt.Errorf("Did not create new repo (%s)", err)
+		err = fmt.Errorf("did not create new repo (%s)", err)
 
 		return err
 	}
 
 	log.Info("writing pre-receive hook under %s", repoPath)
 	if err := createPreReceiveHook(gitHome, repoPath); err != nil {
-		err = fmt.Errorf("Did not write pre-receive hook (%s)", err)
+		err = fmt.Errorf("did not write pre-receive hook (%s)", err)
 		return err
 	}
 
@@ -93,19 +94,19 @@ func Receive(
 	cmd.Stderr = io.MultiWriter(channel.Stderr(), &errbuff)
 
 	if err := cmd.Start(); err != nil {
-		err = fmt.Errorf("Failed to start git pre-receive hook: %s (%s)", err, errbuff.Bytes())
+		err = fmt.Errorf("failed to start git pre-receive hook: %s (%s)", err, errbuff.Bytes())
 		return err
 	}
 
 	if _, err := io.Copy(inpipe, channel); err != nil {
-		err = fmt.Errorf("Failed to write git objects into the git pre-receive hook (%s)", err)
+		err = fmt.Errorf("failed to write git objects into the git pre-receive hook (%s)", err)
 		return err
 	}
 
 	fmt.Println("Waiting for git-receive to run.")
 	fmt.Println("Waiting for deploy.")
 	if err := cmd.Wait(); err != nil {
-		err = fmt.Errorf("Failed to run git pre-receive hook: %s (%s)", errbuff.Bytes(), err)
+		err = fmt.Errorf("failed to run git pre-receive hook: %s (%s)", errbuff.Bytes(), err)
 		return err
 	}
 	if errbuff.Len() > 0 {
@@ -160,16 +161,16 @@ func createPreReceiveHook(gitHome, repoPath string) error {
 	writePath := filepath.Join(repoPath, "hooks", "pre-receive")
 	fd, err := os.Create(writePath)
 	if err != nil {
-		return fmt.Errorf("Cannot create pre-receive hook file at %s (%s)", writePath, err)
+		return fmt.Errorf("cannot create pre-receive hook file at %s (%s)", writePath, err)
 	}
 	defer fd.Close()
 
 	// parse & generate the template anew each receive for each new git home
 	if err := preReceiveHookTpl.Execute(fd, map[string]string{"GitHome": gitHome}); err != nil {
-		return fmt.Errorf("Cannot write pre-receive hook to %s (%s)", writePath, err)
+		return fmt.Errorf("cannot write pre-receive hook to %s (%s)", writePath, err)
 	}
 	if err := os.Chmod(writePath, 0755); err != nil {
-		return fmt.Errorf("Cannot change pre-receive hook script permissions (%s)", err)
+		return fmt.Errorf("cannot change pre-receive hook script permissions (%s)", err)
 	}
 
 	return nil
