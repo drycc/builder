@@ -1,4 +1,5 @@
-ARG LDFLAGS CODENAME
+ARG LDFLAGS
+ARG CODENAME
 
 FROM registry.drycc.cc/drycc/go-dev:latest AS build
 ADD . /workspace
