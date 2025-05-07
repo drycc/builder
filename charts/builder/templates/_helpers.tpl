@@ -60,7 +60,7 @@ env:
 {{- if eq .Values.global.registryLocation "on-cluster" }}
 # NOTE(bacongobbler): use drycc/registry_proxy to work around --insecure-registry requirements
 - name: "DRYCC_REGISTRY_PROXY_HOST"
-  value: {{ print "127.0.0.1"  ":" .Values.global.registryProxyPort }}
+  value: {{ print "127.0.0.1"  ":" .Values.registry.proxyPort }}
 {{- else }}
 - name: "DRYCC_REGISTRY_ORGANIZATION"
   valueFrom:

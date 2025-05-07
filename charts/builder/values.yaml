@@ -50,6 +50,10 @@ podAntiAffinityPreset:
 # see: https://kubernetes.io/docs/concepts/workloads/controllers/job/#ttl-mechanism-for-finished-jobs
 ttlSecondsAfterFinished: 21600
 
+# host port for the registry proxy in the daemonset
+registry:
+  proxyPort: 5555
+
 global:
   # Role-Based Access Control for Kubernetes >= 1.5
   rbac: false
