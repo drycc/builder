@@ -25,21 +25,39 @@ env:
     secretKeyRef:
       name: builder-key-auth
       key: builder-key
+{{- if (.Values.storageEndpoint) }}
 - name: "DRYCC_STORAGE_LOOKUP"
   valueFrom:
     secretKeyRef:
-      name: storage-creds
-      key: lookup
+      name: builder-secret
+      key: storage-lookup
 - name: "DRYCC_STORAGE_BUCKET"
   valueFrom:
     secretKeyRef:
-      name: storage-creds
-      key: builder-bucket
+      name: builder-secret
+      key: storage-bucket
 - name: "DRYCC_STORAGE_ENDPOINT"
   valueFrom:
     secretKeyRef:
-      name: storage-creds
-      key: endpoint
+      name: builder-secret
+      key: storage-endpoint
+- name: "DRYCC_STORAGE_ACCESSKEY"
+  valueFrom:
+    secretKeyRef:
+      name: builder-secret
+      key: storage-accesskey
+- name: "DRYCC_STORAGE_SECRETKEY"
+  valueFrom:
+    secretKeyRef:
+      name: builder-secret
+      key: storage-secretkey
+{{- else if .Values.storage.enabled  }}
+- name: "DRYCC_STORAGE_LOOKUP"
+  value: "path"
+- name: "DRYCC_STORAGE_BUCKET"
+  value: "builder"
+- name: "DRYCC_STORAGE_ENDPOINT"
+  value: {{ printf "http://drycc-storage.%s.svc.%s:9000" .Release.Namespace .Values.global.clusterDomain }}
 - name: "DRYCC_STORAGE_ACCESSKEY"
   valueFrom:
     secretKeyRef:
@@ -50,24 +68,33 @@ env:
     secretKeyRef:
       name: storage-creds
       key: secretkey
+{{- end }}
 - name: "DRYCC_REGISTRY_LOCATION"
-  value: "{{ .Values.global.registryLocation }}"
+  value: {{ ternary "on-cluster" "off-cluster" .Values.registry.enabled }}
+{{- if (.Values.registryHost) }}
 - name: "DRYCC_REGISTRY_HOST"
   valueFrom:
     secretKeyRef:
-      name: registry-secret
-      key: host
-{{- if eq .Values.global.registryLocation "on-cluster" }}
-# NOTE(bacongobbler): use drycc/registry_proxy to work around --insecure-registry requirements
-- name: "DRYCC_REGISTRY_PROXY_HOST"
-  value: {{ print "127.0.0.1"  ":" .Values.registry.proxyPort }}
-{{- else }}
+      name: builder-secret
+      key: registry-host
+- name: "DRYCC_REGISTRY_USERNAME"
+  valueFrom:
+    secretKeyRef:
+      name: builder-secret
+      key: registry-username
+- name: "DRYCC_REGISTRY_PASSWORD"
+  valueFrom:
+    secretKeyRef:
+      name: builder-secret
+      key: registry-password
 - name: "DRYCC_REGISTRY_ORGANIZATION"
   valueFrom:
     secretKeyRef:
-      name: registry-secret
-      key: organization
-{{- end }}
+      name: builder-secret
+      key: registry-organization
+{{- else if .Values.registry.enabled  }}
+- name: "DRYCC_REGISTRY_PROXY_HOST"
+  value: {{ print "127.0.0.1"  ":" .Values.registry.proxyPort }}
 - name: "DRYCC_REGISTRY_USERNAME"
   valueFrom:
     secretKeyRef:
@@ -78,6 +105,8 @@ env:
     secretKeyRef:
       name: registry-secret
       key: password
+{{- end }}
+
 {{- if (.Values.builderPodNodeSelector) }}
 - name: BUILDER_POD_NODE_SELECTOR
   value: {{.Values.builderPodNodeSelector}}
