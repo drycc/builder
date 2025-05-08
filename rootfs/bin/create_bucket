@@ -13,6 +13,8 @@ has_bucket(){
     mc ls storage -json|jq -r '.key'|grep -w "${DRYCC_STORAGE_BUCKET}"
 }
 
+mc ping storage -x
+
 if  [ -z "$(has_bucket)" ] ;then
     mc mb storage/"${DRYCC_STORAGE_BUCKET}"
     if  [ -z "$(has_bucket)" ] ;then
