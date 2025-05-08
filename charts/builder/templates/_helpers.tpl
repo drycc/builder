@@ -93,6 +93,8 @@ env:
       name: builder-secret
       key: registry-organization
 {{- else if .Values.registry.enabled  }}
+- name: "DRYCC_REGISTRY_HOST"
+  value: {{ printf "drycc-registry.%s.svc.%s:5000" .Release.Namespace .Values.global.clusterDomain }}
 - name: "DRYCC_REGISTRY_PROXY_HOST"
   value: {{ print "127.0.0.1"  ":" .Values.registry.proxyPort }}
 - name: "DRYCC_REGISTRY_USERNAME"
