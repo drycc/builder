@@ -75,4 +75,5 @@ storage:
 # host port for the registry proxy in the daemonset
 registry:
   enabled: true
-  proxyPort: 5555
+  proxy:
+    port: 5555

@@ -96,7 +96,7 @@ env:
 - name: "DRYCC_REGISTRY_HOST"
   value: {{ printf "drycc-registry.%s.svc.%s:5000" .Release.Namespace .Values.global.clusterDomain }}
 - name: "DRYCC_REGISTRY_PROXY_HOST"
-  value: {{ print "127.0.0.1"  ":" .Values.registry.proxyPort }}
+  value: {{ print "127.0.0.1"  ":" .Values.registry.proxy.port }}
 - name: "DRYCC_REGISTRY_USERNAME"
   valueFrom:
     secretKeyRef:
