@@ -25,8 +25,14 @@ service:
   annotations: {}
   # Service type default to LoadBalancer
   type: ClusterIP
-# limitsCpu: "100m"
-# limitsMemory: "50Mi"
+
+resources: {}
+  # limits:
+  #   cpu: 200m
+  #   memory: 50Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 30Mi
 
 nodeAffinityPreset:
   key: "drycc.cc/node"
