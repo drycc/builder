@@ -77,10 +77,10 @@ func TestBuild(t *testing.T) {
 		t.Error("expected running build() without a valid builder key to fail")
 	}
 
-	builderconf.BuilderKeyLocation = filepath.Join(tmpDir, "builder-key")
+	builderconf.ServiceKeyLocation = filepath.Join(tmpDir, "service-key")
 	data := []byte("testbuilderkey")
-	if err := os.WriteFile(builderconf.BuilderKeyLocation, data, 0644); err != nil {
-		t.Fatalf("error creating %s (%s)", builderconf.BuilderKeyLocation, err)
+	if err := os.WriteFile(builderconf.ServiceKeyLocation, data, 0644); err != nil {
+		t.Fatalf("error creating %s (%s)", builderconf.ServiceKeyLocation, err)
 	}
 
 	if err := build(config, storageDriver, nil, env, sha); err == nil {

@@ -20,11 +20,6 @@ env:
   valueFrom:
     fieldRef:
       fieldPath: metadata.namespace
-- name: DRYCC_BUILDER_KEY
-  valueFrom:
-    secretKeyRef:
-      name: builder-key-auth
-      key: builder-key
 {{- if (.Values.storageEndpoint) }}
 - name: "DRYCC_STORAGE_LOOKUP"
   valueFrom:

@@ -17,11 +17,11 @@ func New(host, port string) (*drycc.Client, error) {
 	}
 	client.UserAgent = "drycc-builder"
 
-	builderKey, err := conf.GetBuilderKey()
+	serviceKey, err := conf.GetServiceKey()
 	if err != nil {
 		return client, err
 	}
-	client.HooksToken = builderKey
+	client.ServiceKey = serviceKey
 
 	return client, nil
 }

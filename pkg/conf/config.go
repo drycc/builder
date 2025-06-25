@@ -18,20 +18,20 @@ const (
 	storageSecretkeyEnvVar = "DRYCC_STORAGE_SECRETKEY"
 )
 
-// BuilderKeyLocation holds the path of the builder key secret.
-var BuilderKeyLocation = "/var/run/secrets/api/auth/builder-key"
+// ServiceKeyLocation holds the path of the service key secret.
+var ServiceKeyLocation = "/var/run/secrets/drycc/controller/service-key"
 
 // Parameters is map which contains storage params
 type Parameters map[string]interface{}
 
-// GetBuilderKey returns the key to be used as token to interact with drycc-controller
-func GetBuilderKey() (string, error) {
-	builderKeyBytes, err := os.ReadFile(BuilderKeyLocation)
+// GetServiceKey returns the key to be used as token to interact with drycc-controller
+func GetServiceKey() (string, error) {
+	serviceKeyBytes, err := os.ReadFile(ServiceKeyLocation)
 	if err != nil {
-		return "", fmt.Errorf("couldn't get builder key from %s (%s)", BuilderKeyLocation, err)
+		return "", fmt.Errorf("couldn't get builder key from %s (%s)", ServiceKeyLocation, err)
 	}
-	builderKey := strings.Trim(string(builderKeyBytes), "\n")
-	return builderKey, nil
+	serviceKey := strings.Trim(string(serviceKeyBytes), "\n")
+	return serviceKey, nil
 }
 
 // GetStorageParams returns the credentials required for connecting to object storage

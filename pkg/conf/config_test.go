@@ -39,22 +39,22 @@ func TestGetControllerClient(t *testing.T) {
 
 	defer func() {
 		if err := os.RemoveAll(tmpDir); err != nil {
-			t.Fatalf("failed to remove builder-key from %s (%s)", tmpDir, err)
+			t.Fatalf("failed to remove service-key from %s (%s)", tmpDir, err)
 		}
 	}()
 
-	BuilderKeyLocation = filepath.Join(tmpDir, "builder-key")
+	ServiceKeyLocation = filepath.Join(tmpDir, "service-key")
 	data := []byte("testbuilderkey")
-	if err := os.WriteFile(BuilderKeyLocation, data, 0644); err != nil {
-		t.Fatalf("error creating %s (%s)", BuilderKeyLocation, err)
+	if err := os.WriteFile(ServiceKeyLocation, data, 0644); err != nil {
+		t.Fatalf("error creating %s (%s)", ServiceKeyLocation, err)
 	}
 
-	key, err := GetBuilderKey()
+	key, err := GetServiceKey()
 	assert.Equal(t, err, nil)
 	assert.Equal(t, key, string(data), "data")
 }
 
-func TestGetBuilderKeyError(t *testing.T) {
-	_, err := GetBuilderKey()
+func TestGetServiceKeyError(t *testing.T) {
+	_, err := GetServiceKey()
 	assert.True(t, err != nil, "no error received when there should have been")
 }

@@ -5,7 +5,7 @@ go 1.24
 require (
 	github.com/aws/aws-sdk-go v1.55.6
 	github.com/distribution/distribution/v3 v3.0.0
-	github.com/drycc/controller-sdk-go v0.0.0-20250326034724-1dafccaadf6b
+	github.com/drycc/controller-sdk-go v0.0.0-20250625050826-8be5432737be
 	github.com/drycc/pkg v0.0.0-20250324060552-65752139ab2f
 	github.com/google/uuid v1.6.0
 	github.com/kelseyhightower/envconfig v1.4.0

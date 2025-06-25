@@ -71,22 +71,22 @@ spec:
           timeoutSeconds: 1
         {{- end }}
         volumeMounts:
-            - name: builder-key-auth
-              mountPath: /var/run/secrets/api/auth
-              readOnly: true
-            - name: builder-ssh-private-keys
-              mountPath: /var/run/secrets/drycc/builder/ssh
-              readOnly: true
-            - name: imagebuilder-config
-              mountPath: /etc/imagebuilder
-              readOnly: true
+          - name: controller-creds
+            mountPath: /var/run/secrets/drycc/controller
+            readOnly: true
+          - name: imagebuilder-config
+            mountPath: /etc/imagebuilder
+            readOnly: true
+          - name: builder-ssh-private-keys
+            mountPath: /var/run/secrets/drycc/builder/ssh
+            readOnly: true
       volumes:
-        - name: builder-key-auth
+        - name: controller-creds
           secret:
-            secretName: builder-key-auth
-        - name: builder-ssh-private-keys
-          secret:
-            secretName: builder-ssh-private-keys
+            secretName: controller-creds
         - name: imagebuilder-config
           configMap:
             name: imagebuilder-config
+        - name: builder-ssh-private-keys
+          secret:
+            secretName: builder-ssh-private-keys

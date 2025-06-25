@@ -21,14 +21,14 @@ func TestNew(t *testing.T) {
 
 	defer func() {
 		if err := os.RemoveAll(tmpDir); err != nil {
-			t.Fatalf("failed to remove builder-key from %s (%s)", tmpDir, err)
+			t.Fatalf("failed to remove service-key from %s (%s)", tmpDir, err)
 		}
 	}()
 
-	builderconf.BuilderKeyLocation = filepath.Join(tmpDir, "builder-key")
+	builderconf.ServiceKeyLocation = filepath.Join(tmpDir, "service-key")
 	data := []byte("testbuilderkey")
-	if err := os.WriteFile(builderconf.BuilderKeyLocation, data, 0644); err != nil {
-		t.Fatalf("error creating %s (%s)", builderconf.BuilderKeyLocation, err)
+	if err := os.WriteFile(builderconf.ServiceKeyLocation, data, 0644); err != nil {
+		t.Fatalf("error creating %s (%s)", builderconf.ServiceKeyLocation, err)
 	}
 
 	host := "127.0.0.1"
@@ -36,7 +36,7 @@ func TestNew(t *testing.T) {
 	cli, err := New(host, port)
 	assert.Equal(t, err, nil)
 	assert.Equal(t, cli.ControllerURL.String(), fmt.Sprintf("http://%s:%s/", host, port), "data")
-	assert.Equal(t, cli.HooksToken, string(data), "data")
+	assert.Equal(t, cli.ServiceKey, string(data), "data")
 	assert.Equal(t, cli.UserAgent, "drycc-builder", "user-agent")
 
 	port = "invalid-port-number"
