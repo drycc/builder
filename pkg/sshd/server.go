@@ -36,7 +36,7 @@ var errDirCreatePerm = errors.New("empty repo name")
 // AuthKey authenticates based on a public key.
 func AuthKey(key ssh.PublicKey, cnf *Config) (*ssh.Permissions, error) {
 	log.Info("Starting ssh authentication")
-	client, err := controller.New(cnf.ControllerHost, cnf.ControllerPort)
+	client, err := controller.New(cnf.ControllerURL)
 	if err != nil {
 		return nil, err
 	}

@@ -1,17 +1,15 @@
 package controller
 
 import (
-	"fmt"
-
 	"github.com/drycc/builder/pkg/conf"
 	drycc "github.com/drycc/controller-sdk-go"
 	"github.com/drycc/pkg/log"
 )
 
 // New creates a new SDK client configured as the builder.
-func New(host, port string) (*drycc.Client, error) {
+func New(url string) (*drycc.Client, error) {
 
-	client, err := drycc.New(true, fmt.Sprintf("http://%s:%s/", host, port), "")
+	client, err := drycc.New(true, url, "")
 	if err != nil {
 		return client, err
 	}

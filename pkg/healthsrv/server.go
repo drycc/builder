@@ -12,7 +12,7 @@ import (
 // with the indicative error.
 func Start(cnf *sshd.Config, nsLister NamespaceLister, bLister BucketLister, sshServerCircuit *sshd.Circuit) error {
 	mux := http.NewServeMux()
-	client, err := controller.New(cnf.ControllerHost, cnf.ControllerPort)
+	client, err := controller.New(cnf.ControllerURL)
 	if err != nil {
 		return err
 	}

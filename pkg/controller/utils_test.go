@@ -2,7 +2,6 @@ package controller
 
 import (
 	"errors"
-	"fmt"
 	"os"
 	"path/filepath"
 	"testing"
@@ -31,24 +30,22 @@ func TestNew(t *testing.T) {
 		t.Fatalf("error creating %s (%s)", builderconf.ServiceKeyLocation, err)
 	}
 
-	host := "127.0.0.1"
-	port := "80"
-	cli, err := New(host, port)
+	url := "http://127.0.0.1:80"
+	cli, err := New(url)
 	assert.Equal(t, err, nil)
-	assert.Equal(t, cli.ControllerURL.String(), fmt.Sprintf("http://%s:%s/", host, port), "data")
+	assert.Equal(t, cli.ControllerURL.String(), url, "data")
 	assert.Equal(t, cli.ServiceKey, string(data), "data")
 	assert.Equal(t, cli.UserAgent, "drycc-builder", "user-agent")
 
-	port = "invalid-port-number"
-	if _, err = New(host, port); err == nil {
+	url = "http://127.0.0.1:invalid-port-number"
+	if _, err = New(url); err == nil {
 		t.Errorf("expected error with invalid port number, got nil")
 	}
 }
 
 func TestNewWithInvalidBuilderKeyPath(t *testing.T) {
-	host := "127.0.0.1"
-	port := "80"
-	_, err := New(host, port)
+	url := "http://127.0.0.1:80"
+	_, err := New(url)
 	assert.True(t, err != nil, "no error received when there should have been")
 }
 

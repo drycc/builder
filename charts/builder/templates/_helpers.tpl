@@ -20,6 +20,8 @@ env:
   valueFrom:
     fieldRef:
       fieldPath: metadata.namespace
+- name: "DRYCC_CONTROLLER_URL"
+  value: http://drycc-controller-api
 {{- if (.Values.storageEndpoint) }}
 - name: "DRYCC_STORAGE_LOOKUP"
   valueFrom:
@@ -52,7 +54,7 @@ env:
 - name: "DRYCC_STORAGE_BUCKET"
   value: "builder"
 - name: "DRYCC_STORAGE_ENDPOINT"
-  value: {{ printf "http://drycc-storage.%s.svc.%s:9000" .Release.Namespace .Values.global.clusterDomain }}
+  value: http://drycc-storage:9000
 - name: "DRYCC_STORAGE_ACCESSKEY"
   valueFrom:
     secretKeyRef:
@@ -89,7 +91,7 @@ env:
       key: registry-organization
 {{- else if .Values.registry.enabled  }}
 - name: "DRYCC_REGISTRY_HOST"
-  value: {{ printf "drycc-registry.%s.svc.%s:5000" .Release.Namespace .Values.global.clusterDomain }}
+  value: drycc-registry:5000
 - name: "DRYCC_REGISTRY_PROXY_HOST"
   value: {{ print "127.0.0.1"  ":" .Values.registry.proxy.port }}
 - name: "DRYCC_REGISTRY_USERNAME"
@@ -103,7 +105,6 @@ env:
       name: registry-secret
       key: password
 {{- end }}
-
 {{- if (.Values.builderPodNodeSelector) }}
 - name: BUILDER_POD_NODE_SELECTOR
   value: {{.Values.builderPodNodeSelector}}

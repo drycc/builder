@@ -13,10 +13,7 @@ const (
 // Config is the envconfig (http://github.com/kelseyhightower/envconfig) compatible struct for the
 // builder's git-receive hook.
 type Config struct {
-	// k8s service discovery env vars
-	ControllerHost string `envconfig:"DRYCC_CONTROLLER_API_SERVICE_HOST" required:"true"`
-	ControllerPort string `envconfig:"DRYCC_CONTROLLER_API_SERVICE_PORT" required:"true"`
-
+	ControllerURL                 string `envconfig:"DRYCC_CONTROLLER_URL" required:"true"`
 	GitHome                       string `envconfig:"GIT_HOME" required:"true"`
 	SSHConnection                 string `envconfig:"SSH_CONNECTION" required:"true"`
 	SSHOriginalCommand            string `envconfig:"SSH_ORIGINAL_COMMAND" required:"true"`

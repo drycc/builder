@@ -90,7 +90,7 @@ func build(
 		}
 	}()
 
-	client, err := controller.New(conf.ControllerHost, conf.ControllerPort)
+	client, err := controller.New(conf.ControllerURL)
 	if err != nil {
 		return err
 	}

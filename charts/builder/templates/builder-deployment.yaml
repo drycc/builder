@@ -34,9 +34,7 @@ spec:
           - netcat
           - -v
           - -u
-          - $(DRYCC_STORAGE_ENDPOINT)
-          - -a
-          - $(DRYCC_CONTROLLER_API_SERVICE_HOST):$(DRYCC_CONTROLLER_API_SERVICE_PORT)
+          - $(DRYCC_STORAGE_ENDPOINT),$(DRYCC_CONTROLLER_URL)
         {{- include "builder.envs" . | indent 8 }}
       containers:
       - name: drycc-builder

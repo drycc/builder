@@ -70,8 +70,7 @@ func TestBuild(t *testing.T) {
 		t.Error("expected running build() without valid controller client info to fail")
 	}
 
-	config.ControllerHost = "localhost"
-	config.ControllerPort = "1234"
+	config.ControllerURL = "http://localhost:1234"
 
 	if err := build(config, storageDriver, nil, env, sha); err == nil {
 		t.Error("expected running build() without a valid builder key to fail")

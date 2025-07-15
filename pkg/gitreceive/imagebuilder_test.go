@@ -17,12 +17,12 @@ func TestGetImagebuilderEnvOffclusterErr(t *testing.T) {
 	env.Envs = map[string]string{
 		"DRYCC_STORAGE_LOOKUP":    "path",
 		"DRYCC_STORAGE_BUCKET":    "builder",
-		"DRYCC_STORAGE_ENDPOINT":  "drycc-storage.drycc.svc.cluster.local",
+		"DRYCC_STORAGE_ENDPOINT":  "drycc-storage",
 		"DRYCC_REGISTRY_LOCATION": "off-cluster",
 	}
 	_, err := getImagebuilderEnv(&image, config, env)
 	assert.Error(t, err, errors.New("the environment variable DRYCC_REGISTRY_HOST is required"))
-	env.Envs["DRYCC_REGISTRY_HOST"] = "drycc-registry.drycc.svc.cluster.local"
+	env.Envs["DRYCC_REGISTRY_HOST"] = "drycc-registry"
 	_, err = getImagebuilderEnv(&image, config, env)
 	assert.Error(t, err, errors.New("the environment variable DRYCC_REGISTRY_ORGANIZATION is required"))
 }
@@ -32,7 +32,7 @@ func TestGetImagebuilderEnvOffclusterSuccess(t *testing.T) {
 	env.Envs = map[string]string{
 		"DRYCC_STORAGE_LOOKUP":        "path",
 		"DRYCC_STORAGE_BUCKET":        "builder",
-		"DRYCC_STORAGE_ENDPOINT":      "drycc-storage.drycc.svc.cluster.local",
+		"DRYCC_STORAGE_ENDPOINT":      "drycc-storage",
 		"DRYCC_REGISTRY_HOST":         "quay.io",
 		"DRYCC_REGISTRY_ORGANIZATION": "kmala",
 		"DRYCC_REGISTRY_LOCATION":     "off-cluster",
@@ -40,7 +40,7 @@ func TestGetImagebuilderEnvOffclusterSuccess(t *testing.T) {
 	expectedData := map[string]string{
 		"DRYCC_STORAGE_LOOKUP":        "path",
 		"DRYCC_STORAGE_BUCKET":        "builder",
-		"DRYCC_STORAGE_ENDPOINT":      "drycc-storage.drycc.svc.cluster.local",
+		"DRYCC_STORAGE_ENDPOINT":      "drycc-storage",
 		"DRYCC_REGISTRY_LOCATION":     "off-cluster",
 		"DRYCC_REGISTRY_HOST":         "quay.io",
 		"DRYCC_REGISTRY_ORGANIZATION": "kmala",
@@ -63,16 +63,16 @@ func TestGetImagebuilderEnvOnclusterSuccess(t *testing.T) {
 	env.Envs = map[string]string{
 		"DRYCC_STORAGE_LOOKUP":      "path",
 		"DRYCC_STORAGE_BUCKET":      "builder",
-		"DRYCC_STORAGE_ENDPOINT":    "drycc-storage.drycc.svc.cluster.local",
-		"DRYCC_REGISTRY_HOST":       "drycc-registry.drycc.svc.cluster.local",
+		"DRYCC_STORAGE_ENDPOINT":    "drycc-storage",
+		"DRYCC_REGISTRY_HOST":       "drycc-registry",
 		"DRYCC_REGISTRY_PROXY_HOST": "127.0.0.1:8000",
 		"DRYCC_REGISTRY_LOCATION":   "on-cluster",
 	}
 	expectedData := map[string]string{
 		"DRYCC_STORAGE_LOOKUP":        "path",
 		"DRYCC_STORAGE_BUCKET":        "builder",
-		"DRYCC_STORAGE_ENDPOINT":      "drycc-storage.drycc.svc.cluster.local",
-		"DRYCC_REGISTRY_HOST":         "drycc-registry.drycc.svc.cluster.local",
+		"DRYCC_STORAGE_ENDPOINT":      "drycc-storage",
+		"DRYCC_REGISTRY_HOST":         "drycc-registry",
 		"DRYCC_REGISTRY_LOCATION":     "on-cluster",
 		"DRYCC_REGISTRY_PROXY_HOST":   "127.0.0.1:8000",
 		"DRYCC_REGISTRY_ORGANIZATION": "python-getting-started",
