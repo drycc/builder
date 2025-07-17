@@ -273,8 +273,6 @@ func build(
 	log.Info("Use 'drycc open' to view this application in your browser\n")
 	log.Info("To learn more, use 'drycc help' or visit https://www.drycc.cc/\n")
 
-	run(repoCmd(repoDir, "git", "gc"))
-
 	return nil
 }
 
