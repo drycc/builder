@@ -57,11 +57,11 @@ podAntiAffinityPreset:
 ttlSecondsAfterFinished: 21600
 
 # The following parameters will no longer use the built-in storage component.
-storageLookup: "auto"
 storageBucket: "registry"
 storageEndpoint: ""
 storageAccesskey: ""
 storageSecretkey: ""
+storagePathStyle: "auto"
 
 # The following parameters will no longer use the built-in registry component.
 registryHost: ""

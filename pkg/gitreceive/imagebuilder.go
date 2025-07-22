@@ -9,9 +9,9 @@ import (
 
 var (
 	requiredEnvNames = []string{
-		"DRYCC_STORAGE_LOOKUP",
 		"DRYCC_STORAGE_BUCKET",
 		"DRYCC_STORAGE_ENDPOINT",
+		"DRYCC_STORAGE_PATH_STYLE",
 		"DRYCC_REGISTRY_HOST",
 	}
 )

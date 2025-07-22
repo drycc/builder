@@ -2,11 +2,11 @@
 
 set -e
 
-mc config host add storage \
+mc alias set storage \
   "${DRYCC_STORAGE_ENDPOINT}" \
   "${DRYCC_STORAGE_ACCESSKEY}" \
   "${DRYCC_STORAGE_SECRETKEY}" \
-  --lookup "${DRYCC_STORAGE_LOOKUP}" \
-  --api s3v4
+  --path "${DRYCC_STORAGE_PATH_STYLE}"
+
 mc ping storage -x
 mc mb --ignore-existing storage/"${DRYCC_STORAGE_BUCKET}"

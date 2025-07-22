@@ -15,10 +15,10 @@ func TestGetImagebuilderEnvOffclusterErr(t *testing.T) {
 	}
 	env := sys.NewFakeEnv()
 	env.Envs = map[string]string{
-		"DRYCC_STORAGE_LOOKUP":    "path",
-		"DRYCC_STORAGE_BUCKET":    "builder",
-		"DRYCC_STORAGE_ENDPOINT":  "drycc-storage",
-		"DRYCC_REGISTRY_LOCATION": "off-cluster",
+		"DRYCC_STORAGE_BUCKET":     "builder",
+		"DRYCC_STORAGE_ENDPOINT":   "drycc-storage",
+		"DRYCC_STORAGE_PATH_STYLE": "auto",
+		"DRYCC_REGISTRY_LOCATION":  "off-cluster",
 	}
 	_, err := getImagebuilderEnv(&image, config, env)
 	assert.Error(t, err, errors.New("the environment variable DRYCC_REGISTRY_HOST is required"))
@@ -30,17 +30,17 @@ func TestGetImagebuilderEnvOffclusterErr(t *testing.T) {
 func TestGetImagebuilderEnvOffclusterSuccess(t *testing.T) {
 	env := sys.NewFakeEnv()
 	env.Envs = map[string]string{
-		"DRYCC_STORAGE_LOOKUP":        "path",
 		"DRYCC_STORAGE_BUCKET":        "builder",
 		"DRYCC_STORAGE_ENDPOINT":      "drycc-storage",
+		"DRYCC_STORAGE_PATH_STYLE":    "auto",
 		"DRYCC_REGISTRY_HOST":         "quay.io",
 		"DRYCC_REGISTRY_ORGANIZATION": "kmala",
 		"DRYCC_REGISTRY_LOCATION":     "off-cluster",
 	}
 	expectedData := map[string]string{
-		"DRYCC_STORAGE_LOOKUP":        "path",
 		"DRYCC_STORAGE_BUCKET":        "builder",
 		"DRYCC_STORAGE_ENDPOINT":      "drycc-storage",
+		"DRYCC_STORAGE_PATH_STYLE":    "auto",
 		"DRYCC_REGISTRY_LOCATION":     "off-cluster",
 		"DRYCC_REGISTRY_HOST":         "quay.io",
 		"DRYCC_REGISTRY_ORGANIZATION": "kmala",
@@ -61,17 +61,18 @@ func TestGetImagebuilderEnvOffclusterSuccess(t *testing.T) {
 func TestGetImagebuilderEnvOnclusterSuccess(t *testing.T) {
 	env := sys.NewFakeEnv()
 	env.Envs = map[string]string{
-		"DRYCC_STORAGE_LOOKUP":      "path",
 		"DRYCC_STORAGE_BUCKET":      "builder",
 		"DRYCC_STORAGE_ENDPOINT":    "drycc-storage",
+		"DRYCC_STORAGE_PATH_STYLE":  "auto",
 		"DRYCC_REGISTRY_HOST":       "drycc-registry",
 		"DRYCC_REGISTRY_PROXY_HOST": "127.0.0.1:8000",
 		"DRYCC_REGISTRY_LOCATION":   "on-cluster",
 	}
 	expectedData := map[string]string{
-		"DRYCC_STORAGE_LOOKUP":        "path",
+
 		"DRYCC_STORAGE_BUCKET":        "builder",
 		"DRYCC_STORAGE_ENDPOINT":      "drycc-storage",
+		"DRYCC_STORAGE_PATH_STYLE":    "auto",
 		"DRYCC_REGISTRY_HOST":         "drycc-registry",
 		"DRYCC_REGISTRY_LOCATION":     "on-cluster",
 		"DRYCC_REGISTRY_PROXY_HOST":   "127.0.0.1:8000",

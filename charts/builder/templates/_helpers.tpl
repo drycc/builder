@@ -23,11 +23,6 @@ env:
 - name: "DRYCC_CONTROLLER_URL"
   value: http://drycc-controller-api
 {{- if (.Values.storageEndpoint) }}
-- name: "DRYCC_STORAGE_LOOKUP"
-  valueFrom:
-    secretKeyRef:
-      name: builder-secret
-      key: storage-lookup
 - name: "DRYCC_STORAGE_BUCKET"
   valueFrom:
     secretKeyRef:
@@ -48,9 +43,12 @@ env:
     secretKeyRef:
       name: builder-secret
       key: storage-secretkey
+- name: "DRYCC_STORAGE_PATH_STYLE"
+  valueFrom:
+    secretKeyRef:
+      name: builder-secret
+      key: storage-path-style
 {{- else if .Values.storage.enabled  }}
-- name: "DRYCC_STORAGE_LOOKUP"
-  value: "path"
 - name: "DRYCC_STORAGE_BUCKET"
   value: "builder"
 - name: "DRYCC_STORAGE_ENDPOINT"
@@ -65,6 +63,8 @@ env:
     secretKeyRef:
       name: storage-creds
       key: secretkey
+- name: "DRYCC_STORAGE_PATH_STYLE"
+  value: "on"
 {{- end }}
 - name: "DRYCC_REGISTRY_LOCATION"
   value: {{ ternary "on-cluster" "off-cluster" .Values.registry.enabled }}

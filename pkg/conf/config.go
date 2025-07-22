@@ -11,11 +11,11 @@ import (
 )
 
 const (
-	storageLookupEnvVar    = "DRYCC_STORAGE_LOOKUP"
 	storageBucketEnvVar    = "DRYCC_STORAGE_BUCKET"
 	storageEndpointEnvVar  = "DRYCC_STORAGE_ENDPOINT"
 	storageAccesskeyEnvVar = "DRYCC_STORAGE_ACCESSKEY"
 	storageSecretkeyEnvVar = "DRYCC_STORAGE_SECRETKEY"
+	storagePathStyleEnvVar = "DRYCC_STORAGE_PATH_STYLE"
 )
 
 // ServiceKeyLocation holds the path of the service key secret.
@@ -51,7 +51,7 @@ func GetStorageParams(env sys.Env) (Parameters, error) {
 	params["accesskey"] = env.Get(storageAccesskeyEnvVar)
 	params["secretkey"] = env.Get(storageSecretkeyEnvVar)
 	params["bucket"] = env.Get(storageBucketEnvVar)
-	if env.Get(storageLookupEnvVar) == "path" {
+	if env.Get(storagePathStyleEnvVar) == "on" {
 		params["forcepathstyle"] = "true"
 	}
 
