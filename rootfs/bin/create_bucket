@@ -9,4 +9,9 @@ mc alias set storage \
   --path "${DRYCC_STORAGE_PATH_STYLE}"
 
 mc ping storage -x
+if ! mc admin info storage > /dev/null 2>&1; then
+  sleep 9s
+else
+  mc ready storage
+fi
 mc mb --ignore-existing storage/"${DRYCC_STORAGE_BUCKET}"
