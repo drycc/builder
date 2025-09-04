@@ -30,7 +30,7 @@ func GetServiceKey() (string, error) {
 	if err != nil {
 		return "", fmt.Errorf("couldn't get builder key from %s (%s)", ServiceKeyLocation, err)
 	}
-	serviceKey := strings.Trim(string(serviceKeyBytes), "\n")
+	serviceKey := strings.TrimSuffix(string(serviceKeyBytes), "\n")
 	return serviceKey, nil
 }
 
