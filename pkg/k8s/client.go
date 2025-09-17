@@ -1,3 +1,4 @@
+// Package k8s provides Kubernetes client utilities for the builder service.
 package k8s
 
 import (
@@ -5,6 +6,7 @@ import (
 	"k8s.io/client-go/rest"
 )
 
+// NewInCluster creates a new kubernetes clientset using the in-cluster configuration.
 func NewInCluster() (*kubernetes.Clientset, error) {
 	// creates the in-cluster config
 	config, err := rest.InClusterConfig()

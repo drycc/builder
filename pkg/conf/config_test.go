@@ -10,7 +10,6 @@ import (
 )
 
 func TestGetStorageParams(t *testing.T) {
-
 	env := sys.NewFakeEnv()
 	env.Envs = map[string]string{
 		"DRYCC_STORAGE_BUCKET":     "builder",
@@ -45,7 +44,7 @@ func TestGetControllerClient(t *testing.T) {
 
 	ServiceKeyLocation = filepath.Join(tmpDir, "service-key")
 	data := []byte("testbuilderkey")
-	if err := os.WriteFile(ServiceKeyLocation, data, 0644); err != nil {
+	if err := os.WriteFile(ServiceKeyLocation, data, 0o644); err != nil {
 		t.Fatalf("error creating %s (%s)", ServiceKeyLocation, err)
 	}
 

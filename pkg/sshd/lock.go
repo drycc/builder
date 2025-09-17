@@ -7,9 +7,7 @@ import (
 	"time"
 )
 
-var (
-	errAlreadyLocked = errors.New("already locked")
-)
+var errAlreadyLocked = errors.New("already locked")
 
 // RepositoryLock interface that allows the creation of a lock associated
 // with a repository name to avoid simultaneous git operations.

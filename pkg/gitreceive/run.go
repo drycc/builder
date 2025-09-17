@@ -7,10 +7,9 @@ import (
 	"strings"
 
 	storagedriver "github.com/distribution/distribution/v3/registry/storage/driver"
+	"github.com/drycc/builder/pkg/k8s"
 	"github.com/drycc/builder/pkg/sys"
 	"github.com/drycc/pkg/log"
-
-	"github.com/drycc/builder/pkg/k8s"
 )
 
 func readLine(line string) (string, string, string, error) {
@@ -25,7 +24,7 @@ func readLine(line string) (string, string, string, error) {
 // although it is called from the main in boot.go.
 func Run(conf *Config, env sys.Env, storageDriver storagedriver.StorageDriver) error {
 	log.Debug("Running git hook")
-	//kubeClient, err := client.NewInCluster()
+	// kubeClient, err := client.NewInCluster()
 	kubeClient, err := k8s.NewInCluster()
 	if err != nil {
 		return fmt.Errorf("couldn't reach the api server (%s)", err)
@@ -35,7 +34,6 @@ func Run(conf *Config, env sys.Env, storageDriver storagedriver.StorageDriver) e
 	for scanner.Scan() {
 		line := scanner.Text()
 		oldRev, newRev, refName, err := readLine(line)
-
 		if err != nil {
 			return fmt.Errorf("reading STDIN (%s)", err)
 		}

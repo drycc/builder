@@ -1,3 +1,4 @@
+// Package main provides the entry point for the Drycc builder service.
 package main
 
 import (
@@ -62,7 +63,6 @@ func main() {
 				}
 				var storageDriver storagedriver.StorageDriver
 				storageDriver, err = factory.Create(context.Background(), "s3", storageParams)
-
 				if err != nil {
 					return fmt.Errorf("error creating storage driver (%s)", err)
 				}
@@ -119,7 +119,6 @@ func main() {
 				}
 				var storageDriver storagedriver.StorageDriver
 				storageDriver, err = factory.Create(context.Background(), "s3", storageParams)
-
 				if err != nil {
 					return fmt.Errorf("error creating storage driver (%s)", err)
 				}

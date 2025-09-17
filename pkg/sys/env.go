@@ -1,3 +1,4 @@
+// Package sys provides system utilities for environment variable handling.
 package sys
 
 import (
@@ -52,6 +53,7 @@ func (f *FakeEnv) Get(name string) string {
 	return f.Envs[name]
 }
 
+// Environ returns a map of environment variables that match the given prefixes.
 func (f *FakeEnv) Environ(prefixs []string) map[string]string {
 	envs := make(map[string]string)
 	for key := range f.Envs {

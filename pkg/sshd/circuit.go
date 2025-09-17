@@ -17,12 +17,14 @@ const (
 
 // String is the fmt.Stringer interface implementation.
 func (c CircuitState) String() string {
-	if c == OpenState {
+	switch c {
+	case OpenState:
 		return "OPEN"
-	} else if c == ClosedState {
+	case ClosedState:
 		return "CLOSED"
+	default:
+		return fmt.Sprintf("Unknown (%d)", c.toUint32())
 	}
-	return fmt.Sprintf("Unknown (%d)", c.toUint32())
 }
 
 func (c CircuitState) toUint32() uint32 {

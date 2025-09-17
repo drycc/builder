@@ -106,7 +106,6 @@ func TestReceive(t *testing.T) {
 	if err := sess.Run("illegal command"); err == nil {
 		t.Fatalf("expected a failed run with command 'illegal command'")
 	}
-
 }
 
 // TestPushInvalidArgsLength tests trying to do a push with only the command, not the repo
@@ -246,8 +245,8 @@ func runServer(
 	pushLock RepositoryLock,
 	testAddr string,
 	_ time.Duration,
-	t *testing.T) {
-
+	t *testing.T,
+) {
 	go func() {
 		if err := Serve(config, c, gitHome, pushLock, testAddr, "mock"); err != nil {
 			t.Errorf("Failed serving with %s", err)
@@ -266,8 +265,7 @@ func mockAuthKey() (*ssh.Permissions, error) {
 	return perm, nil
 }
 
-var (
-	testingHostKey = `-----BEGIN RSA PRIVATE KEY-----
+var testingHostKey = `-----BEGIN RSA PRIVATE KEY-----
 MIIEpAIBAAKCAQEA0xOK/wubqj+e4HNp+yAdK4WJnLZCvcjS2DwaxwF+E968kSeU
 27SOqiol7Y0UwLGLpB6rpIBnSqXo70xiMUSrnteKmMejddzfbGkvnyvo0dwE4nDd
 vnbz64I25xfjTldb4RtNvpk6ymr0soq0EEYssLmdnt7pIgHT71n9RNtu+RPpRe5n
@@ -295,4 +293,3 @@ v3+ZZfZMlci4pxBtXqrnoyj4uUoqZtR3ENLz53SN1i0vpT7DtC6gMnEF1UWiaoJ6
 6mGH5/bxCg9wpV7qpqR0EbFM/dhQFZmmnirOS8x+00hJvc1HFiuN/A==
 -----END RSA PRIVATE KEY-----
 `
-)

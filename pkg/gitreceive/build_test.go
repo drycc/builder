@@ -78,7 +78,7 @@ func TestBuild(t *testing.T) {
 
 	builderconf.ServiceKeyLocation = filepath.Join(tmpDir, "service-key")
 	data := []byte("testbuilderkey")
-	if err := os.WriteFile(builderconf.ServiceKeyLocation, data, 0644); err != nil {
+	if err := os.WriteFile(builderconf.ServiceKeyLocation, data, 0o644); err != nil {
 		t.Fatalf("error creating %s (%s)", builderconf.ServiceKeyLocation, err)
 	}
 
@@ -100,7 +100,7 @@ func TestGetProcfileFromRepoSuccess(t *testing.T) {
 		t.Fatalf("error creating temp directory (%s)", err)
 	}
 	data := []byte("web: example-go")
-	if err := os.WriteFile(tmpDir+"/Procfile", data, 0644); err != nil {
+	if err := os.WriteFile(tmpDir+"/Procfile", data, 0o644); err != nil {
 		t.Fatalf("error creating %s/Procfile (%s)", tmpDir, err)
 	}
 	defer func() {
@@ -121,7 +121,7 @@ func TestGetProcfileFromRepoFailure(t *testing.T) {
 		t.Fatalf("error creating temp directory (%s)", err)
 	}
 	data := []byte("web= example-go")
-	if err := os.WriteFile(tmpDir+"/Procfile", data, 0644); err != nil {
+	if err := os.WriteFile(tmpDir+"/Procfile", data, 0o644); err != nil {
 		t.Fatalf("error creating %s/Procfile (%s)", tmpDir, err)
 	}
 	defer func() {

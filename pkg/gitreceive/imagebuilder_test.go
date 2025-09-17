@@ -69,7 +69,6 @@ func TestGetImagebuilderEnvOnclusterSuccess(t *testing.T) {
 		"DRYCC_REGISTRY_LOCATION":   "on-cluster",
 	}
 	expectedData := map[string]string{
-
 		"DRYCC_STORAGE_BUCKET":        "builder",
 		"DRYCC_STORAGE_ENDPOINT":      "drycc-storage",
 		"DRYCC_STORAGE_PATH_STYLE":    "auto",

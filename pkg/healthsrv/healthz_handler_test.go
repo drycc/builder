@@ -14,9 +14,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-var (
-	errTest = errors.New("test error")
-)
+var errTest = errors.New("test error")
 
 type emptyBucketLister struct{}
 

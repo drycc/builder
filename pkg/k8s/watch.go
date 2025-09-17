@@ -2,7 +2,6 @@ package k8s
 
 import (
 	"context"
-	"time"
 
 	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -13,10 +12,7 @@ import (
 	"k8s.io/client-go/tools/cache"
 )
 
-var (
-	resyncPeriod = 30 * time.Second
-)
-
+// StoreToPodLister is a wrapper around cache.Store that provides methods to list pods.
 type StoreToPodLister struct {
 	cache.Store
 }
@@ -27,6 +23,7 @@ type PodWatcher struct {
 	Controller cache.Controller
 }
 
+// List returns a list of pods that match the given label selector.
 func (s *StoreToPodLister) List(selector labels.Selector) (pods []*v1.Pod, err error) {
 	// TODO: it'd be great to just call
 	// s.Pods(api.NamespaceAll).List(selector), however then we'd have to
@@ -45,16 +42,14 @@ func (s *StoreToPodLister) List(selector labels.Selector) (pods []*v1.Pod, err e
 func NewPodWatcher(c kubernetes.Clientset, ns string) *PodWatcher {
 	pw := &PodWatcher{}
 
-	pw.Store.Store, pw.Controller = cache.NewIndexerInformer(
-		&cache.ListWatch{
+	pw.Store.Store, pw.Controller = cache.NewInformerWithOptions(cache.InformerOptions{
+		ListerWatcher: &cache.ListWatch{
 			ListFunc:  podListFunc(c, ns),
 			WatchFunc: podWatchFunc(c, ns),
 		},
-		&v1.Pod{},
-		resyncPeriod,
-		cache.ResourceEventHandlerFuncs{},
-		cache.Indexers{},
-	)
+		ObjectType: &v1.Pod{},
+		Handler:    cache.ResourceEventHandlerFuncs{},
+	})
 	return pw
 }
 

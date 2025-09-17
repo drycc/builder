@@ -93,11 +93,11 @@ func TestBuildJob(t *testing.T) {
 			build.builderPodNodeSelector,
 		)
 
-		if job.ObjectMeta.Name != build.name {
-			t.Errorf("expected %v but returned %v ", build.name, job.ObjectMeta.Name)
+		if job.Name != build.name {
+			t.Errorf("expected %v but returned %v ", build.name, job.Name)
 		}
-		if job.ObjectMeta.Namespace != build.namespace {
-			t.Errorf("expected %v but returned %v ", build.namespace, job.ObjectMeta.Namespace)
+		if job.Namespace != build.namespace {
+			t.Errorf("expected %v but returned %v ", build.namespace, job.Namespace)
 		}
 
 		checkForEnv(t, job, "SOURCE_VERSION", build.gitShortHash)

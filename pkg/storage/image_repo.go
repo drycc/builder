@@ -1,3 +1,4 @@
+// Package storage provides image repository management functionality.
 package storage
 
 import (
@@ -44,7 +45,7 @@ func CreateImageRepo(reponame string, params map[string]string) error {
 		},
 		&credentials.EnvProvider{},
 		&credentials.SharedCredentialsProvider{},
-		&ec2rolecreds.EC2RoleProvider{Client: ec2metadata.New(session.New())},
+		&ec2rolecreds.EC2RoleProvider{Client: ec2metadata.New(session.Must(session.NewSession()))},
 	})
 	awsConfig := aws.NewConfig()
 	awsConfig.WithCredentials(creds)

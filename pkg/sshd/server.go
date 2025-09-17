@@ -29,9 +29,11 @@ const (
 	multiplePush string = "Another git push is ongoing"
 )
 
-var errBuildAppPerm = errors.New("user has no permission to build the app")
-var errDirPerm = errors.New("cannot change directory in file name")
-var errDirCreatePerm = errors.New("empty repo name")
+var (
+	errBuildAppPerm  = errors.New("user has no permission to build the app")
+	errDirPerm       = errors.New("cannot change directory in file name")
+	errDirCreatePerm = errors.New("empty repo name")
+)
 
 // AuthKey authenticates based on a public key.
 func AuthKey(key ssh.PublicKey, cnf *Config) (*ssh.Permissions, error) {
@@ -97,7 +99,7 @@ func Configure(cnf *Config) (*ssh.ServerConfig, error) {
 		log.Debug("Parsed host key %s.", path)
 		cfg.AddHostKey(hk)
 	}
-	cfg.Config.Ciphers = []string{"aes128-ctr", "aes192-ctr", "aes256-ctr", "aes128-gcm@openssh.com"}
+	cfg.Ciphers = []string{"aes128-ctr", "aes192-ctr", "aes256-ctr", "aes128-gcm@openssh.com"}
 	return cfg, nil
 }
 
@@ -107,8 +109,8 @@ func Serve(
 	serverCircuit *Circuit,
 	gitHomeDir string,
 	concurrentPushLock RepositoryLock,
-	addr, receivetype string) error {
-
+	addr, receivetype string,
+) error {
 	listener, err := net.Listen("tcp", addr)
 	if err != nil {
 		return err
@@ -137,7 +139,6 @@ type server struct {
 // listen handles accepting and managing connections. However, since closer
 // is len(1), it will not block the sender.
 func (s *server) listen(l net.Listener, conf *ssh.ServerConfig) error {
-
 	log.Info("Accepting new connections.")
 	defer l.Close()
 
@@ -368,7 +369,7 @@ func cleanRepoName(name string) (string, error) {
 	if strings.Contains(name, "..") {
 		return "", errDirPerm
 	}
-	name = strings.Replace(name, "'", "", -1)
+	name = strings.ReplaceAll(name, "'", "")
 	return strings.TrimPrefix(strings.TrimSuffix(name, ".git"), "/"), nil
 }
 

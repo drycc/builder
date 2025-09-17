@@ -1,11 +1,10 @@
 package storage
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"time"
-
-	"context"
 
 	storagedriver "github.com/distribution/distribution/v3/registry/storage/driver"
 )

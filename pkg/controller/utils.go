@@ -1,3 +1,4 @@
+// Package controller provides utilities for interacting with the Drycc controller.
 package controller
 
 import (
@@ -8,7 +9,6 @@ import (
 
 // New creates a new SDK client configured as the builder.
 func New(url string) (*drycc.Client, error) {
-
 	client, err := drycc.New(true, url, "")
 	if err != nil {
 		return client, err

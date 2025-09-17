@@ -1,3 +1,4 @@
+// Package conf provides configuration utilities for the builder service.
 package conf
 
 import (
@@ -40,7 +41,7 @@ func GetStorageParams(env sys.Env) (Parameters, error) {
 
 	mEndpoint := env.Get(storageEndpointEnvVar)
 	params["regionendpoint"] = mEndpoint
-	region := "us-east-1" //region is required in distribution
+	region := "us-east-1" // region is required in distribution
 	if endpointURL, err := url.Parse(mEndpoint); err == nil {
 		if endpointURL.Hostname() != "" && net.ParseIP(endpointURL.Hostname()) == nil {
 			region = strings.Split(endpointURL.Hostname(), ".")[0]

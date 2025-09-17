@@ -1,3 +1,4 @@
+// Package healthsrv provides health check services for the builder.
 package healthsrv
 
 import (
