@@ -13,9 +13,7 @@ const (
 	callbackTimeout = 1 * time.Second
 )
 
-var (
-	errGitReceive = errors.New("git receive error")
-)
+var errGitReceive = errors.New("git receive error")
 
 func TestMultipleSameRepoLocks(t *testing.T) {
 	var wg sync.WaitGroup

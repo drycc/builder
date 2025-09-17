@@ -5,7 +5,6 @@ import (
 	"sync"
 	"sync/atomic"
 	"testing"
-	"time"
 )
 
 const (
@@ -13,7 +12,9 @@ const (
 )
 
 func init() {
-	rand.Seed(time.Now().UnixNano())
+	// rand.Seed is deprecated as of Go 1.20
+	// Programs that call Seed with a known value should use New(NewSource(seed))
+	// No need to seed for random values as of Go 1.20
 }
 
 func TestOpenCloseSerial(t *testing.T) {

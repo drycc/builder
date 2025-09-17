@@ -5,7 +5,7 @@ import (
 )
 
 func TestReadLine(t *testing.T) {
-	//readLine() expects a line with two spaces.
+	// readLine() expects a line with two spaces.
 	good := "foo bar car"
 	foo, bar, car, err := readLine(good)
 	if err != nil {

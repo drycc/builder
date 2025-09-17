@@ -52,7 +52,6 @@ func createBuilderJob(
 	securityContext corev1.SecurityContext,
 	nodeSelector map[string]string,
 ) *batchv1.Job {
-
 	job := buildJob(debug, name, namespace, builderName, pullPolicy, securityContext, nodeSelector, config)
 	job.Spec.Template.Spec.Containers[0].Name = builderName
 	job.Spec.Template.Spec.Containers[0].Image = builderImage
@@ -80,7 +79,8 @@ func buildJob(
 	pullPolicy corev1.PullPolicy,
 	securityContext corev1.SecurityContext,
 	nodeSelector map[string]string,
-	values []api.ConfigValue) batchv1.Job {
+	values []api.ConfigValue,
+) batchv1.Job {
 	TTLSecondsAfterFinished := newInt32(21600)
 	if os.Getenv("TTL_SECONDS_AFTER_FINISHED") != "" {
 		ttl, err := strconv.ParseInt(os.Getenv("TTL_SECONDS_AFTER_FINISHED"), 10, 32)
@@ -217,7 +217,8 @@ func waitForPodEnd(pw *k8s.PodWatcher, jobName string, interval, timeout time.Du
 
 // waitForPodCondition waits for a pod in state defined by a condition (func)
 func waitForPodCondition(pw *k8s.PodWatcher, jobName string, condition func(pod *corev1.Pod) (bool, error),
-	interval, timeout time.Duration) error {
+	interval, timeout time.Duration,
+) error {
 	return wait.PollUntilContextTimeout(context.Background(), interval, timeout, true, func(context.Context) (done bool, err error) {
 		selector := labels.Set{
 			"job-name": jobName,

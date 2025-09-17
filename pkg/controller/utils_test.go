@@ -7,9 +7,8 @@ import (
 	"testing"
 
 	builderconf "github.com/drycc/builder/pkg/conf"
-	"github.com/stretchr/testify/assert"
-
 	drycc "github.com/drycc/controller-sdk-go"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestNew(t *testing.T) {
@@ -26,7 +25,7 @@ func TestNew(t *testing.T) {
 
 	builderconf.ServiceKeyLocation = filepath.Join(tmpDir, "service-key")
 	data := []byte("testbuilderkey")
-	if err := os.WriteFile(builderconf.ServiceKeyLocation, data, 0644); err != nil {
+	if err := os.WriteFile(builderconf.ServiceKeyLocation, data, 0o644); err != nil {
 		t.Fatalf("error creating %s (%s)", builderconf.ServiceKeyLocation, err)
 	}
 

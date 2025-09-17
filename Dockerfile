@@ -12,7 +12,7 @@ FROM registry.drycc.cc/drycc/base:${CODENAME}
 ENV DRYCC_UID=1001 \
   DRYCC_GID=1001 \
   DRYCC_HOME_DIR=/workspace \
-  MC_VERSION="2025.04.03.17.07.56" \
+  MC_VERSION="2025.08.13.08.35.41" \
   JQ_VERSION="1.7.1"
 
 RUN groupadd drycc --gid ${DRYCC_GID} \

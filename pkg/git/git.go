@@ -1,3 +1,4 @@
+// Package git provides Git repository handling functionality for the SSH server.
 package git
 
 // This file just contains the Git-specific portions of sshd.
@@ -45,8 +46,8 @@ var preReceiveHookTpl = template.Must(template.New("hooks").Parse(preReceiveHook
 func Receive(
 	repo, operation, gitHome string,
 	channel ssh.Channel,
-	fingerprint, username, conndata, receivetype string) error {
-
+	fingerprint, username, conndata, receivetype string,
+) error {
 	log.Info("receiving git repo name: %s, operation: %s, fingerprint: %s, user: %s", repo, operation, fingerprint, username)
 
 	if receivetype == "mock" {
@@ -138,7 +139,7 @@ func createRepo(repoPath string) (bool, error) {
 	} else if os.IsNotExist(err) {
 		log.Debug("Creating new directory at %s", repoPath)
 		// Create directory
-		if err := os.MkdirAll(repoPath, 0755); err != nil {
+		if err := os.MkdirAll(repoPath, 0o755); err != nil {
 			log.Err("Failed to create repository: %s", err)
 			return false, err
 		}
@@ -169,7 +170,7 @@ func createPreReceiveHook(gitHome, repoPath string) error {
 	if err := preReceiveHookTpl.Execute(fd, map[string]string{"GitHome": gitHome}); err != nil {
 		return fmt.Errorf("cannot write pre-receive hook to %s (%s)", writePath, err)
 	}
-	if err := os.Chmod(writePath, 0755); err != nil {
+	if err := os.Chmod(writePath, 0o755); err != nil {
 		return fmt.Errorf("cannot change pre-receive hook script permissions (%s)", err)
 	}
 

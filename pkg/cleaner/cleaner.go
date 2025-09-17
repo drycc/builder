@@ -17,7 +17,6 @@ import (
 	"github.com/drycc/builder/pkg/sys"
 	"github.com/drycc/pkg/log"
 	corev1 "k8s.io/api/core/v1"
-
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -85,7 +84,6 @@ func dirHasGitSuffix(dir string) bool {
 }
 
 func deleteFromStorage(app string, storageDriver storagedriver.StorageDriver) error {
-
 	// delete all files matching app
 	objs, err := storageDriver.List(context.Background(), "home")
 	if err != nil {

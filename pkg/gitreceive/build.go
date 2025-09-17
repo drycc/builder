@@ -1,3 +1,4 @@
+// Package gitreceive provides functionality for handling git receive operations.
 package gitreceive
 
 import (
@@ -57,11 +58,11 @@ func run(cmd *exec.Cmd) error {
 func build(
 	conf *Config,
 	storageDriver storagedriver.StorageDriver,
-	//kubeClient *client.Client,
+	// kubeClient *client.Client,
 	kubeClient *kubernetes.Clientset,
 	env sys.Env,
-	rawGitSha string) error {
-
+	rawGitSha string,
+) error {
 	// Rewrite regular expression, compatible with slug type
 	storagedriver.PathRegexp = regexp.MustCompile(`^([A-Za-z0-9._:-]*(/[A-Za-z0-9._:-]+)*)+$`)
 
@@ -76,7 +77,7 @@ func build(
 	repoDir := filepath.Join(conf.GitHome, repo)
 	buildDir := filepath.Join(repoDir, "build")
 
-	if err := os.MkdirAll(buildDir, 0700); err != nil {
+	if err := os.MkdirAll(buildDir, 0o700); err != nil {
 		return fmt.Errorf("making the build directory %s (%s)", buildDir, err)
 	}
 
