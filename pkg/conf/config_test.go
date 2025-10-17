@@ -16,7 +16,7 @@ func TestGetStorageParams(t *testing.T) {
 		"DRYCC_STORAGE_ENDPOINT":   "http://localhost:8088",
 		"DRYCC_STORAGE_ACCESSKEY":  "admin",
 		"DRYCC_STORAGE_SECRETKEY":  "adminpass",
-		"DRYCC_STORAGE_PATH_STYLE": "on",
+		"DRYCC_STORAGE_PATH_STYLE": "true",
 	}
 	params, err := GetStorageParams(env)
 	if err != nil {

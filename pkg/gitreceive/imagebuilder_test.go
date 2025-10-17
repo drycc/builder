@@ -17,7 +17,7 @@ func TestGetImagebuilderEnvOffclusterErr(t *testing.T) {
 	env.Envs = map[string]string{
 		"DRYCC_STORAGE_BUCKET":     "builder",
 		"DRYCC_STORAGE_ENDPOINT":   "drycc-storage",
-		"DRYCC_STORAGE_PATH_STYLE": "auto",
+		"DRYCC_STORAGE_PATH_STYLE": "true",
 		"DRYCC_REGISTRY_LOCATION":  "off-cluster",
 	}
 	_, err := getImagebuilderEnv(&image, config, env)
@@ -32,7 +32,7 @@ func TestGetImagebuilderEnvOffclusterSuccess(t *testing.T) {
 	env.Envs = map[string]string{
 		"DRYCC_STORAGE_BUCKET":        "builder",
 		"DRYCC_STORAGE_ENDPOINT":      "drycc-storage",
-		"DRYCC_STORAGE_PATH_STYLE":    "auto",
+		"DRYCC_STORAGE_PATH_STYLE":    "true",
 		"DRYCC_REGISTRY_HOST":         "quay.io",
 		"DRYCC_REGISTRY_ORGANIZATION": "kmala",
 		"DRYCC_REGISTRY_LOCATION":     "off-cluster",
@@ -40,7 +40,7 @@ func TestGetImagebuilderEnvOffclusterSuccess(t *testing.T) {
 	expectedData := map[string]string{
 		"DRYCC_STORAGE_BUCKET":        "builder",
 		"DRYCC_STORAGE_ENDPOINT":      "drycc-storage",
-		"DRYCC_STORAGE_PATH_STYLE":    "auto",
+		"DRYCC_STORAGE_PATH_STYLE":    "true",
 		"DRYCC_REGISTRY_LOCATION":     "off-cluster",
 		"DRYCC_REGISTRY_HOST":         "quay.io",
 		"DRYCC_REGISTRY_ORGANIZATION": "kmala",
@@ -63,7 +63,7 @@ func TestGetImagebuilderEnvOnclusterSuccess(t *testing.T) {
 	env.Envs = map[string]string{
 		"DRYCC_STORAGE_BUCKET":      "builder",
 		"DRYCC_STORAGE_ENDPOINT":    "drycc-storage",
-		"DRYCC_STORAGE_PATH_STYLE":  "auto",
+		"DRYCC_STORAGE_PATH_STYLE":  "true",
 		"DRYCC_REGISTRY_HOST":       "drycc-registry",
 		"DRYCC_REGISTRY_PROXY_HOST": "127.0.0.1:8000",
 		"DRYCC_REGISTRY_LOCATION":   "on-cluster",
@@ -71,7 +71,7 @@ func TestGetImagebuilderEnvOnclusterSuccess(t *testing.T) {
 	expectedData := map[string]string{
 		"DRYCC_STORAGE_BUCKET":        "builder",
 		"DRYCC_STORAGE_ENDPOINT":      "drycc-storage",
-		"DRYCC_STORAGE_PATH_STYLE":    "auto",
+		"DRYCC_STORAGE_PATH_STYLE":    "true",
 		"DRYCC_REGISTRY_HOST":         "drycc-registry",
 		"DRYCC_REGISTRY_LOCATION":     "on-cluster",
 		"DRYCC_REGISTRY_PROXY_HOST":   "127.0.0.1:8000",

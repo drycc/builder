@@ -61,7 +61,7 @@ storageBucket: "registry"
 storageEndpoint: ""
 storageAccesskey: ""
 storageSecretkey: ""
-storagePathStyle: "auto"
+storagePathStyle: "true"
 
 # The following parameters will no longer use the built-in registry component.
 registryHost: ""

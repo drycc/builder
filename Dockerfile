@@ -9,10 +9,10 @@ RUN export GO111MODULE=on \
 
 FROM registry.drycc.cc/drycc/base:${CODENAME}
 
-ENV DRYCC_UID=1001 \
+ARG DRYCC_UID=1001 \
   DRYCC_GID=1001 \
   DRYCC_HOME_DIR=/workspace \
-  MC_VERSION="2025.08.13.08.35.41" \
+  RCLONE_VERSION="1.71.1" \
   JQ_VERSION="1.7.1"
 
 RUN groupadd drycc --gid ${DRYCC_GID} \
@@ -24,7 +24,7 @@ COPY rootfs/container-entrypoint.sh /container-entrypoint.sh
 COPY --from=build /usr/local/bin/boot /usr/bin/boot
 
 RUN install-packages git openssh-server coreutils xz-utils tar \
-  && install-stack mc $MC_VERSION \
+  && install-stack rclone $RCLONE_VERSION \
   && install-stack jq $JQ_VERSION \
   && mkdir -p /var/run/sshd \
   && rm -rf /etc/ssh/ssh_host* \

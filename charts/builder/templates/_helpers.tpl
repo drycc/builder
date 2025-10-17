@@ -64,7 +64,7 @@ env:
       name: storage-creds
       key: secretkey
 - name: "DRYCC_STORAGE_PATH_STYLE"
-  value: "on"
+  value: "true"
 {{- end }}
 - name: "DRYCC_REGISTRY_LOCATION"
   value: {{ ternary "on-cluster" "off-cluster" .Values.registry.enabled }}
