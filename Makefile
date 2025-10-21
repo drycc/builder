@@ -1,7 +1,7 @@
 SHORT_NAME ?= builder
+DRYCC_REGISTRY ?= ${DEV_REGISTRY}
 
 include versioning.mk
-DRYCC_REGISTRY ?= ${DEV_REGISTRY}
 
 # container development environment variables
 REPO_PATH := github.com/drycc/${SHORT_NAME}

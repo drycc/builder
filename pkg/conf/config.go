@@ -52,9 +52,8 @@ func GetStorageParams(env sys.Env) (Parameters, error) {
 	params["accesskey"] = env.Get(storageAccesskeyEnvVar)
 	params["secretkey"] = env.Get(storageSecretkeyEnvVar)
 	params["bucket"] = env.Get(storageBucketEnvVar)
-	if env.Get(storagePathStyleEnvVar) == "on" {
+	if env.Get(storagePathStyleEnvVar) == "true" {
 		params["forcepathstyle"] = "true"
 	}
-
 	return params, nil
 }
