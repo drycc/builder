@@ -291,7 +291,7 @@ func buildBuilderPodNodeSelector(config string) (map[string]string, error) {
 	return selector, nil
 }
 
-func prettyPrintJSON(data interface{}) (string, error) {
+func prettyPrintJSON(data any) (string, error) {
 	output := &bytes.Buffer{}
 	if err := json.NewEncoder(output).Encode(data); err != nil {
 		return "", err

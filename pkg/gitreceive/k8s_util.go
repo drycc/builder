@@ -256,7 +256,7 @@ func progress(msg string, interval time.Duration) chan bool {
 	return quit
 }
 
-func createAppEnvConfigSecret(secretsClient typedcorev1.SecretInterface, secretName string, env map[string]interface{}) error {
+func createAppEnvConfigSecret(secretsClient typedcorev1.SecretInterface, secretName string, env map[string]any) error {
 	newSecret := new(corev1.Secret)
 	newSecret.Name = secretName
 	newSecret.Type = corev1.SecretTypeOpaque

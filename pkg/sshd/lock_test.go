@@ -43,7 +43,7 @@ func TestMultipleSameRepoLocks(t *testing.T) {
 func TestSingleLock(t *testing.T) {
 	rl := NewInMemoryRepositoryLock(0)
 	key := "fakeid"
-	callbackCh := make(chan interface{})
+	callbackCh := make(chan any)
 	go lockAndCallback(rl, key, callbackCh)
 	verifyCallbackHappens(t, callbackCh)
 }
@@ -51,7 +51,7 @@ func TestSingleLock(t *testing.T) {
 func TestSingleLockUnlock(t *testing.T) {
 	rl := NewInMemoryRepositoryLock(0)
 	key := "fakeid"
-	callbackCh := make(chan interface{})
+	callbackCh := make(chan any)
 	go lockAndCallback(rl, key, callbackCh)
 	verifyCallbackHappens(t, callbackCh)
 	err := rl.Unlock(key)
@@ -72,8 +72,8 @@ func TestInvalidUnlock(t *testing.T) {
 func TestDoubleLockUnlock(t *testing.T) {
 	rl := NewInMemoryRepositoryLock(0)
 	key := "fakeid"
-	callbackCh1stLock := make(chan interface{})
-	callbackCh2ndLock := make(chan interface{})
+	callbackCh1stLock := make(chan any)
+	callbackCh2ndLock := make(chan any)
 
 	go lockAndCallback(rl, key, callbackCh1stLock)
 	verifyCallbackHappens(t, callbackCh1stLock)
@@ -108,13 +108,13 @@ func TestWrapInLock(t *testing.T) {
 	}), nil)
 }
 
-func lockAndCallback(rl RepositoryLock, id string, callbackCh chan<- interface{}) {
+func lockAndCallback(rl RepositoryLock, id string, callbackCh chan<- any) {
 	if err := rl.Lock(id); err == nil {
 		callbackCh <- true
 	}
 }
 
-func verifyCallbackHappens(t *testing.T, callbackCh <-chan interface{}) bool {
+func verifyCallbackHappens(t *testing.T, callbackCh <-chan any) bool {
 	select {
 	case <-callbackCh:
 		return true
@@ -124,7 +124,7 @@ func verifyCallbackHappens(t *testing.T, callbackCh <-chan interface{}) bool {
 	}
 }
 
-func verifyCallbackDoesntHappens(t *testing.T, callbackCh <-chan interface{}) bool {
+func verifyCallbackDoesntHappens(t *testing.T, callbackCh <-chan any) bool {
 	select {
 	case <-callbackCh:
 		t.Fatalf("Unexpected callback.")

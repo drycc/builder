@@ -23,7 +23,7 @@ const (
 var ServiceKeyLocation = "/var/run/secrets/drycc/controller/service-key"
 
 // Parameters is map which contains storage params
-type Parameters map[string]interface{}
+type Parameters map[string]any
 
 // GetServiceKey returns the key to be used as token to interact with drycc-controller
 func GetServiceKey() (string, error) {
@@ -37,7 +37,7 @@ func GetServiceKey() (string, error) {
 
 // GetStorageParams returns the credentials required for connecting to object storage
 func GetStorageParams(env sys.Env) (Parameters, error) {
-	params := make(map[string]interface{})
+	params := make(map[string]any)
 
 	mEndpoint := env.Get(storageEndpointEnvVar)
 	params["regionendpoint"] = mEndpoint
