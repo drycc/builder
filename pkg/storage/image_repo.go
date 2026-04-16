@@ -2,15 +2,15 @@
 package storage
 
 import (
+	"context"
+	"errors"
 	"fmt"
 
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/awserr"
-	"github.com/aws/aws-sdk-go/aws/credentials"
-	"github.com/aws/aws-sdk-go/aws/credentials/ec2rolecreds"
-	"github.com/aws/aws-sdk-go/aws/ec2metadata"
-	"github.com/aws/aws-sdk-go/aws/session"
-	"github.com/aws/aws-sdk-go/service/ecr"
+	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/config"
+	"github.com/aws/aws-sdk-go-v2/credentials"
+	"github.com/aws/aws-sdk-go-v2/service/ecr"
+	"github.com/aws/aws-sdk-go-v2/service/ecr/types"
 )
 
 // CreateImageRepo create a repository for the image on amazon's ECR(EC2 Container Repository)
@@ -36,30 +36,27 @@ func CreateImageRepo(reponame string, params map[string]string) error {
 		return fmt.Errorf("no region parameter provided: %s", regionName)
 	}
 	region := fmt.Sprint(regionName)
-	creds := credentials.NewChainCredentials([]credentials.Provider{
-		&credentials.StaticProvider{
-			Value: credentials.Value{
-				AccessKeyID:     accessKey,
-				SecretAccessKey: secretKey,
-			},
-		},
-		&credentials.EnvProvider{},
-		&credentials.SharedCredentialsProvider{},
-		&ec2rolecreds.EC2RoleProvider{Client: ec2metadata.New(session.Must(session.NewSession()))},
-	})
-	awsConfig := aws.NewConfig()
-	awsConfig.WithCredentials(creds)
-	awsConfig.WithRegion(region)
 
-	session, err := session.NewSession(awsConfig)
+	ctx := context.Background()
+	cfg, err := config.LoadDefaultConfig(ctx,
+		config.WithRegion(region),
+		config.WithCredentialsProvider(
+			aws.NewCredentialsCache(
+				credentials.NewStaticCredentialsProvider(accessKey, secretKey, ""),
+			),
+		),
+	)
 	if err != nil {
 		return err
 	}
+
+	client := ecr.NewFromConfig(cfg)
 	repoInput := &ecr.CreateRepositoryInput{
 		RepositoryName: aws.String(reponame),
 	}
-	if _, err := ecr.New(session).CreateRepository(repoInput); err != nil {
-		if s3Err, ok := err.(awserr.Error); ok && s3Err.Code() == "RepositoryAlreadyExistsException" {
+	if _, err := client.CreateRepository(ctx, repoInput); err != nil {
+		var repoExistsErr *types.RepositoryAlreadyExistsException
+		if ok := errors.As(err, &repoExistsErr); ok {
 			return nil
 		}
 		return err

@@ -21,7 +21,7 @@ import (
 	"github.com/drycc/builder/pkg/sys"
 	pkglog "github.com/drycc/pkg/log"
 	"github.com/kelseyhightower/envconfig"
-	"github.com/urfave/cli/v2"
+	"github.com/urfave/cli/v3"
 )
 
 const (
@@ -40,14 +40,14 @@ func main() {
 		log.Printf("Running in debug mode")
 	}
 
-	app := cli.NewApp()
+	app := &cli.Command{}
 
 	app.Commands = []*cli.Command{
 		{
 			Name:    "server",
 			Aliases: []string{"srv"},
 			Usage:   "Run the git server",
-			Action: func(*cli.Context) error {
+			Action: func(ctx context.Context, cmd *cli.Command) error {
 				cnf := new(sshd.Config)
 				if err := envconfig.Process(serverConfAppName, cnf); err != nil {
 					return fmt.Errorf("getting config for %s [%s]", serverConfAppName, err)
@@ -106,7 +106,7 @@ func main() {
 			Name:    "git-receive",
 			Aliases: []string{"gr"},
 			Usage:   "Run the git-receive hook",
-			Action: func(*cli.Context) error {
+			Action: func(ctx context.Context, cmd *cli.Command) error {
 				cnf := new(gitreceive.Config)
 				if err := envconfig.Process(gitReceiveConfAppName, cnf); err != nil {
 					return fmt.Errorf("error getting config for %s [%s]", gitReceiveConfAppName, err)
@@ -131,7 +131,7 @@ func main() {
 		},
 	}
 
-	if err := app.Run(os.Args); err != nil {
+	if err := app.Run(context.Background(), os.Args); err != nil {
 		log.Fatal(err)
 	}
 }
