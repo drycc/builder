@@ -77,3 +77,19 @@ registry:
   enabled: true
   proxy:
     port: 5555
+
+# Override DRYCC_VALKEY_URL when running against an external Valkey/Redis.
+# When empty, the chart wires the in-cluster drycc-valkey service.
+valkeyUrl: ""
+
+# Passport configuration
+# When enabled, uses the in-cluster drycc-passport service
+# When disabled, uses external passport credentials from secrets
+passport:
+  enabled: true
+
+# The following parameters are used when passport.enabled is false
+passportUrl: ""
+passportKey: ""
+passportSecret: ""
+passportScopes: ""

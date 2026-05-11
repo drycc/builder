@@ -6,3 +6,4 @@ coverage.txt
 testdata/hooks/pre-receive
 .idea/
 .vscode/
+.sisyphus/

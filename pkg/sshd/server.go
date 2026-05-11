@@ -4,6 +4,7 @@
 package sshd
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"io"
@@ -38,7 +39,7 @@ var (
 // AuthKey authenticates based on a public key.
 func AuthKey(key ssh.PublicKey, cnf *Config) (*ssh.Permissions, error) {
 	log.Info("Starting ssh authentication")
-	client, err := controller.New(cnf.ControllerURL)
+	client, err := controller.New(context.Background(), cnf.ControllerURL)
 	if err != nil {
 		return nil, err
 	}

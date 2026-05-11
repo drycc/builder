@@ -6,6 +6,18 @@ env:
   value: "2223"
 - name: "TTL_SECONDS_AFTER_FINISHED"
   value: "{{ .Values.global.ttlSecondsAfterFinished }}"
+{{- if (.Values.valkeyUrl) }}
+- name: DRYCC_VALKEY_URL
+  value: "{{ .Values.valkeyUrl }}"
+{{- else }}
+- name: DRYCC_VALKEY_PASSWORD
+  valueFrom:
+    secretKeyRef:
+      name: valkey-creds
+      key: password
+- name: DRYCC_VALKEY_URL
+  value: "redis://:$(DRYCC_VALKEY_PASSWORD)@drycc-valkey:16379/3"
+{{- end }}
 # Set GIT_LOCK_TIMEOUT to number of minutes you want to wait to git push again to the same repository
 - name: "GIT_LOCK_TIMEOUT"
   value: "30"
@@ -22,6 +34,50 @@ env:
       fieldPath: metadata.namespace
 - name: "DRYCC_CONTROLLER_URL"
   value: http://drycc-controller-api
+{{- if .Values.passport.enabled }}
+- name: "DRYCC_PASSPORT_URL"
+{{- if .Values.global.certManagerEnabled }}
+  value: https://drycc-passport.{{ .Values.global.platformDomain }}
+{{- else }}
+  value: http://drycc-passport.{{ .Values.global.platformDomain }}
+{{- end }}
+- name: DRYCC_PASSPORT_KEY
+  valueFrom:
+    secretKeyRef:
+      name: passport-creds
+      key: drycc-passport-builder-key
+- name: DRYCC_PASSPORT_SECRET
+  valueFrom:
+    secretKeyRef:
+      name: passport-creds
+      key: drycc-passport-builder-secret
+- name: DRYCC_PASSPORT_SCOPES
+  valueFrom:
+    secretKeyRef:
+      name: passport-creds
+      key: drycc-passport-builder-scopes
+{{- else if .Values.passportUrl }}
+- name: DRYCC_PASSPORT_URL
+  valueFrom:
+    secretKeyRef:
+      name: builder-secret
+      key: passport-url
+- name: DRYCC_PASSPORT_KEY
+  valueFrom:
+    secretKeyRef:
+      name: builder-secret
+      key: passport-key
+- name: DRYCC_PASSPORT_SECRET
+  valueFrom:
+    secretKeyRef:
+      name: builder-secret
+      key: passport-secret
+- name: DRYCC_PASSPORT_SCOPES
+  valueFrom:
+    secretKeyRef:
+      name: builder-secret
+      key: passport-scopes
+{{- end }}
 {{- if (.Values.storageEndpoint) }}
 - name: "DRYCC_STORAGE_BUCKET"
   valueFrom:

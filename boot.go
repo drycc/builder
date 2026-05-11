@@ -14,6 +14,7 @@ import (
 	"github.com/drycc/builder/pkg"
 	"github.com/drycc/builder/pkg/cleaner"
 	"github.com/drycc/builder/pkg/conf"
+	"github.com/drycc/builder/pkg/controller/token"
 	"github.com/drycc/builder/pkg/gitreceive"
 	"github.com/drycc/builder/pkg/healthsrv"
 	"github.com/drycc/builder/pkg/k8s"
@@ -47,7 +48,7 @@ func main() {
 			Name:    "server",
 			Aliases: []string{"srv"},
 			Usage:   "Run the git server",
-			Action: func(ctx context.Context, cmd *cli.Command) error {
+			Action: func(_ context.Context, _ *cli.Command) error {
 				cnf := new(sshd.Config)
 				if err := envconfig.Process(serverConfAppName, cnf); err != nil {
 					return fmt.Errorf("getting config for %s [%s]", serverConfAppName, err)
@@ -106,7 +107,7 @@ func main() {
 			Name:    "git-receive",
 			Aliases: []string{"gr"},
 			Usage:   "Run the git-receive hook",
-			Action: func(ctx context.Context, cmd *cli.Command) error {
+			Action: func(_ context.Context, _ *cli.Command) error {
 				cnf := new(gitreceive.Config)
 				if err := envconfig.Process(gitReceiveConfAppName, cnf); err != nil {
 					return fmt.Errorf("error getting config for %s [%s]", gitReceiveConfAppName, err)
@@ -126,6 +127,23 @@ func main() {
 				if err := gitreceive.Run(cnf, env, storageDriver); err != nil {
 					return fmt.Errorf("error running git receive hook [%s]", err)
 				}
+				return nil
+			},
+		},
+		{
+			Name:  "refresh-token",
+			Usage: "Refresh the OAuth m2m access token in Valkey (CronJob entry point)",
+			Flags: []cli.Flag{
+				&cli.BoolFlag{
+					Name:  "force",
+					Usage: "Refresh regardless of current token lifetime",
+				},
+			},
+			Action: func(ctx context.Context, c *cli.Command) error {
+				if err := token.Refresh(ctx, c.Bool("force")); err != nil {
+					return fmt.Errorf("token refresh failed: %w", err)
+				}
+				log.Printf("Token refresh completed successfully")
 				return nil
 			},
 		},

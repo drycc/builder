@@ -1,6 +1,7 @@
 package healthsrv
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 
@@ -12,7 +13,7 @@ import (
 // with the indicative error.
 func Start(cnf *sshd.Config, nsLister NamespaceLister, bLister BucketLister, sshServerCircuit *sshd.Circuit) error {
 	mux := http.NewServeMux()
-	client, err := controller.New(cnf.ControllerURL)
+	client, err := controller.New(context.Background(), cnf.ControllerURL)
 	if err != nil {
 		return err
 	}

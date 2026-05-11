@@ -1,0 +1,32 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: drycc-builder-token-refresher
+  labels:
+    heritage: drycc
+    app: drycc-builder
+    component: token-refresher
+spec:
+  schedule: "0 2 * * *"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      backoffLimit: 3
+      template:
+        metadata:
+          labels: {{- include "common.labels.standard" . | nindent 12 }}
+            app: drycc-builder
+            component: token-refresher
+        spec:
+          affinity:
+            nodeAffinity: {{- include "common.affinities.nodes" (dict "type" .Values.nodeAffinityPreset.type "key" .Values.nodeAffinityPreset.key "values" .Values.nodeAffinityPreset.values ) | nindent 14 }}
+          serviceAccount: drycc-builder
+          restartPolicy: OnFailure
+          containers:
+          - name: token-refresher
+            image: {{ .Values.imageRegistry }}/{{ .Values.imageOrg }}/builder:{{ .Values.imageTag }}
+            imagePullPolicy: {{ .Values.imagePullPolicy }}
+            args: ["refresh-token"]
+            {{- include "builder.envs" . | indent 12 }}

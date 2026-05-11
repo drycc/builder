@@ -3,18 +3,20 @@ module github.com/drycc/builder
 go 1.26
 
 require (
+	github.com/alicebob/miniredis/v2 v2.37.0
 	github.com/aws/aws-sdk-go-v2 v1.36.3
 	github.com/aws/aws-sdk-go-v2/config v1.29.14
 	github.com/aws/aws-sdk-go-v2/credentials v1.17.67
 	github.com/aws/aws-sdk-go-v2/service/ecr v1.44.1
-	github.com/distribution/distribution/v3 v3.1.0
-	github.com/drycc/controller-sdk-go v0.0.0-20260416093543-28d3a22ab999
+	github.com/distribution/distribution/v3 v3.1.1
+	github.com/drycc/controller-sdk-go v0.0.0-20260511051139-2b7986fe96fd
 	github.com/drycc/pkg v0.0.0-20250917064731-345368da3dbf
 	github.com/google/uuid v1.6.0
 	github.com/kelseyhightower/envconfig v1.4.0
 	github.com/stretchr/testify v1.11.1
 	github.com/urfave/cli/v3 v3.3.3
-	golang.org/x/crypto v0.50.0
+	github.com/valkey-io/valkey-go v1.0.74
+	golang.org/x/crypto v0.51.0
 	gopkg.in/yaml.v3 v3.0.1
 	k8s.io/api v0.35.4
 	k8s.io/apimachinery v0.35.4
@@ -64,6 +66,7 @@ require (
 	github.com/prometheus/procfs v0.20.1 // indirect
 	github.com/sirupsen/logrus v1.9.4 // indirect
 	github.com/x448/float16 v0.8.4 // indirect
+	github.com/yuin/gopher-lua v1.1.1 // indirect
 	go.opentelemetry.io/auto/sdk v1.2.1 // indirect
 	go.opentelemetry.io/contrib/bridges/prometheus v0.67.0 // indirect
 	go.opentelemetry.io/contrib/exporters/autoexport v0.67.0 // indirect
@@ -88,11 +91,11 @@ require (
 	go.opentelemetry.io/proto/otlp v1.10.0 // indirect
 	go.yaml.in/yaml/v2 v2.4.3 // indirect
 	go.yaml.in/yaml/v3 v3.0.4 // indirect
-	golang.org/x/net v0.52.0 // indirect
+	golang.org/x/net v0.54.0 // indirect
 	golang.org/x/oauth2 v0.35.0 // indirect
-	golang.org/x/sys v0.43.0 // indirect
-	golang.org/x/term v0.42.0 // indirect
-	golang.org/x/text v0.36.0 // indirect
+	golang.org/x/sys v0.44.0 // indirect
+	golang.org/x/term v0.43.0 // indirect
+	golang.org/x/text v0.37.0 // indirect
 	golang.org/x/time v0.14.0 // indirect
 	google.golang.org/genproto/googleapis/api v0.0.0-20260401024825-9d38bb4040a9 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20260401024825-9d38bb4040a9 // indirect
