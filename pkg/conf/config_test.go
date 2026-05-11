@@ -1,8 +1,6 @@
 package conf
 
 import (
-	"os"
-	"path/filepath"
 	"testing"
 
 	"github.com/drycc/builder/pkg/sys"
@@ -28,32 +26,4 @@ func TestGetStorageParams(t *testing.T) {
 	assert.Equal(t, params["bucket"], "builder", "bucket")
 	assert.Equal(t, params["accesskey"], "admin", "accesskey")
 	assert.Equal(t, params["secretkey"], "adminpass", "secretkey")
-}
-
-func TestGetControllerClient(t *testing.T) {
-	tmpDir, err := os.MkdirTemp("", "tmpdir")
-	if err != nil {
-		t.Fatalf("error creating temp directory (%s)", err)
-	}
-
-	defer func() {
-		if err := os.RemoveAll(tmpDir); err != nil {
-			t.Fatalf("failed to remove service-key from %s (%s)", tmpDir, err)
-		}
-	}()
-
-	ServiceKeyLocation = filepath.Join(tmpDir, "service-key")
-	data := []byte("testbuilderkey")
-	if err := os.WriteFile(ServiceKeyLocation, data, 0o644); err != nil {
-		t.Fatalf("error creating %s (%s)", ServiceKeyLocation, err)
-	}
-
-	key, err := GetServiceKey()
-	assert.Equal(t, err, nil)
-	assert.Equal(t, key, string(data), "data")
-}
-
-func TestGetServiceKeyError(t *testing.T) {
-	_, err := GetServiceKey()
-	assert.True(t, err != nil, "no error received when there should have been")
 }

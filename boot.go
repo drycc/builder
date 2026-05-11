@@ -47,7 +47,7 @@ func main() {
 			Name:    "server",
 			Aliases: []string{"srv"},
 			Usage:   "Run the git server",
-			Action: func(ctx context.Context, cmd *cli.Command) error {
+			Action: func(_ context.Context, _ *cli.Command) error {
 				cnf := new(sshd.Config)
 				if err := envconfig.Process(serverConfAppName, cnf); err != nil {
 					return fmt.Errorf("getting config for %s [%s]", serverConfAppName, err)
@@ -106,7 +106,7 @@ func main() {
 			Name:    "git-receive",
 			Aliases: []string{"gr"},
 			Usage:   "Run the git-receive hook",
-			Action: func(ctx context.Context, cmd *cli.Command) error {
+			Action: func(_ context.Context, _ *cli.Command) error {
 				cnf := new(gitreceive.Config)
 				if err := envconfig.Process(gitReceiveConfAppName, cnf); err != nil {
 					return fmt.Errorf("error getting config for %s [%s]", gitReceiveConfAppName, err)

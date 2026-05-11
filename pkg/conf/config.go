@@ -2,10 +2,8 @@
 package conf
 
 import (
-	"fmt"
 	"net"
 	"net/url"
-	"os"
 	"strings"
 
 	"github.com/drycc/builder/pkg/sys"
@@ -19,21 +17,8 @@ const (
 	storagePathStyleEnvVar = "DRYCC_STORAGE_PATH_STYLE"
 )
 
-// ServiceKeyLocation holds the path of the service key secret.
-var ServiceKeyLocation = "/var/run/secrets/drycc/controller/service-key"
-
 // Parameters is map which contains storage params
 type Parameters map[string]any
-
-// GetServiceKey returns the key to be used as token to interact with drycc-controller
-func GetServiceKey() (string, error) {
-	serviceKeyBytes, err := os.ReadFile(ServiceKeyLocation)
-	if err != nil {
-		return "", fmt.Errorf("couldn't get builder key from %s (%s)", ServiceKeyLocation, err)
-	}
-	serviceKey := strings.TrimSuffix(string(serviceKeyBytes), "\n")
-	return serviceKey, nil
-}
 
 // GetStorageParams returns the credentials required for connecting to object storage
 func GetStorageParams(env sys.Env) (Parameters, error) {

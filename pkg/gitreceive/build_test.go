@@ -5,12 +5,10 @@ import (
 	"context"
 	"os"
 	"os/exec"
-	"path/filepath"
 	"testing"
 
 	"github.com/distribution/distribution/v3/registry/storage/driver/factory"
 	_ "github.com/distribution/distribution/v3/registry/storage/driver/inmemory"
-	builderconf "github.com/drycc/builder/pkg/conf"
 	"github.com/drycc/builder/pkg/sys"
 	"github.com/drycc/controller-sdk-go/api"
 	"github.com/drycc/pkg/log"
@@ -73,13 +71,7 @@ func TestBuild(t *testing.T) {
 	config.ControllerURL = "http://localhost:1234"
 
 	if err := build(config, storageDriver, nil, env, sha); err == nil {
-		t.Error("expected running build() without a valid builder key to fail")
-	}
-
-	builderconf.ServiceKeyLocation = filepath.Join(tmpDir, "service-key")
-	data := []byte("testbuilderkey")
-	if err := os.WriteFile(builderconf.ServiceKeyLocation, data, 0o644); err != nil {
-		t.Fatalf("error creating %s (%s)", builderconf.ServiceKeyLocation, err)
+		t.Error("expected running build() without valid credentials to fail")
 	}
 
 	if err := build(config, storageDriver, nil, env, sha); err == nil {

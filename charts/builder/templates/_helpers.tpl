@@ -22,6 +22,32 @@ env:
       fieldPath: metadata.namespace
 - name: "DRYCC_CONTROLLER_URL"
   value: http://drycc-controller-api
+{{- if .Values.passport.enabled }}
+- name: "DRYCC_PASSPORT_URL"
+{{- if .Values.global.certManagerEnabled }}
+  value: https://drycc-passport.{{ .Values.global.platformDomain }}
+{{- else }}
+  value: http://drycc-passport.{{ .Values.global.platformDomain }}
+{{- end }}
+- name: DRYCC_PASSPORT_KEY
+  valueFrom:
+    secretKeyRef:
+      name: passport-creds
+      key: drycc-passport-builder-key
+- name: DRYCC_PASSPORT_SECRET
+  valueFrom:
+    secretKeyRef:
+      name: passport-creds
+      key: drycc-passport-builder-secret
+{{- else }}
+- name: DRYCC_PASSPORT_URL
+  valueFrom:
+    secretKeyRef:
+      name: builder-secret
+      key: passport-url
+- name: DRYCC_PASSPORT_KEY
+  valueFrom:
+    secretKeyRef:
 {{- if (.Values.storageEndpoint) }}
 - name: "DRYCC_STORAGE_BUCKET"
   valueFrom:
