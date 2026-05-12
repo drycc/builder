@@ -6,6 +6,18 @@ env:
   value: "2223"
 - name: "TTL_SECONDS_AFTER_FINISHED"
   value: "{{ .Values.global.ttlSecondsAfterFinished }}"
+{{- if (.Values.valkeyUrl) }}
+- name: DRYCC_VALKEY_URL
+  value: "{{ .Values.valkeyUrl }}"
+{{- else }}
+- name: DRYCC_VALKEY_PASSWORD
+  valueFrom:
+    secretKeyRef:
+      name: valkey-creds
+      key: password
+- name: DRYCC_VALKEY_URL
+  value: "redis://:$(DRYCC_VALKEY_PASSWORD)@drycc-valkey:16379/3"
+{{- end }}
 # Set GIT_LOCK_TIMEOUT to number of minutes you want to wait to git push again to the same repository
 - name: "GIT_LOCK_TIMEOUT"
   value: "30"

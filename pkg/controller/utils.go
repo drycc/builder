@@ -2,77 +2,116 @@
 package controller
 
 import (
-	"encoding/json"
-	"fmt"
+	"bytes"
+	"context"
+	"crypto/tls"
+	"errors"
+	"io"
 	"net/http"
-	"net/url"
-	"os"
-	"strings"
+	"sync/atomic"
 
+	"github.com/drycc/builder/pkg/controller/token"
 	drycc "github.com/drycc/controller-sdk-go"
 	"github.com/drycc/pkg/log"
 )
 
-type tokenResponse struct {
-	AccessToken string `json:"access_token"`
-	TokenType   string `json:"token_type"`
-}
-
-// New creates a new SDK client configured as the builder.
-func New(controllerURL string) (*drycc.Client, error) {
+// New creates a new SDK client configured as the builder. The OAuth m2m
+// access token is sourced from Valkey via the token package; the HTTP
+// transport transparently re-fetches on 401 (self-heal).
+func New(ctx context.Context, controllerURL string) (*drycc.Client, error) {
 	client, err := drycc.New(true, controllerURL, "")
 	if err != nil {
 		return client, err
 	}
 	client.UserAgent = "drycc-builder"
 
-	passportURL := os.Getenv("DRYCC_PASSPORT_URL")
-	passportKey := os.Getenv("DRYCC_PASSPORT_KEY")
-	passportSecret := os.Getenv("DRYCC_PASSPORT_SECRET")
-	if passportURL == "" || passportKey == "" || passportSecret == "" {
-		return client, fmt.Errorf("passport credentials not configured")
-	}
-
-	data := url.Values{}
-	data.Set("grant_type", "client_credentials")
-	data.Set("client_id", passportKey)
-	data.Set("client_secret", passportSecret)
-
-	req, err := http.NewRequest("POST", fmt.Sprintf("%s/oauth/token/", passportURL), strings.NewReader(data.Encode()))
+	tok, err := token.Get(ctx)
 	if err != nil {
-		return client, fmt.Errorf("failed to create token request: %v", err)
-	}
-	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
-
-	resp, err := http.DefaultClient.Do(req)
-	if err != nil {
-		return client, fmt.Errorf("failed to request token: %v", err)
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusOK {
-		return client, fmt.Errorf("failed to get token: HTTP %d", resp.StatusCode)
+		return client, err
 	}
 
-	var tr tokenResponse
-	if err := json.NewDecoder(resp.Body).Decode(&tr); err != nil {
-		return client, fmt.Errorf("failed to decode token response: %v", err)
+	base := &http.Transport{
+		TLSClientConfig:   &tls.Config{InsecureSkipVerify: !client.VerifySSL},
+		DisableKeepAlives: true,
+		Proxy:             http.ProxyFromEnvironment,
 	}
+	at := &authTransport{base: base}
+	at.token.Store(tok)
+	client.HTTPClient = &http.Client{Transport: at}
 
-	client.Token = tr.TokenType + " " + tr.AccessToken
-
+	// Clear Token so the SDK does not append its own Authorization header;
+	// authTransport is the sole owner of Authorization.
+	client.Token = ""
 	return client, nil
 }
 
 // CheckAPICompat checks for API compatibility errors and warns about them.
 func CheckAPICompat(c *drycc.Client, err error) error {
-	if err == drycc.ErrAPIMismatch {
+	if errors.Is(err, drycc.ErrAPIMismatch) {
 		log.Info("WARNING: SDK and Controller API versions do not match. SDK: %s Controller: %s",
 			drycc.APIVersion, c.ControllerAPIVersion)
-
-		// API mismatch isn't fatal, so after warning continue on.
 		return nil
 	}
-
 	return err
+}
+
+// authTransport injects the cached bearer token on every request and, on
+// 401, invalidates the cache and replays the request exactly once with a
+// freshly fetched token. This is the runtime self-heal path: if the CronJob
+// is late or the cached token was rotated out-of-band, in-flight requests
+// recover without the caller noticing.
+type authTransport struct {
+	base  http.RoundTripper
+	token atomic.Value
+}
+
+func (t *authTransport) RoundTrip(req *http.Request) (*http.Response, error) {
+	body, err := copyBody(req)
+	if err != nil {
+		return nil, err
+	}
+	t.setAuth(req)
+	resp, err := t.base.RoundTrip(req)
+	if err != nil || resp.StatusCode != http.StatusUnauthorized {
+		return resp, err
+	}
+	_ = resp.Body.Close()
+	if err := token.Invalidate(req.Context()); err != nil {
+		log.Info("token: failed to invalidate after 401: %s", err)
+	}
+	fresh, err := token.Get(req.Context())
+	if err != nil {
+		return nil, err
+	}
+	t.token.Store(fresh)
+	retry := req.Clone(req.Context())
+	if body != nil {
+		retry.Body = io.NopCloser(bytes.NewReader(body))
+		retry.GetBody = func() (io.ReadCloser, error) {
+			return io.NopCloser(bytes.NewReader(body)), nil
+		}
+	}
+	t.setAuth(retry)
+	return t.base.RoundTrip(retry)
+}
+
+func (t *authTransport) setAuth(req *http.Request) {
+	if tok, ok := t.token.Load().(string); ok && tok != "" {
+		req.Header.Set("Authorization", "Bearer "+tok)
+	}
+}
+
+// copyBody buffers a request body so the same payload can be replayed after
+// a 401. Returns nil for bodyless requests.
+func copyBody(req *http.Request) ([]byte, error) {
+	if req.Body == nil || req.Body == http.NoBody {
+		return nil, nil
+	}
+	buf, err := io.ReadAll(req.Body)
+	if err != nil {
+		return nil, err
+	}
+	_ = req.Body.Close()
+	req.Body = io.NopCloser(bytes.NewReader(buf))
+	return buf, nil
 }

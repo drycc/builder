@@ -77,3 +77,7 @@ registry:
   enabled: true
   proxy:
     port: 5555
+
+# Override DRYCC_VALKEY_URL when running against an external Valkey/Redis.
+# When empty, the chart wires the in-cluster drycc-valkey service.
+valkeyUrl: ""

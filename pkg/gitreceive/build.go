@@ -91,7 +91,7 @@ func build(
 		}
 	}()
 
-	client, err := controller.New(conf.ControllerURL)
+	client, err := controller.New(context.Background(), conf.ControllerURL)
 	if err != nil {
 		return err
 	}
