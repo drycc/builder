@@ -25,8 +25,10 @@ import (
 	"gopkg.in/yaml.v3"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/kubernetes/scheme"
+	"k8s.io/client-go/tools/cache"
 )
 
 const (
@@ -186,24 +188,25 @@ func build(
 		return fmt.Errorf("creating builder pod (%s)", err)
 	}
 
-	pw := k8s.NewPodWatcher(*kubeClient, conf.PodNamespace)
+	pw := k8s.NewPodWatcher(*kubeClient, conf.PodNamespace, builderPodLabelSelector(newJob.Name))
 	stopCh := make(chan struct{})
 	defer close(stopCh)
 	go pw.Controller.Run(stopCh)
+
+	if !cache.WaitForCacheSync(stopCh, pw.Controller.HasSynced) {
+		return fmt.Errorf("pod watcher cache failed to sync for job %s", newJob.Name)
+	}
 
 	if err := waitForPod(pw, newJob.Name, conf.SessionIdleInterval(), conf.BuilderPodTickDuration(), conf.BuilderPodWaitDuration()); err != nil {
 		return fmt.Errorf("watching events for builder pod startup (%s)", err)
 	}
 
-	options := metav1.ListOptions{
-		LabelSelector: fmt.Sprintf("job-name=%s", newJob.Name),
-	}
-	podList, err := kubeClient.CoreV1().Pods(newJob.Namespace).List(context.Background(), options)
+	builderPod, err := resolveBuilderPod(pw, newJob.Name)
 	if err != nil {
-		return fmt.Errorf("list pods %s fail: (%s)", newJob.Name, err)
+		return err
 	}
 
-	req := kubeClient.CoreV1().RESTClient().Get().Namespace(newJob.Namespace).Name(podList.Items[0].Name).Resource("pods").SubResource("log").VersionedParams(
+	req := kubeClient.CoreV1().RESTClient().Get().Namespace(newJob.Namespace).Name(builderPod.Name).Resource("pods").SubResource("log").VersionedParams(
 		&corev1.PodLogOptions{
 			Follow: true,
 		}, scheme.ParameterCodec)
@@ -234,7 +237,7 @@ func build(
 	}
 	log.Debug("Done")
 	log.Debug("Checking for builder pod exit code")
-	buildPod, err := kubeClient.CoreV1().Pods(newJob.Namespace).Get(context.TODO(), podList.Items[0].Name, metav1.GetOptions{})
+	buildPod, err := kubeClient.CoreV1().Pods(newJob.Namespace).Get(context.TODO(), builderPod.Name, metav1.GetOptions{})
 	if err != nil {
 		return fmt.Errorf("error getting builder pod status (%s)", err)
 	}
@@ -330,4 +333,23 @@ func getDockerfile(dirName string, stack map[string]string) (string, error) {
 		}
 	}
 	return "", nil
+}
+
+func builderPodLabelSelector(jobName string) string {
+	return fmt.Sprintf("job-name=%s,heritage=drycc", jobName)
+}
+
+func resolveBuilderPod(pw *k8s.PodWatcher, jobName string) (*corev1.Pod, error) {
+	selector := labels.Set{
+		"job-name": jobName,
+		"heritage": "drycc",
+	}.AsSelector()
+	pods, err := pw.Store.List(selector)
+	if err != nil {
+		return nil, fmt.Errorf("listing builder pods for job %s: %s", jobName, err)
+	}
+	if len(pods) == 0 {
+		return nil, fmt.Errorf("no builder pod found in cache for job %s", jobName)
+	}
+	return pods[0], nil
 }

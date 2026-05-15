@@ -68,6 +68,12 @@ type tokenResponse struct {
 	ExpiresIn   int64  `json:"expires_in"`
 }
 
+// introspectResponse models the passport /oauth/introspect/ response.
+type introspectResponse struct {
+	Active bool   `json:"active"`
+	Scope  string `json:"scope"`
+}
+
 // Manager owns the Valkey client and the configuration needed to refresh
 // tokens. It is safe for concurrent use.
 type Manager struct {
@@ -237,6 +243,9 @@ func (m *Manager) readValid(ctx context.Context, buffer time.Duration) (*payload
 	if p.ExpiresAt <= cutoff {
 		return nil, nil
 	}
+	if !m.introspectToken(ctx, p.AccessToken) {
+		return nil, nil
+	}
 	return &p, nil
 }
 
@@ -267,6 +276,60 @@ func (m *Manager) fetchAndSave(ctx context.Context) (*payload, error) {
 		return nil, err
 	}
 	return &p, nil
+}
+
+func (m *Manager) introspectToken(ctx context.Context, token string) bool {
+	if m.passportScopes == "" {
+		return true
+	}
+
+	endpoint := strings.TrimRight(m.passportURL, "/") + "/oauth/introspect/"
+	form := url.Values{}
+	form.Set("token", token)
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, endpoint, strings.NewReader(form.Encode()))
+	if err != nil {
+		return false
+	}
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	req.SetBasicAuth(m.passportKey, m.passportSecret)
+
+	resp, err := m.httpClient.Do(req)
+	if err != nil {
+		return false
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return false
+	}
+
+	var ir introspectResponse
+	if err := json.NewDecoder(resp.Body).Decode(&ir); err != nil {
+		return false
+	}
+
+	if !ir.Active {
+		return false
+	}
+
+	requiredScopes := strings.Fields(m.passportScopes)
+	tokenScopes := strings.Fields(ir.Scope)
+
+	if len(requiredScopes) != len(tokenScopes) {
+		return false
+	}
+
+	reqMap := make(map[string]bool)
+	for _, s := range requiredScopes {
+		reqMap[s] = true
+	}
+	for _, s := range tokenScopes {
+		if !reqMap[s] {
+			return false
+		}
+	}
+	return true
 }
 
 func (m *Manager) requestToken(ctx context.Context) (*tokenResponse, error) {

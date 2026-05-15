@@ -36,7 +36,7 @@ func newTestManager(t *testing.T, passportHandler http.HandlerFunc) (*Manager, *
 	t.Setenv("DRYCC_PASSPORT_URL", ts.URL)
 	t.Setenv("DRYCC_PASSPORT_KEY", "test-key")
 	t.Setenv("DRYCC_PASSPORT_SECRET", "test-secret")
-	t.Setenv("DRYCC_PASSPORT_SCOPES", "controller:hook")
+	t.Setenv("DRYCC_PASSPORT_SCOPES", "passport:message")
 
 	mgr, err := NewManager(client)
 	require.NoError(t, err)
@@ -57,7 +57,20 @@ func passportJSON(t *testing.T, accessToken string, expiresIn int64) http.Handle
 }
 
 func TestGet_FastPathReturnsCachedToken(t *testing.T) {
-	mgr, mr, _ := newTestManager(t, passportJSON(t, "should-not-be-fetched", 2592000))
+	// The introspect endpoint is required for the fast path validity check now.
+	handler := func(w http.ResponseWriter, req *http.Request) {
+		if req.URL.Path == "/oauth/introspect/" {
+			w.Header().Set("Content-Type", "application/json")
+			_ = json.NewEncoder(w).Encode(map[string]any{
+				"active": true,
+				"scope":  "passport:message",
+			})
+			return
+		}
+		// Fallback for token requests
+		passportJSON(t, "should-not-be-fetched", 2592000)(w, req)
+	}
+	mgr, mr, _ := newTestManager(t, handler)
 
 	// Pre-populate Valkey with a still-valid token.
 	p := payload{AccessToken: "cached-token", ExpiresAt: time.Now().Add(24 * time.Hour).Unix()}
@@ -96,13 +109,30 @@ func TestGet_ColdStartFetchesFromPassport(t *testing.T) {
 }
 
 func TestGet_ConcurrentCallsHitPassportOnce(t *testing.T) {
-	var calls int32
-	handler := func(w http.ResponseWriter, _ *http.Request) {
-		atomic.AddInt32(&calls, 1)
+	var activeCalls int32
+	var tokenCalls int32
+	var mu sync.Mutex
+
+	handler := func(w http.ResponseWriter, req *http.Request) {
+		mu.Lock()
+		if req.URL.Path == "/oauth/introspect/" {
+			activeCalls++
+			mu.Unlock()
+			w.Header().Set("Content-Type", "application/json")
+			_ = json.NewEncoder(w).Encode(map[string]any{
+				"active": true,
+				"scope":  "passport:message",
+			})
+			return
+		}
+
+		tokenCalls++
+		mu.Unlock()
+
 		// Slow handler to widen the race window.
 		time.Sleep(50 * time.Millisecond)
 		w.Header().Set("Content-Type", "application/json")
-		_, _ = w.Write([]byte(`{"access_token":"only-one","token_type":"Bearer","expires_in":2592000}`))
+		_, _ = w.Write([]byte(`{"access_token":"only-one","token_type":"Bearer","expires_in":2592000,"scope":"passport:message"}`))
 	}
 	mgr, _, _ := newTestManager(t, handler)
 
@@ -123,15 +153,24 @@ func TestGet_ConcurrentCallsHitPassportOnce(t *testing.T) {
 		require.NoErrorf(t, errs[i], "goroutine %d", i)
 		assert.Equal(t, "only-one", results[i])
 	}
-	assert.Equal(t, int32(1), atomic.LoadInt32(&calls), "passport should be called exactly once")
+	assert.Equal(t, int32(1), atomic.LoadInt32(&tokenCalls), "passport should be called exactly once")
 }
 
 func TestRefresh_SkipsWhenPlentyOfLifetimeRemains(t *testing.T) {
-	var calls int32
-	handler := func(w http.ResponseWriter, _ *http.Request) {
-		atomic.AddInt32(&calls, 1)
+	var tokenCalls int32
+	handler := func(w http.ResponseWriter, req *http.Request) {
+		if req.URL.Path == "/oauth/introspect/" {
+			w.Header().Set("Content-Type", "application/json")
+			_ = json.NewEncoder(w).Encode(map[string]any{
+				"active": true,
+				"scope":  "passport:message",
+			})
+			return
+		}
+
+		atomic.AddInt32(&tokenCalls, 1)
 		w.WriteHeader(http.StatusOK)
-		_, _ = w.Write([]byte(`{"access_token":"new","expires_in":2592000}`))
+		_, _ = w.Write([]byte(`{"access_token":"new","expires_in":2592000,"scope":"passport:message"}`))
 	}
 	mgr, mr, _ := newTestManager(t, handler)
 
@@ -141,7 +180,7 @@ func TestRefresh_SkipsWhenPlentyOfLifetimeRemains(t *testing.T) {
 	require.NoError(t, mr.Set(TokenKey, string(raw)))
 
 	require.NoError(t, mgr.Refresh(context.Background(), false))
-	assert.Equal(t, int32(0), atomic.LoadInt32(&calls))
+	assert.Equal(t, int32(0), atomic.LoadInt32(&tokenCalls))
 
 	got, _ := mr.Get(TokenKey)
 	assert.Equal(t, string(raw), got, "token must be untouched")
@@ -386,6 +425,15 @@ func TestNewClientFromEnv_MissingURL(t *testing.T) {
 func TestRequestToken_SendsControllerHookScope(t *testing.T) {
 	var captured url.Values
 	handler := func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path == "/oauth/introspect/" {
+			w.Header().Set("Content-Type", "application/json")
+			_ = json.NewEncoder(w).Encode(map[string]any{
+				"active": true,
+				"scope":  "passport:message",
+			})
+			return
+		}
+
 		body, _ := io.ReadAll(r.Body)
 		captured, _ = url.ParseQuery(string(body))
 		w.Header().Set("Content-Type", "application/json")
@@ -399,5 +447,5 @@ func TestRequestToken_SendsControllerHookScope(t *testing.T) {
 	assert.Equal(t, "client_credentials", captured.Get("grant_type"))
 	assert.Equal(t, "test-key", captured.Get("client_id"))
 	assert.Equal(t, "test-secret", captured.Get("client_secret"))
-	assert.Equal(t, "controller:hook", captured.Get("scope"))
+	assert.Equal(t, "passport:message", captured.Get("scope"))
 }
