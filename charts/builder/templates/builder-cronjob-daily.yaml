@@ -28,5 +28,5 @@ spec:
           - name: token-refresher
             image: {{ .Values.imageRegistry }}/{{ .Values.imageOrg }}/builder:{{ .Values.imageTag }}
             imagePullPolicy: {{ .Values.imagePullPolicy }}
-            args: ["refresh-token"]
+            args: ["/usr/bin/boot", "refresh-token"]
             {{- include "builder.envs" . | indent 12 }}

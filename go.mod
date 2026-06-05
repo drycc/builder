@@ -9,7 +9,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/credentials v1.17.67
 	github.com/aws/aws-sdk-go-v2/service/ecr v1.44.1
 	github.com/distribution/distribution/v3 v3.1.1
-	github.com/drycc/controller-sdk-go v0.0.0-20260527062908-7d751e6440b0
+	github.com/drycc/controller-sdk-go v0.0.0-20260529052452-a2af31b41928
 	github.com/drycc/pkg v0.0.0-20250917064731-345368da3dbf
 	github.com/google/uuid v1.6.0
 	github.com/kelseyhightower/envconfig v1.4.0
