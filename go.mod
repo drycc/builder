@@ -9,7 +9,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/credentials v1.20.15
 	github.com/aws/aws-sdk-go-v2/service/ecr v1.67.4
 	github.com/distribution/distribution/v3 v3.1.2
-	github.com/drycc/controller-sdk-go v0.0.0-20261102093753-1b1de2a4e601
+	github.com/drycc/controller-sdk-go v0.0.0-20261106131338-8d7d754f0349
 	github.com/drycc/pkg v0.0.0-20250917064731-345368da3dbf
 	github.com/google/uuid v1.6.0
 	github.com/kelseyhightower/envconfig v1.4.0
@@ -101,7 +101,7 @@ require (
 	go.opentelemetry.io/proto/otlp v1.11.0 // indirect
 	go.yaml.in/yaml/v2 v2.4.4 // indirect
 	go.yaml.in/yaml/v3 v3.0.5 // indirect
-	golang.org/x/net v0.60.0 // indirect
+	golang.org/x/net v0.62.0 // indirect
 	golang.org/x/oauth2 v0.36.0 // indirect
 	golang.org/x/sys v0.49.0 // indirect
 	golang.org/x/term v0.47.0 // indirect
