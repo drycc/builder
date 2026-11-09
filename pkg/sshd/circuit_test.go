@@ -1,7 +1,6 @@
 package sshd
 
 import (
-	"math/rand"
 	"sync"
 	"sync/atomic"
 	"testing"
@@ -10,12 +9,6 @@ import (
 const (
 	numConcurrents = 1000
 )
-
-func init() {
-	// rand.Seed is deprecated as of Go 1.20
-	// Programs that call Seed with a known value should use New(NewSource(seed))
-	// No need to seed for random values as of Go 1.20
-}
 
 func TestOpenCloseSerial(t *testing.T) {
 	c := NewCircuit()
@@ -37,25 +30,52 @@ func TestOpenCloseSerial(t *testing.T) {
 }
 
 func TestOpenCloseConcurrent(t *testing.T) {
-	c := NewCircuit()
-	var wg sync.WaitGroup
-	state := uint32(0)
-	for i := 0; i < numConcurrents; i++ {
-		wg.Add(1)
-		go func(int) {
-			defer wg.Done()
-			r := rand.Int() % 2
-			if r == 0 {
-				c.Open()
-				atomic.StoreUint32(&state, OpenState.toUint32())
-			} else {
-				c.Close()
-				atomic.StoreUint32(&state, ClosedState.toUint32())
-			}
-		}(i)
+	tests := []struct {
+		name         string
+		initialState CircuitState
+		operation    func(*Circuit) bool
+		wantState    CircuitState
+	}{
+		{
+			name:         "close",
+			initialState: OpenState,
+			operation:    (*Circuit).Close,
+			wantState:    ClosedState,
+		},
+		{
+			name:         "open",
+			initialState: ClosedState,
+			operation:    (*Circuit).Open,
+			wantState:    OpenState,
+		},
 	}
-	wg.Wait()
-	if state != c.State().toUint32() {
-		t.Fatalf("expected state %d wasn't equal to actual %d", state, c.State().toUint32())
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			c := NewCircuit()
+			if tt.initialState == ClosedState {
+				c.Close()
+			}
+
+			var wg sync.WaitGroup
+			var successes uint32
+			for i := 0; i < numConcurrents; i++ {
+				wg.Add(1)
+				go func() {
+					defer wg.Done()
+					if tt.operation(c) {
+						atomic.AddUint32(&successes, 1)
+					}
+				}()
+			}
+			wg.Wait()
+
+			if successes != 1 {
+				t.Errorf("expected exactly one successful %s, got %d", tt.name, successes)
+			}
+			if got := c.State(); got != tt.wantState {
+				t.Errorf("expected final state %s, got %s", tt.wantState, got)
+			}
+		})
 	}
 }
